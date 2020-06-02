@@ -1,0 +1,23 @@
+html {
+    min-height: 100vh;
+}
+
+html, body, #root {
+    display: flex;
+    flex: 1;
+    margin: 0;
+}
+
+body {
+    background: #F2F7FB;
+}
+
+@font-face {
+    font-family: EuclidCircular;
+    src: url("fonts/euclid_circular.ttf");
+}
+
+@font-face {
+    font-family: FuturaLight;
+    src: url("fonts/futura_light.ttf");
+}
