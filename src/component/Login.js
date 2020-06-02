@@ -1,5 +1,8 @@
 import React from "react";
 import styled from "styled-components";
+import Card from "./basic/Card"
+import Button from "./basic/Button";
+import Input from "./basic/Input";
 import * as firebase from "firebase/app";
 
 //---LOGIN
@@ -19,31 +22,58 @@ import * as firebase from "firebase/app";
 //f().then();//DON'T STOP CODE
 //await f();//STOP CODE
 
-const Header = styled.div`
-  width:100%;
-  height: 256px;
-  background: red;
+const Container = styled.div`
+    min-width: 400px;
+    min-height: 500px; 
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background:#E5E5E5;
 `;
-
-const Footer = styled.div`
-  width:100%;
-  height: 256px;
-  background: blue;
-`;
-
-const Wrapper = styled.div`
-  flex: 1;
+const Form = styled.div`
+    display:flex;
+    flex-direction: column;
+    text-align:center;
+    min-width: 400px;
+    min-height: 500px; 
+    background: #FAFDFF;
+    border-radius: 24px;
+    box-shadow: 0 2px 64px rgba(232,238,243,0.5);
+    padding: 48px 36px;
+`
+const Upper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-`;
+  margin-bottom: auto;
+  flex-grow: 0.09;
+`
+const Bottom = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: auto;
+  flex-grow: 0.09;
+  
+`
 
 export default function Login(props) {
     return (
-        <Wrapper>
-            <Header/>
-            {props.children}
-            <Footer/>
-        </Wrapper>
+        <Container>
+            <Form>
+                <p src="">c</p>
+                <Upper>
+                    <Input placeholder="Email"></Input>
+                    <Input placeholder="Password"></Input>
+                </Upper>
+                <Bottom>
+                    <Button>Login</Button>
+                    <Button>Don't have an account?</Button>
+                </Bottom>
+
+            </Form>
+        </Container>
     );
 }
