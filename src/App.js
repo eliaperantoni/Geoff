@@ -1,5 +1,6 @@
 import React from 'react';
-import Empty from "./Empty";
+import Empty from "./component/basic/Empty";
+import Login from "./component/Login"
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -17,9 +18,9 @@ const Wrapper = styled.div`
 
 function App() {
     return (
-        <Empty>
-            <h1>Nicolò Sboretti</h1>
-        </Empty>
+        <Login>
+
+        </Login>
     );
 }
 
