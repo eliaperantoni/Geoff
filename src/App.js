@@ -1,6 +1,6 @@
 import React from 'react';
-import Empty from "./component/basic/Empty";
-import Login from "./component/Login"
+import Empty from "./components/basic/Empty";
+import Login from "./components/Login"
 import styled from "styled-components";
 
 const Wrapper = styled.div`
