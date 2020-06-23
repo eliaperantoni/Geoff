@@ -3,6 +3,8 @@ import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import styled from "styled-components";
 import GlobalStyle from "./style";
 import Login from "./components/Login";
+import Register from "./components/Register"
+import Confirm from "./components/Confirm"
 
 const StyledApp = styled.div`
     display: flex;
@@ -31,6 +33,12 @@ function App() {
                 <Switch>
                     <Route path="/login">
                         <Login/>
+                    </Route>
+                    <Route path="/register">
+                        <Register/>
+                    </Route>
+                    <Route path="/confirm">
+                        <Confirm/>
                     </Route>
                     <Route>
                         <C404/>
