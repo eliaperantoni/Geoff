@@ -5,6 +5,7 @@ import GlobalStyle from "./style";
 import Login from "./components/Login";
 import Register from "./components/Register"
 import Confirm from "./components/Confirm"
+import Checkout from "./components/Checkout"
 
 const StyledApp = styled.div`
     display: flex;
@@ -39,6 +40,9 @@ function App() {
                     </Route>
                     <Route path="/confirm">
                         <Confirm/>
+                    </Route>
+                    <Route path="/checkout">
+                        <Checkout/>
                     </Route>
                     <Route>
                         <C404/>
