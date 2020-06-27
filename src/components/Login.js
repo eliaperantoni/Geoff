@@ -52,7 +52,7 @@ const Upper = styled.div`
   justify-content: space-between;
   margin-bottom: auto;
   flex-grow: 0.2;
-  margin-top: 100px;
+  margin-top: 90px;
 `
 const Bottom = styled.div`
   display: flex;

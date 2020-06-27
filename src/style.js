@@ -1,6 +1,7 @@
 import {createGlobalStyle} from "styled-components";
 import EuclidCircular from "./fonts/euclid_circular.ttf";
 import FuturaLight from "./fonts/futura_light.ttf";
+import FuturaBold from "./fonts/unicode.futurab.ttf";
 
 const GlobalStyle = createGlobalStyle`
     html {
@@ -25,6 +26,10 @@ const GlobalStyle = createGlobalStyle`
     @font-face {
         font-family: FuturaLight;
         src: url(${FuturaLight});
+    }
+    @font-face {
+        font-family: FuturaBold;
+        src: url(${FuturaBold});
     }
 `;
 

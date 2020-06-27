@@ -44,7 +44,6 @@ export default function Header(props) {
         <Right>
             <Imm src={cart}/>
             <Imm src={orders}/>
-
             <Imm src={profile}/>
             <Imm src={logout}/>
         </Right>

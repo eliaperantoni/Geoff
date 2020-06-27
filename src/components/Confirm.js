@@ -4,24 +4,7 @@ import Card from "./basic/Card"
 import Button from "./basic/Button";
 import Input from "./basic/Input";
 import image from "../img/confirm.svg"
-import * as firebase from "firebase/app";
 
-//---LOGIN
-
-//ASSINCRONO
-//const i = firebase.auth().signInWithEmailAndPassword(em,pw);
-//i.then((params)=>{console.log(params)});
-//---OPPURE
-//const i = await firebase.auth().signInWithEmailAndPassword(em,pw);
-//QUI I CONTIENE IL VALORE EFFETTIVO, ASPETTO IL VALORE
-
-//CONTEXT ASYNC POSSO SOLO FARLO QUI IL AWAI PER METTERE TUTTE LE COSE ASINCRONE DIVISE SENZA
-//DOVER STOPPARE IL MAIN, POSSO CHIAMARLA OVUNQUE
-//async function f(){
-    //POSSO METTERE
-//}
-//f().then();//DON'T STOP CODE
-//await f();//STOP CODE
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -61,11 +44,13 @@ const Immage = styled.img`
  `
 const Title = styled.p`
     margin-top:20px;
-    font-family: FuturaLight, sans-serif;
+    font-family: FuturaBold, sans-serif;
     font-weight: 900;
     line-height: 38px;
     font-size: 48px;
     color: #859EB3;
+    margin:auto;
+    margin-bottom: 30px;
  `
 const Par = styled.p`
     margin-top:20px;

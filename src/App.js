@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Register from "./components/Register"
 import Confirm from "./components/Confirm"
 import Checkout from "./components/Checkout"
+import Thanks from "./components/Thanks"
 
 const StyledApp = styled.div`
     display: flex;
@@ -43,6 +44,9 @@ function App() {
                     </Route>
                     <Route path="/checkout">
                         <Checkout/>
+                    </Route>
+                    <Route path="/thanks">
+                        <Thanks/>
                     </Route>
                     <Route>
                         <C404/>

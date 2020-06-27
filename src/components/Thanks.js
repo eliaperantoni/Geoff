@@ -2,11 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import Card from "./basic/Card"
 import Button from "./basic/Button";
-import Header from "./basic/Header";
-import card from "../img/card_small.svg"
+import Input from "./basic/Input";
+import image from "../img/thanks.svg"
+import Header from "./basic/Header"
+
 
 const Container = styled(Card)`
-    top:0;
     min-width: 400px;
     min-height: 500px; 
     flex: 1;
@@ -16,7 +17,6 @@ const Container = styled(Card)`
     align-items: center;
     background:#E5E5E5;
     overflow: hidden;
-    
 `
 const Form = styled(Card)`
     margin-top:70px;
@@ -24,8 +24,8 @@ const Form = styled(Card)`
     flex-direction: column;
     align-items: center;
     text-align:center;
-    width: 600px;
-    min-height: 500px; 
+    width: 800px;
+    min-height: 400px; 
     background: #FAFDFF;
     border-radius: 24px;
     box-shadow: 0 2px 64px rgba(232,238,243,0.5);
@@ -35,48 +35,46 @@ const Upper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex-grow: 1;
+  margin-bottom: auto;
+  flex-grow: 0.2;
+  margin-top: 75px;
 `
-const Price = styled.p`
+const Immage = styled.img`
+    max-width: 340px;
+    max-height: 340px;
+    margin-top: -140px;
+ `
+const Title = styled.p`
+    margin-top:20px;
     font-family: FuturaBold, sans-serif;
-    font-size: 96px;
-    color: #A4BBCD;
+    font-weight: 900;
+    line-height: 38px;
+    font-size: 48px;
+    color: #859EB3;
     margin:auto;
+    margin-bottom: 30px;
  `
-const BoldText = styled.p`
-    font-family: FuturaBold, sans-serif;
-    font-weight: bold;
-    color: #A4BBCD;
- `
-const Text = styled.p`
+const Par = styled.p`
+    margin-top:20px;
     font-family: FuturaLight, sans-serif;
-    font-size: 24px;
-    color: #A4BBCD;
-    margin:auto;
-    margin-top:40px;
+    font-size: 48px;
+    color: #AAB8C2;
  `
-const Imm = styled.img`
-    max-width: 100px;
-    max-height: 150px;
-`
 export default function Confirm(props) {
     return (
 
         <Container>
-            <Header/>
-
+            <Header></Header>
             <Form>
+                <Immage src={image}/>
                 <Upper>
-                    <Price>22.50€</Price>
-                    <Text>
-                        Paying with:
-                        <BoldText><Imm src={card}/> **** **** **** 1234</BoldText>
-                        Will ship to:
-                        <BoldText>Zimba, Palu 13, X</BoldText>
-                    </Text>
-                    <Button style={{height:'100px'}}>Buy</Button>
-                    <Button style={{marginTop:'20px'}}>Change payment method</Button>
+
+                    <Par>
+                        <Title>Your order has been placed!</Title>
+                        #1234
+                    </Par>
                 </Upper>
+
             </Form>
         </Container>
     );
