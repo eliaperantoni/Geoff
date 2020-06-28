@@ -28,3 +28,4 @@ yarn-error.log*
 firestore.indexes.json
 firebase.json
 firestore.rules
+firebase_tester/
