@@ -1,11 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import Card from "./basic/Card"
 import Button from "./basic/Button";
 import Input from "./basic/Input";
 import image from "../img/authentication.svg"
 import * as firebase from "firebase/app";
-
+import {HashRouter} from 'react-router-dom';
 //---LOGIN
 
 //ASSINCRONO
@@ -42,6 +42,7 @@ const Form = styled(Card)`
     min-width: 400px;
     min-height: 550px; 
     background: #FAFDFF;
+    margin-top:50px;
     border-radius: 24px;
     box-shadow: 0 2px 64px rgba(232,238,243,0.5);
     padding: 48px 36px;
@@ -71,22 +72,37 @@ const Par = styled.p`
     font-family: FuturaLight, sans-serif;
     font-size: 22px;
  `
+
 export default function Login(props) {
+    const [email,setEmail] = useState('')
+    const [password, setPassword] = useState('');
     return (
 
         <Container>
             <Form>
                 <Immage src={image}/>
                 <Upper>
-                    <Input placeholder="Email"></Input>
-                    <Input placeholder="Password"></Input>
+                    <Input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}></Input>
+                    <Input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}></Input>
                 </Upper>
                 <Bottom>
-                    <Button>Login</Button>
+                    <Button
+                        type="submit"
+                        onClick={login}
+                    >Login</Button>
                     <Button>Don't have an account?</Button>
                 </Bottom>
                 <Par>Forgot password ?</Par>
             </Form>
         </Container>
     );
+    async  function login() {
+        try{
+            await firebase.auth().signInWithEmailAndPassword(email,password);
+            props.history.push(null, 'login');
+        }catch(error){
+            alert(error.message)
+        }
+    }
 }
+

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import Card from "./basic/Card"
 import Button from "./basic/Button";
@@ -43,6 +43,14 @@ const Upper = styled.div`
 `
 
 export default function Register(props) {
+    const [email,setEmail] = useState('')
+    const [password,setPassword] = useState('')
+    const [cpassword,setCPassword] = useState('')
+    const [name,setName] = useState('')
+    const [surname,setSurname] = useState('')
+    const [city,setCity] = useState('')
+    const [address,setAddress] = useState('')
+    const [cap,setCap] = useState('')
     return (
 
         <Container>
@@ -62,4 +70,12 @@ export default function Register(props) {
             </Form>
         </Container>
     );
+    async function Register(){
+        try{
+            await firebase.auth().createUserWithEmailAndPassword(email,password)
+            //TODO
+        }catch(error){
+            alert(error.message)
+        }
+    }
 }

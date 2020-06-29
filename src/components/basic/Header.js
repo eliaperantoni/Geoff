@@ -4,9 +4,13 @@ import Button from "./Button";
 import React from "react";
 import logo from "../../img/logo.svg"
 import cart from "../../img/cart.svg"
-import logout from "../../img/logout.svg"
+import out from "../../img/logout.svg"
 import orders from "../../img/orders.svg"
 import profile from "../../img/profile.svg"
+import * as firebase from "firebase/app";
+import { withRouter } from "react-router-dom";
+import Login from "../Login.js"
+
 const Container = styled.div`
     outline: none;
     border: none;
@@ -38,6 +42,7 @@ const Right = styled.div`
     justify-content: space-between;
 `;
 export default function Header(props) {
+    const {history} = props;
     return (
         <Container>
         <Imm src={logo}/>
@@ -45,9 +50,18 @@ export default function Header(props) {
             <Imm src={cart}/>
             <Imm src={orders}/>
             <Imm src={profile}/>
-            <Imm src={logout}/>
+            <Imm src={out} onClick={logout}/>
         </Right>
 
         </Container>
     );
+    async  function logout() {
+        try{
+            await firebase.auth().signOut();
+            history.push('/path');
+        }catch(error){
+            alert(error.message);
+        }
+    }
 }
+
