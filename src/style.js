@@ -1,7 +1,8 @@
 import {createGlobalStyle} from "styled-components";
-import EuclidCircular from "./fonts/euclid_circular.ttf";
-import FuturaLight from "./fonts/futura_light.ttf";
-import FuturaBold from "./fonts/unicode.futurab.ttf";
+
+import EuclidCircular from "fonts/euclid_circular.ttf";
+import FuturaLight from "fonts/futura_light.ttf";
+import FuturaBold from "fonts/futura_bold.ttf";
 
 const GlobalStyle = createGlobalStyle`
     html {
