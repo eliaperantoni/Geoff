@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import styled from "styled-components";
-import * as firebase from "firebase/app";
+import firebase from "firebase.js";
 
 import Card from "components/basic/Card"
 import Button from "components/basic/Button";
@@ -38,17 +38,16 @@ const Upper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-bottom: auto;
+  
   flex-grow: 0.2;
-  margin-top: 90px;
+  margin-top: auto;
 `;
 
-const Bottom = styled.div`
+const Actions = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-top: auto;
-  flex-grow: 0.09;
+  flex-grow: 1;
 `;
 
 const Image = styled.img`
@@ -70,17 +69,12 @@ export default function (props) {
         <Container>
             <Form>
                 <Image src={authenticationSVG}/>
-                <Upper>
-                <Input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}/>
-                <Input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}/>
-                </Upper>
-                <Bottom>
-                    <Button
-                        type="submit"
-                        onClick={login}
-                    >Login</Button>
+                <Actions>
+                    <Input style={{'margin-top':'50px'}}placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}/>
+                    <Input style={{'margin-bottom':'50px'}} type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}/>
+                    <Button type="submit" onClick={login}>Login</Button>
                     <Button>Don't have an account?</Button>
-                </Bottom>
+                </Actions>
                 <Par>Forgot password ?</Par>
             </Form>
         </Container>

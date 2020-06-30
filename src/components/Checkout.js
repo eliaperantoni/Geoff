@@ -78,7 +78,7 @@ export default function () {
                     <Price>22.50€</Price>
                     <Text>
                         Paying with:
-                        <BoldText><Icon path={mdiCreditCard}/> **** **** **** 1234</BoldText>
+                        <BoldText><Icon path={mdiCreditCard} size={1.8}/> **** **** **** 1234</BoldText>
                         Will ship to:
                         <BoldText>Zimba, Palu 13, X</BoldText>
                     </Text>
