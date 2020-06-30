@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import Card from "./basic/Card"
-import Button from "./basic/Button";
-import Header from "./basic/Header";
-import card from "../img/card_small.svg"
+
+import Card from "/src/components/basic/Card"
+import Button from "/src/components/basic/Button";
+import Header from "/src/components/basic/Header";
+
+import cardSVG from "/src/img/card_small.svg";
 
 const Container = styled(Card)`
     top:0;
@@ -16,8 +18,8 @@ const Container = styled(Card)`
     align-items: center;
     background:#E5E5E5;
     overflow: hidden;
-    
-`
+`;
+
 const Form = styled(Card)`
     margin-top:70px;
     display:flex;
@@ -30,47 +32,50 @@ const Form = styled(Card)`
     border-radius: 24px;
     box-shadow: 0 2px 64px rgba(232,238,243,0.5);
     padding: 48px 36px;
-`
+`;
+
 const Upper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
-`
+`;
+
 const Price = styled.p`
     font-family: FuturaBold, sans-serif;
     font-size: 96px;
     color: #A4BBCD;
     margin:auto;
- `
+`;
+
 const BoldText = styled.p`
     font-family: FuturaBold, sans-serif;
     font-weight: bold;
     color: #A4BBCD;
- `
+`;
+
 const Text = styled.p`
     font-family: FuturaLight, sans-serif;
     font-size: 24px;
     color: #A4BBCD;
-    margin:auto;
-    margin-top:40px;
- `
+    margin: 40px auto auto;
+`;
+
 const Imm = styled.img`
     max-width: 100px;
     max-height: 150px;
-`
-export default function Confirm(props) {
-    return (
+`;
 
+export default function () {
+    return (
         <Container>
             <Header/>
-
             <Form>
                 <Upper>
                     <Price>22.50€</Price>
                     <Text>
                         Paying with:
-                        <BoldText><Imm src={card}/> **** **** **** 1234</BoldText>
+                        <BoldText><Imm src={cardSVG}/> **** **** **** 1234</BoldText>
                         Will ship to:
                         <BoldText>Zimba, Palu 13, X</BoldText>
                     </Text>

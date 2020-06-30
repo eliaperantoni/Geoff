@@ -1,10 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import Card from "./basic/Card"
-import Button from "./basic/Button";
-import Input from "./basic/Input";
-import image from "../img/authentication.svg"
-import * as firebase from "firebase/app";
+
+import Card from "/src/components/basic/Card"
+import Button from "/src/components/basic/Button";
+import Input from "/src/components/basic/Input";
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -16,7 +15,8 @@ const Container = styled(Card)`
     align-items: center;
     background:#E5E5E5;
     overflow: hidden;
-`
+`;
+
 const Form = styled(Card)`
     display:flex;
     flex-direction: column;
@@ -28,7 +28,8 @@ const Form = styled(Card)`
     border-radius: 24px;
     box-shadow: 0 2px 64px rgba(232,238,243,0.5);
     padding: 48px 36px;
-`
+`;
+
 const Upper = styled.div`
   display: flex;
   flex-direction: column;
@@ -39,24 +40,23 @@ const Upper = styled.div`
     &:last-child {
         margin-bottom: 0;
     }
-}
-`
+  }
+`;
 
-export default function Register(props) {
+export default function () {
     return (
-
         <Container>
             <Form>
                 <Upper>
-                    <Input placeholder="Email"></Input>
-                    <Input placeholder="Password"></Input>
-                    <Input placeholder="Confirm Password"></Input>
-                    <Input placeholder="Name"></Input>
-                    <Input placeholder="Surname"></Input>
-                    <Input placeholder="City"></Input>
-                    <Input placeholder="Address"></Input>
-                    <Input placeholder="CAP"></Input>
-                    <Input placeholder="Phone Number"></Input>
+                    <Input placeholder="Email"/>
+                    <Input placeholder="Password"/>
+                    <Input placeholder="Confirm Password"/>
+                    <Input placeholder="Name"/>
+                    <Input placeholder="Surname"/>
+                    <Input placeholder="City"/>
+                    <Input placeholder="Address"/>
+                    <Input placeholder="CAP"/>
+                    <Input placeholder="Phone Number"/>
                     <Button>Register</Button>
                 </Upper>
             </Form>

@@ -1,12 +1,12 @@
-import styled from "styled-components";
-import Input from "./Input";
-import Button from "./Button";
 import React from "react";
-import logo from "../../img/logo.svg"
-import cart from "../../img/cart.svg"
-import logout from "../../img/logout.svg"
-import orders from "../../img/orders.svg"
-import profile from "../../img/profile.svg"
+import styled from "styled-components";
+
+import logoSVG from "/src/img/logo.svg";
+import cartSVG from "/src/img/cart.svg";
+import logoutSVG from "/src/img/logout.svg";
+import ordersSVG from "/src/img/orders.svg";
+import profileSVG from "/src/img/profile.svg";
+
 const Container = styled.div`
     outline: none;
     border: none;
@@ -27,25 +27,28 @@ const Container = styled.div`
     min-width: 300px;
     justify-content: space-between;
 `;
-const Imm = styled.img`
+
+const Image = styled.img`
     max-width: 100px;
     max-height: 150px;
-`
+`;
+
 const Right = styled.div`
     display: flex;
     flex-direction: row;
     flex-grow: 0.05;
     justify-content: space-between;
 `;
-export default function Header(props) {
+
+export default function () {
     return (
         <Container>
-        <Imm src={logo}/>
+        <Image src={logoSVG}/>
         <Right>
-            <Imm src={cart}/>
-            <Imm src={orders}/>
-            <Imm src={profile}/>
-            <Imm src={logout}/>
+            <Image src={cartSVG}/>
+            <Image src={ordersSVG}/>
+            <Image src={profileSVG}/>
+            <Image src={logoutSVG}/>
         </Right>
 
         </Container>

@@ -1,12 +1,14 @@
 import React from 'react';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import styled from "styled-components";
-import GlobalStyle from "./style";
-import Login from "./components/Login";
-import Register from "./components/Register"
-import Confirm from "./components/Confirm"
-import Checkout from "./components/Checkout"
-import Thanks from "./components/Thanks"
+
+import GlobalStyle from "/src/style";
+
+import Login from "/src/components/Login";
+import Register from "/src/components/Register";
+import Confirm from "/src/components/Confirm";
+import Checkout from "/src/components/Checkout";
+import Thanks from "/src/components/Thanks";
 
 const StyledApp = styled.div`
     display: flex;
@@ -16,7 +18,7 @@ const StyledApp = styled.div`
 const C404 = styled.div.attrs(() => ({
     children: "404",
 }))`
-    font-family: EuclidCircular,sans-serif;
+    font-family: EuclidCircular, sans-serif;
     font-size: 3em;
     color: #dae1ec;
     user-select: none;
