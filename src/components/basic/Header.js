@@ -1,67 +1,84 @@
 import React from "react";
 import styled from "styled-components";
 import * as firebase from "firebase/app";
+import Icon from '@mdi/react';
+import Input from "components/basic/Input";
+import {
+    mdiFaceProfile,
+    mdiLogoutVariant,
+    mdiCart,
+    mdiTextBoxMultiple
+} from '@mdi/js';
 
-import logoSVG from "img/logo.svg";
-import cartSVG from "img/cart.svg";
-import logoutSVG from "img/logout.svg";
-import ordersSVG from "img/orders.svg";
-import profileSVG from "img/profile.svg";
-
-const Container = styled.div`
-    outline: none;
-    border: none;
-    font-family: FuturaLight, sans-serif;
-    font-size: 22px;
-    padding: 12px 64px;
-    background:#FAFDFF;
-    display:flex;
-    flex-direction: row;
-    margin-top: 0;
-    align-items: center;
-    height: 50px;
-    position: fixed;
-    right: 0;
-    left: 0;
-    top: 0;
-    z-index:999;
-    min-width: 300px;
-    justify-content: space-between;
+const StyledHeader = styled.div`
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   padding: 16px 32px;
+   background: #F9FCFE;
+   
+   box-sizing: border-box;
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
 `;
 
-const Image = styled.img`
-    max-width: 100px;
-    max-height: 150px;
+const Title = styled.div`
+    margin-right: auto;
+    font-family: FuturaBold, sans-serif;
+    font-size: 36px;
+    color: #DEE5EA;
+    flex: 1;
 `;
 
-const Right = styled.div`
+const StyledInput = styled(Input)`
+    flex: 3;
+`;
+
+const Action = styled(Icon).attrs(props => ({
+    size: 1.2,
+    color: "#DEE5EA",
+    ...props,
+}))`
+    margin-right: 2px;
+    cursor: pointer;
+`;
+
+const Actions = styled.div`
     display: flex;
     flex-direction: row;
-    flex-grow: 0.05;
-    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
 `;
 
-export default function (props) {
-	const {history} = props;
-    return (
-        <Container>
-        <Image src={logoSVG}/>
-        <Right>
-            <Image src={cartSVG}/>
-            <Image src={ordersSVG}/>
-            <Image src={profileSVG}/>
-            <Image src={logoutSVG} onClick={logout}/>
-        </Right>
+function Header(props) {
+    const {history} = props;
 
-        </Container>
-    );
-    async  function logout() {
-        try{
+    async function logout() {
+        try {
             await firebase.auth().signOut();
             history.push('/path');
-        }catch(error){
+        } catch (error) {
             alert(error.message);
         }
     }
+
+    return (
+        <StyledHeader>
+            <Title>Geoff</Title>
+
+            <StyledInput placeholder="Type here to search"/>
+
+            <Actions>
+                <Action path={mdiCart} size={1.8}/>
+                <Action path={mdiTextBoxMultiple}/>
+                <Action path={mdiFaceProfile}/>
+                <Action path={mdiLogoutVariant} onClick={logout}/>
+            </Actions>
+        </StyledHeader>
+    );
 }
 
+export default Header;

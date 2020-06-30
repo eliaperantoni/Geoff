@@ -5,7 +5,10 @@ import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Header from "components/basic/Header";
 
-import cardSVG from "img/card_small.svg";
+import Icon from '@mdi/react';
+import {
+    mdiCreditCard,
+} from '@mdi/js';
 
 const Container = styled(Card)`
     top:0;
@@ -75,7 +78,7 @@ export default function () {
                     <Price>22.50€</Price>
                     <Text>
                         Paying with:
-                        <BoldText><Imm src={cardSVG}/> **** **** **** 1234</BoldText>
+                        <BoldText><Icon path={mdiCreditCard}/> **** **** **** 1234</BoldText>
                         Will ship to:
                         <BoldText>Zimba, Palu 13, X</BoldText>
                     </Text>
