@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
-import Card from "/src/components/basic/Card";
+import Card from "components/basic/Card";
 
-import confirmSVG from "/src/img/confirm.svg";
+import confirmSVG from "img/confirm.svg";
 
 const Container = styled(Card)`
     min-width: 400px;

@@ -1,9 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
+import * as firebase from "firebase/app";
 
-import Card from "/src/components/basic/Card"
-import Button from "/src/components/basic/Button";
-import Input from "/src/components/basic/Input";
+import Card from "components/basic/Card"
+import Button from "components/basic/Button";
+import Input from "components/basic/Input";
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -43,7 +44,15 @@ const Upper = styled.div`
   }
 `;
 
-export default function () {
+export default function (props) {
+	const [email,setEmail] = useState('');
+    const [password,setPassword] = useState('');
+    const [cpassword,setCPassword] = useState('');
+    const [name,setName] = useState('');
+    const [surname,setSurname] = useState('');
+    const [city,setCity] = useState('');
+    const [address,setAddress] = useState('');
+    const [cap,setCap] = useState('');
     return (
         <Container>
             <Form>
@@ -62,4 +71,12 @@ export default function () {
             </Form>
         </Container>
     );
+    async function Register(){
+        try{
+            await firebase.auth().createUserWithEmailAndPassword(email,password)
+            //TODO
+        }catch(error){
+            alert(error.message)
+        }
+    }
 }

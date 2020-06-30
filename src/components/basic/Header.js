@@ -1,11 +1,12 @@
 import React from "react";
 import styled from "styled-components";
+import * as firebase from "firebase/app";
 
-import logoSVG from "/src/img/logo.svg";
-import cartSVG from "/src/img/cart.svg";
-import logoutSVG from "/src/img/logout.svg";
-import ordersSVG from "/src/img/orders.svg";
-import profileSVG from "/src/img/profile.svg";
+import logoSVG from "img/logo.svg";
+import cartSVG from "img/cart.svg";
+import logoutSVG from "img/logout.svg";
+import ordersSVG from "img/orders.svg";
+import profileSVG from "img/profile.svg";
 
 const Container = styled.div`
     outline: none;
@@ -40,7 +41,8 @@ const Right = styled.div`
     justify-content: space-between;
 `;
 
-export default function () {
+export default function (props) {
+	const {history} = props;
     return (
         <Container>
         <Image src={logoSVG}/>
@@ -48,9 +50,18 @@ export default function () {
             <Image src={cartSVG}/>
             <Image src={ordersSVG}/>
             <Image src={profileSVG}/>
-            <Image src={logoutSVG}/>
+            <Image src={logoutSVG} onClick={logout}/>
         </Right>
 
         </Container>
     );
+    async  function logout() {
+        try{
+            await firebase.auth().signOut();
+            history.push('/path');
+        }catch(error){
+            alert(error.message);
+        }
+    }
 }
+

@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-import Card from "/src/components/basic/Card"
-import Button from "/src/components/basic/Button";
-import Header from "/src/components/basic/Header";
+import Card from "components/basic/Card"
+import Button from "components/basic/Button";
+import Header from "components/basic/Header";
 
-import cardSVG from "/src/img/card_small.svg";
+import cardSVG from "img/card_small.svg";
 
 const Container = styled(Card)`
     top:0;

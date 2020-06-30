@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-import Card from "/src/components/basic/Card";
-import Header from "/src/components/basic/Header";
+import Card from "components/basic/Card";
+import Header from "components/basic/Header";
 
-import thanksSVG from "/src/img/thanks.svg";
+import thanksSVG from "img/thanks.svg";
 
 
 const Container = styled(Card)`

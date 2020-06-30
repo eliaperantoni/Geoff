@@ -1,11 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
+import * as firebase from "firebase/app";
 
-import Card from "/src/components/basic/Card"
-import Button from "/src/components/basic/Button";
-import Input from "/src/components/basic/Input";
+import Card from "components/basic/Card"
+import Button from "components/basic/Button";
+import Input from "components/basic/Input";
 
-import authenticationSVG from "/src/img/authentication.svg";
+import authenticationSVG from "img/authentication.svg";
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -27,6 +28,7 @@ const Form = styled(Card)`
     min-width: 400px;
     min-height: 550px; 
     background: #FAFDFF;
+    margin-top:50px;
     border-radius: 24px;
     box-shadow: 0 2px 64px rgba(232,238,243,0.5);
     padding: 48px 36px;
@@ -61,21 +63,35 @@ const Par = styled.p`
     font-size: 22px;
 `;
 
-export default function () {
+export default function (props) {
+	const [email,setEmail] = useState('')
+    const [password, setPassword] = useState('');
     return (
         <Container>
             <Form>
                 <Image src={authenticationSVG}/>
                 <Upper>
-                    <Input placeholder="Email"/>
-                    <Input placeholder="Password"/>
+                <Input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}/>
+                <Input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}/>
                 </Upper>
                 <Bottom>
-                    <Button>Login</Button>
+                    <Button
+                        type="submit"
+                        onClick={login}
+                    >Login</Button>
                     <Button>Don't have an account?</Button>
                 </Bottom>
                 <Par>Forgot password ?</Par>
             </Form>
         </Container>
     );
+    async  function login() {
+        try{
+            await firebase.auth().signInWithEmailAndPassword(email,password);
+            props.history.push(null, 'login');
+        }catch(error){
+            alert(error.message)
+        }
+    }
 }
+
