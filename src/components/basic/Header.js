@@ -3,6 +3,7 @@ import styled from "styled-components";
 import * as firebase from "firebase/app";
 import Icon from '@mdi/react';
 import Input from "components/basic/Input";
+import { withRouter } from "react-router-dom"
 import {
     mdiFaceProfile,
     mdiLogoutVariant,
@@ -43,6 +44,10 @@ const Action = styled(Icon).attrs(props => ({
 }))`
     margin-right: 2px;
     cursor: pointer;
+    &:hover{
+      background: black;
+    }
+
 `;
 
 const Actions = styled.div`
@@ -54,12 +59,11 @@ const Actions = styled.div`
 `;
 
 function Header(props) {
-    const {history} = props;
 
     async function logout() {
         try {
             await firebase.auth().signOut();
-            history.push('/path');
+            props.history.push('/login');
         } catch (error) {
             alert(error.message);
         }
@@ -81,4 +85,4 @@ function Header(props) {
     );
 }
 
-export default Header;
+export default withRouter(Header);

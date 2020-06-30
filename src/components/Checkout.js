@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Header from "components/basic/Header";
+import { withRouter } from "react-router-dom"
 
 import Icon from '@mdi/react';
 import {
@@ -69,7 +70,7 @@ const Imm = styled.img`
     max-height: 150px;
 `;
 
-export default function () {
+function Checkout(props) {
     return (
         <Container>
             <Header/>
@@ -89,3 +90,4 @@ export default function () {
         </Container>
     );
 }
+export default withRouter(Checkout)

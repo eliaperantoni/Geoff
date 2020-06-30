@@ -1,12 +1,11 @@
 import React, {useState} from "react";
 import styled from "styled-components";
 import firebase from "firebase.js";
-
 import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Input from "components/basic/Input";
-
 import authenticationSVG from "img/authentication.svg";
+import { withRouter } from "react-router-dom"
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -62,9 +61,17 @@ const Par = styled.p`
     font-size: 22px;
 `;
 
-export default function (props) {
+function Login(props) {
 	const [email,setEmail] = useState('')
     const [password, setPassword] = useState('');
+    async  function login() {
+        try{
+            await firebase.auth().signInWithEmailAndPassword(email,password);
+            props.history.push("/checkout");
+        }catch(error){
+            alert(error.message)
+        }
+    }
     return (
         <Container>
             <Form>
@@ -79,13 +86,6 @@ export default function (props) {
             </Form>
         </Container>
     );
-    async  function login() {
-        try{
-            await firebase.auth().signInWithEmailAndPassword(email,password);
-            props.history.push(null, 'login');
-        }catch(error){
-            alert(error.message)
-        }
-    }
-}
 
+}
+export default withRouter(Login);
