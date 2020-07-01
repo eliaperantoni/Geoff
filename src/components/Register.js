@@ -34,6 +34,7 @@ const Form = styled(Card)`
 
 const Upper = styled.div`
   display: flex;
+  min-width: 350px;
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
