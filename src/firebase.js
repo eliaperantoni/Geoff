@@ -16,15 +16,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-export default firebase;
-/*
-class Firebase{
-    constructor() {
+const firestore = firebase.firestore();
 
-        this.auth = firebase.auth();
-        this.db = firebase.firestore();
-    }
-    login(email,password){
-        return this.auth.signInWithEmailAndPassword(email,password)
-    }
-}*/
+export default firebase;

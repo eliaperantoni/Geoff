@@ -5,6 +5,7 @@ import * as firebase from "firebase/app";
 import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Input from "components/basic/Input";
+import { withRouter } from "react-router-dom"
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -44,7 +45,7 @@ const Upper = styled.div`
   }
 `;
 
-export default function (props) {
+function Register(props) {
 	const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
     const [cpassword,setCPassword] = useState('');
@@ -53,30 +54,49 @@ export default function (props) {
     const [city,setCity] = useState('');
     const [address,setAddress] = useState('');
     const [cap,setCap] = useState('');
+    const [phone,setPhone] = useState('');
     return (
         <Container>
             <Form>
                 <Upper>
-                    <Input placeholder="Email"/>
-                    <Input placeholder="Password"/>
-                    <Input placeholder="Confirm Password"/>
-                    <Input placeholder="Name"/>
-                    <Input placeholder="Surname"/>
-                    <Input placeholder="City"/>
-                    <Input placeholder="Address"/>
-                    <Input placeholder="CAP"/>
-                    <Input placeholder="Phone Number"/>
-                    <Button>Register</Button>
+                    <Input placeholder="Email" onChange={e => setEmail(e.target.value)}/>
+                    <Input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
+                    <Input type="password" placeholder="Confirm Password" onChange={e => setCPassword(e.target.value)}/>
+                    <Input placeholder="Name" onChange={e => setName(e.target.value)}/>
+                    <Input placeholder="Surname" onChange={e => setSurname(e.target.value)}/>
+                    <Input placeholder="City" onChange={e => setCity(e.target.value)}/>
+                    <Input placeholder="Address" onChange={e => setAddress(e.target.value)}/>
+                    <Input placeholder="CAP" onChange={e => setCap(e.target.value)}/>
+                    <Input placeholder="Phone Number" onChange={e => setPhone(e.target.value)}/>
+                    <Button onClick={register}>Register</Button>
                 </Upper>
             </Form>
         </Container>
     );
-    async function Register(){
+
+    async function register(){
         try{
-            await firebase.auth().createUserWithEmailAndPassword(email,password)
-            //TODO
+            await firebase.auth().createUserWithEmailAndPassword(email,password).then(
+                ()=>{
+                    firebase.firestore().collection('users').add({
+                        email: email,
+                        name:name,
+                        surname:surname,
+                        city: city,
+                        address: address,
+                        cap: cap,
+                        phone:phone,
+                        preferredPaymentMethod: "",
+                        loyaltyCard: null,
+                    });
+                }).then(()=>{
+                    props.history.push("/checkout");
+                }).catch((err)=>{
+                    alert(err.message);
+            });
         }catch(error){
             alert(error.message)
         }
     }
 }
+export default withRouter(Register)

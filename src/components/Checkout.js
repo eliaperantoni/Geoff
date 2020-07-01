@@ -5,6 +5,7 @@ import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Header from "components/basic/Header";
 import { withRouter } from "react-router-dom"
+import firebase from "firebase.js";
 
 import Icon from '@mdi/react';
 import {
