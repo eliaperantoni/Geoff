@@ -45,30 +45,35 @@ const Upper = styled.div`
     }
   }
 `;
-
+const Par = styled.p`
+    margin-top:20px;
+    font-family: FuturaBold, sans-serif;
+    font-size: 22px;
+`;
 function Register(props) {
-	const [email,setEmail] = useState('');
-    const [password,setPassword] = useState('');
-    const [cpassword,setCPassword] = useState('');
-    const [name,setName] = useState('');
-    const [surname,setSurname] = useState('');
-    const [city,setCity] = useState('');
-    const [address,setAddress] = useState('');
-    const [cap,setCap] = useState('');
-    const [phone,setPhone] = useState('');
+	const [email,setEmail] =        useState('');
+    const [password,setPassword] =  useState('');
+    const [cpassword,setCPassword] =useState('');
+    const [name,setName] =          useState('');
+    const [surname,setSurname] =    useState('');
+    const [city,setCity] =          useState('');
+    const [address,setAddress] =    useState('');
+    const [cap,setCap] =            useState('');
+    const [phone,setPhone] =        useState('');
     return (
         <Container>
             <Form>
+                <Par>Create a New Account</Par>
                 <Upper>
-                    <Input placeholder="Email" onChange={e => setEmail(e.target.value)}/>
-                    <Input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
-                    <Input type="password" placeholder="Confirm Password" onChange={e => setCPassword(e.target.value)}/>
-                    <Input placeholder="Name" onChange={e => setName(e.target.value)}/>
-                    <Input placeholder="Surname" onChange={e => setSurname(e.target.value)}/>
-                    <Input placeholder="City" onChange={e => setCity(e.target.value)}/>
-                    <Input placeholder="Address" onChange={e => setAddress(e.target.value)}/>
-                    <Input placeholder="CAP" onChange={e => setCap(e.target.value)}/>
-                    <Input placeholder="Phone Number" onChange={e => setPhone(e.target.value)}/>
+                    <Input  placeholder="Email" onChange={e => setEmail(e.target.value)}/>
+                    <Input  type="password" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
+                    <Input  type="password" placeholder="Confirm Password" onChange={e => setCPassword(e.target.value)}/>
+                    <Input  placeholder="Name" onChange={e => setName(e.target.value)}/>
+                    <Input  placeholder="Surname" onChange={e => setSurname(e.target.value)}/>
+                    <Input  placeholder="City" onChange={e => setCity(e.target.value)}/>
+                    <Input  placeholder="Address" onChange={e => setAddress(e.target.value)}/>
+                    <Input  type="number" placeholder="CAP" onChange={e => setCap(e.target.value)}/>
+                    <Input  type="tel" pattern="[+]{1}[0-9]{11,14}" placeholder="Phone +398888888888" onChange={e => setPhone(e.target.value)}/>
                     <Button onClick={register}>Register</Button>
                 </Upper>
             </Form>
@@ -76,28 +81,34 @@ function Register(props) {
     );
 
     async function register(){
-        try{
-            await firebase.auth().createUserWithEmailAndPassword(email,password).then(
-                ()=>{
-                    firebase.firestore().collection('users').add({
-                        email: email,
-                        name:name,
-                        surname:surname,
-                        city: city,
-                        address: address,
-                        cap: cap,
-                        phone:phone,
-                        preferredPaymentMethod: "",
-                        loyaltyCard: null,
-                    });
-                }).then(()=>{
+        if(password === cpassword){
+            try{
+                await firebase.auth().createUserWithEmailAndPassword(email,password).then(
+                    ()=>{
+                        firebase.firestore().collection(email).add({
+                            email: email,
+                            name:name,
+                            surname:surname,
+                            city: city,
+                            address: address,
+                            cap: cap,
+                            phone:phone,
+                            preferredPaymentMethod: null,
+                            loyaltyCard: null,
+                            basket:[]
+                        });
+                    }).then(()=>{
                     props.history.push("/checkout");
                 }).catch((err)=>{
                     alert(err.message);
-            });
-        }catch(error){
-            alert(error.message)
+                });
+            }catch(error){
+                alert(error.message);
+            }
+        }else{
+            alert("password don't match");
         }
+
     }
 }
 export default withRouter(Register)
