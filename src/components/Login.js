@@ -72,6 +72,9 @@ function Login(props) {
             alert(error.message)
         }
     }
+    function register(){
+        props.history.push("/register")
+    }
     return (
         <Container>
             <Form>
@@ -80,7 +83,7 @@ function Login(props) {
                     <Input style={{'margin-top':'50px'}} placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}/>
                     <Input style={{'margin-bottom':'50px'}} type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}/>
                     <Button type="submit" onClick={login}>Login</Button>
-                    <Button>Don't have an account?</Button>
+                    <Button onClick={register}>Don't have an account?</Button>
                 </Actions>
                 <Par>Forgot password ?</Par>
             </Form>

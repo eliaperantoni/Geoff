@@ -3,9 +3,7 @@ import styled from "styled-components";
 
 import Card from "components/basic/Card";
 import Header from "components/basic/Header";
-
 import thanksSVG from "img/thanks.svg";
-
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -20,7 +18,7 @@ const Container = styled(Card)`
 `;
 
 const Form = styled(Card)`
-    margin-top:70px;
+    margin-top:auto;
     display:flex;
     flex-direction: column;
     align-items: center;

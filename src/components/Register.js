@@ -51,15 +51,15 @@ const Par = styled.p`
     font-size: 22px;
 `;
 function Register(props) {
-	const [email,setEmail] =        useState('');
-    const [password,setPassword] =  useState('');
+	const [email,setEmail]         =useState('');
+    const [password,setPassword]   =useState('');
     const [cpassword,setCPassword] =useState('');
-    const [name,setName] =          useState('');
-    const [surname,setSurname] =    useState('');
-    const [city,setCity] =          useState('');
-    const [address,setAddress] =    useState('');
-    const [cap,setCap] =            useState('');
-    const [phone,setPhone] =        useState('');
+    const [name,setName]           =useState('');
+    const [surname,setSurname]     =useState('');
+    const [city,setCity]           =useState('');
+    const [address,setAddress]     =useState('');
+    const [cap,setCap]             =useState('');
+    const [phone,setPhone]         =useState('');
     return (
         <Container>
             <Form>
@@ -83,22 +83,27 @@ function Register(props) {
     async function register(){
         if(password === cpassword){
             try{
+
                 await firebase.auth().createUserWithEmailAndPassword(email,password).then(
-                    ()=>{
-                        firebase.firestore().collection(email).add({
-                            email: email,
-                            name:name,
-                            surname:surname,
-                            city: city,
-                            address: address,
-                            cap: cap,
-                            phone:phone,
-                            preferredPaymentMethod: null,
-                            loyaltyCard: null,
-                            basket:[]
-                        });
+                    () => {
+                        firebase.auth().currentUser.sendEmailVerification({
+                            url: 'http://localhost:3000/thanks'
+                        })
                     }).then(()=>{
-                    props.history.push("/checkout");
+                    firebase.firestore().collection(email).add({
+                        email: email,
+                        name:name,
+                        surname:surname,
+                        city: city,
+                        address: address,
+                        cap: cap,
+                        phone:phone,
+                        preferredPaymentMethod: null,
+                        loyaltyCard: null,
+                        basket:[]
+                    });
+                }).then(()=>{
+                    props.history.push("/confirm");
                 }).catch((err)=>{
                     alert(err.message);
                 });
