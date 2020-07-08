@@ -30,6 +30,7 @@ const Title = styled.div`
 
 const StyledInput = styled(Input)`
     flex: 3;
+    ${props => props.hide && "visibility: hidden;"};
 `;
 
 const Action = styled(Icon).attrs(props => ({
@@ -67,7 +68,7 @@ function Header(props) {
         <StyledHeader className={props.className}>
             <Title>Geoff</Title>
 
-            <StyledInput placeholder="Type here to search"/>
+            <StyledInput onInput={props.onInput} hide={props.hideInput} placeholder="Type here to search"/>
 
             <Actions>
                 <Action path={mdiCart} size={1.8}/>

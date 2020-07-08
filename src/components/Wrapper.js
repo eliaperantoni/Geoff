@@ -17,6 +17,9 @@ const StyledHeader = styled(Header)`
 const ChildrenWrapper = styled.div`
   box-sizing: border-box;
   padding: 128px 128px 400px 128px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const StyledFooter = styled(Footer)`
@@ -24,12 +27,12 @@ const StyledFooter = styled(Footer)`
   margin-top: auto;
 `;
 
-export default function Wrapper(props) {
+export default function Wrapper({children, hideInput=false, onInput=(()=>{})}) {
     return (
         <StyledWrapper>
-            <StyledHeader/>
+            <StyledHeader hideInput={hideInput} onInput={onInput}/>
             <ChildrenWrapper>
-                {props.children}
+                {children}
             </ChildrenWrapper>
             <StyledFooter/>
         </StyledWrapper>
