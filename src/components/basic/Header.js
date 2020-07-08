@@ -40,10 +40,9 @@ const Action = styled(Icon).attrs(props => ({
 }))`
     margin-right: 2px;
     cursor: pointer;
-    &:hover{
-      background: black;
+    &:hover path {
+        fill: #c2cfd9 !important;
     }
-
 `;
 
 const Actions = styled.div`
