@@ -1,10 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import {Switch, Route} from "react-router-dom";
 
 import Header from "components/basic/Header";
 import Footer from "components/basic/Footer";
-import Confirm from "components/Confirm";
 
 const StyledWrapper = styled.div`
   flex: 1;
@@ -16,7 +14,7 @@ const StyledHeader = styled(Header)`
   align-self: stretch;
 `;
 
-const RouteWrapper = styled.div`
+const ChildrenWrapper = styled.div`
   box-sizing: border-box;
   padding: 128px 128px 400px 128px;
 `;
@@ -26,17 +24,13 @@ const StyledFooter = styled(Footer)`
   margin-top: auto;
 `;
 
-export default function Wrapper() {
+export default function Wrapper(props) {
     return (
         <StyledWrapper>
             <StyledHeader/>
-            <RouteWrapper>
-                <Switch>
-                    <Route>
-                        <Confirm/>
-                    </Route>
-                </Switch>
-            </RouteWrapper>
+            <ChildrenWrapper>
+                {props.children}
+            </ChildrenWrapper>
             <StyledFooter/>
         </StyledWrapper>
     );

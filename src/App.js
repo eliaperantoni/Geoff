@@ -7,9 +7,6 @@ import GlobalStyle from "style";
 import Login from "components/Login";
 import Register from "components/Register";
 import Confirm from "components/Confirm";
-import Checkout from "components/Checkout";
-import Thanks from "components/Thanks";
-import Wrapper from "components/Wrapper";
 
 import AdminOrders from "components/admin/Orders";
 
@@ -47,8 +44,8 @@ function App() {
                     <Route path="/confirm">
                         <Confirm/>
                     </Route>
-                    <Route path="/wrapper">
-                        <Wrapper/>
+                    <Route path="/admin/orders">
+                        <AdminOrders/>
                     </Route>
                     <Route>
                         <C404/>
