@@ -9,6 +9,9 @@ import Register from "components/Register";
 import Confirm from "components/Confirm";
 import Checkout from "components/Checkout";
 import Thanks from "components/Thanks";
+import Wrapper from "components/Wrapper";
+
+import AdminOrders from "components/admin/Orders";
 
 const StyledApp = styled.div`
     display: flex;
@@ -44,11 +47,8 @@ function App() {
                     <Route path="/confirm">
                         <Confirm/>
                     </Route>
-                    <Route path="/checkout">
-                        <Checkout/>
-                    </Route>
-                    <Route path="/thanks">
-                        <Thanks/>
+                    <Route path="/wrapper">
+                        <Wrapper/>
                     </Route>
                     <Route>
                         <C404/>

@@ -17,12 +17,7 @@ const StyledHeader = styled.div`
    align-items: center;
    padding: 16px 32px;
    background: #F9FCFE;
-   
    box-sizing: border-box;
-   position: fixed;
-   top: 0;
-   left: 0;
-   right: 0;
 `;
 
 const Title = styled.div`
@@ -59,7 +54,6 @@ const Actions = styled.div`
 `;
 
 function Header(props) {
-
     async function logout() {
         try {
             await firebase.auth().signOut();
@@ -70,7 +64,7 @@ function Header(props) {
     }
 
     return (
-        <StyledHeader>
+        <StyledHeader className={props.className}>
             <Title>Geoff</Title>
 
             <StyledInput placeholder="Type here to search"/>
