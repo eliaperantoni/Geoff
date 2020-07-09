@@ -1,7 +1,6 @@
 import React from "react";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import styled from "styled-components";
-import firebase from "firebase";
 
 import GlobalStyle from "style";
 
@@ -10,6 +9,8 @@ import Register from "components/Register";
 import Confirm from "components/Confirm";
 import Orders from "components/Orders";
 import Test from "components/Test";
+import Catalogue from "./components/Catalogue";
+
 const StyledApp = styled.div`
     display: flex;
     flex: 1;
@@ -35,6 +36,9 @@ function App() {
             <Router>
                 <GlobalStyle/>
                 <Switch>
+                    <Route exact path="/">
+                        <Catalogue/>
+                    </Route>
                     <Route path="/login">
                         <Login/>
                     </Route>
@@ -51,7 +55,10 @@ function App() {
                         <Orders/>
                     </Route>
                     <Route path="/admin/orders">
-                        <Orders global={true}/>
+                        <Orders admin={true}/>
+                    </Route>
+                    <Route path="/admin/catalogue">
+                        <Catalogue admin={true}/>
                     </Route>
                     <Route>
                         <C404/>
