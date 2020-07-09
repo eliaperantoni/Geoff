@@ -6,7 +6,7 @@ export default function Price({price, className}) {
 
     return (
         <span className={className}>
-            {integral}{decimal !== 0 && `.${decimal}`} $
+            {integral}{decimal !== 0 && `.${decimal.toString().padStart(2, "0")}`} $
         </span>
     );
 }
