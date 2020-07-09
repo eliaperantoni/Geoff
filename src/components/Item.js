@@ -1,59 +1,64 @@
 import React from 'react';
 import styled from 'styled-components';
-import Card from 'components/basic/Card.js';
-import Button from 'components/basic/Card.js';
+import {mdiCart} from "@mdi/js";
 
-const Container = styled(Card)`
+import Card from 'components/basic/Card.js';
+import IconButton from 'components/basic/IconButton.js';
+import Price from 'components/basic/Price.js';
+
+const StyledItem = styled(Card)`
     display: flex;
     flex-direction: column;
-    background-position: center center;
-    max-width: 341px;
-    max-heigth: 254px;
-    background: black;
+    height: 200px;
+    width: 300px;
+    padding: 0;
 `;
 
-const Divider = styled.div`
+const Info = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
+    justify-content: space-between;
+    padding: 22px 32px;
 `;
 
-const Text = styled.p`
-    font-family: FuturaLight, sans-serif;
-    font-size: 24px;
-    color: #A4BBCD;
-    margin: 40px auto auto;
+const InfoCol = styled.div`
+    display: flex;
+    flex-direction: column;
 `;
 
-const Bold = styled.p`
+const Name = styled.span`
     font-family: FuturaBold, sans-serif;
-    font-weight: bold;
-    color: #A4BBCD;
+    font-size: 1.4rem;
+    color: #6C7C89;
+    margin-bottom: 4px;
 `;
 
-const Image = styled.img`
+const StyledPrice = styled(Price)`
+    font-family: FuturaLight, sans-serif;
+    font-size: 1.2rem;
+    color: #B2BDC6;
+`;
+
+const Image = styled.div`
     flex: 1;
-    align-self: stretch;
-    min-heigth: 300px;
-    max-width: 341px;
-    margin: -48px -36px;
+    background: url("${props => props.image}");
+    border-radius: 24px 24px 0 0;
+    background-size: cover;
 `;
 
 function Item(props) {
     return (
-        <Container>
-            <Image src={props.image} />
-            <Divider>
-                <div>
-                    <Bold>{props.title}</Bold>
-                    <Text>{props.price}</Text>
-                </div>
-                <div>
-                    <Button>Add to cart</Button>
-                </div>
-            </Divider>
-        </Container>
+        <StyledItem>
+            <Image image={props.image}/>
+            <Info>
+                <InfoCol>
+                    <Name>{props.name}</Name>
+                    <StyledPrice price={props.price}/>
+                </InfoCol>
+                <IconButton icon={mdiCart}/>
+            </Info>
+        </StyledItem>
     )
 }
 

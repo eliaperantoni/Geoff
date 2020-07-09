@@ -9,6 +9,8 @@ import Login from "components/Login";
 import Register from "components/Register";
 import Confirm from "components/Confirm";
 import Orders from "components/Orders";
+import Item from "components/Item";
+import Card from "components/basic/Card";
 
 const StyledApp = styled.div`
     display: flex;
