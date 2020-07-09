@@ -19,6 +19,7 @@ export default class Catalogue extends React.Component {
         super(props);
         this.state = {
             items: [],
+            query: "",
         };
     }
 
@@ -28,11 +29,31 @@ export default class Catalogue extends React.Component {
         this.setState({items});
     }
 
+    onInput = e => {
+        this.setState({query: e.target.value});
+    }
+
     render() {
+        const doesItemMatch = item => {
+            const doesStringResemble = str => {
+                return str.toLowerCase().includes(this.state.query.toLowerCase());
+            }
+
+            return doesStringResemble(item.name) ||
+                doesStringResemble(item.brand) ||
+                item.tags.reduce((acc, tag) => acc || doesStringResemble(tag), false);
+        }
+
+        let items;
+        if (this.state.query === "")
+            items = this.state.items;
+        else
+            items = this.state.items.filter(doesItemMatch)
+
         return (
-            <Wrapper>
+            <Wrapper onInput={this.onInput}>
                 <StyledCatalogue>
-                    {this.state.items.map(item => (<Item name={item.name} price={item.price} image={item.image}/>))}
+                    {items.map(item => (<Item name={item.name} price={item.price} image={item.image} key={item.name}/>))}
                 </StyledCatalogue>
             </Wrapper>
         );
