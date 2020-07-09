@@ -13,7 +13,7 @@ const Container = styled(Card)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background:#E5E5E5;
+    background:#f2f7fb;
     overflow: hidden;
 `;
 

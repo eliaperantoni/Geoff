@@ -7,8 +7,10 @@ import GlobalStyle from "style";
 import Login from "components/Login";
 import Register from "components/Register";
 import Confirm from "components/Confirm";
-
+import Thanks from "components/Thanks";
+import Test from "components/Test";
 import AdminOrders from "components/admin/Orders";
+import Checkout from "components/Checkout";
 
 const StyledApp = styled.div`
     display: flex;
@@ -43,6 +45,15 @@ function App() {
                     </Route>
                     <Route path="/confirm">
                         <Confirm/>
+                    </Route>
+                    <Route path="/thanks">
+                        <Thanks/>
+                    </Route>
+                    <Route path="/checkout">
+                        <Checkout/>
+                    </Route>
+                    <Route path="/test">
+                        <Test/>
                     </Route>
                     <Route path="/admin/orders">
                         <AdminOrders/>

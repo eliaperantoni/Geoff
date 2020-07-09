@@ -16,7 +16,7 @@ const StyledHeader = styled(Header)`
 
 const ChildrenWrapper = styled.div`
   box-sizing: border-box;
-  padding: 128px 128px 400px 128px;
+  padding: 64px 128px 400px 128px;//EDIT 128px -> 64px
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Card from "components/basic/Card";
 import Header from "components/basic/Header";
 import thanksSVG from "img/thanks.svg";
+import Wrapper from "./Wrapper";
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -13,7 +14,7 @@ const Container = styled(Card)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background:#E5E5E5;
+    background:#f2f7fb;
     overflow: hidden;
 `;
 
@@ -64,19 +65,16 @@ const Par = styled.p`
 
 export default function () {
     return (
-        <Container>
-            <Header/>
+        <Wrapper hideInput={true}>
             <Form>
                 <Image src={thanksSVG}/>
                 <Upper>
-
                     <Par>
                         <Title>Your order has been placed!</Title>
                         #1234
                     </Par>
                 </Upper>
-
             </Form>
-        </Container>
+        </Wrapper>
     );
 }
