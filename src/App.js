@@ -8,15 +8,8 @@ import GlobalStyle from "style";
 import Login from "components/Login";
 import Register from "components/Register";
 import Confirm from "components/Confirm";
-<<<<<<< HEAD
-import Thanks from "components/Thanks";
-import Test from "components/Test";
-import AdminOrders from "components/admin/Orders";
-import Checkout from "components/Checkout";
-=======
 import Orders from "components/Orders";
->>>>>>> master
-
+import Test from "components/Test";
 const StyledApp = styled.div`
     display: flex;
     flex: 1;
@@ -48,22 +41,14 @@ function App() {
                     <Route path="/register">
                         <Register/>
                     </Route>
+                    <Route path="/test">
+                        <Test/>
+                    </Route>
                     <Route path="/confirm">
                         <Confirm/>
                     </Route>
-<<<<<<< HEAD
-                    <Route path="/thanks">
-                        <Thanks/>
-                    </Route>
-                    <Route path="/checkout">
-                        <Checkout/>
-                    </Route>
-                    <Route path="/test">
-                        <Test/>
-=======
                     <Route path="/orders">
                         <Orders/>
->>>>>>> master
                     </Route>
                     <Route path="/admin/orders">
                         <Orders global={true}/>
