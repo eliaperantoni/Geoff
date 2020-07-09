@@ -15,7 +15,7 @@ const Container = styled(Card)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background:#E5E5E5;
+    background:#f2f7fb;
     overflow: hidden;
 `;
 
@@ -51,15 +51,15 @@ const Par = styled.p`
     font-size: 22px;
 `;
 function Register(props) {
-	const [email,setEmail]         =useState('');
-    const [password,setPassword]   =useState('');
-    const [cpassword,setCPassword] =useState('');
-    const [name,setName]           =useState('');
-    const [surname,setSurname]     =useState('');
-    const [city,setCity]           =useState('');
-    const [address,setAddress]     =useState('');
-    const [cap,setCap]             =useState('');
-    const [phone,setPhone]         =useState('');
+	const [email,setEmail]         =useState('nico.fretti@gmail.com');
+    const [password,setPassword]   =useState('123123');
+    const [cpassword,setCPassword] =useState('123123');
+    const [name,setName]           =useState('123123');
+    const [surname,setSurname]     =useState('123123');
+    const [city,setCity]           =useState('123123');
+    const [address,setAddress]     =useState('123123');
+    const [cap,setCap]             =useState('123123');
+    const [phone,setPhone]         =useState('+39123123123');
     return (
         <Container>
             <Form>
@@ -84,13 +84,11 @@ function Register(props) {
         if(password === cpassword){
             try{
 
-                await firebase.auth().createUserWithEmailAndPassword(email,password).then(
-                    () => {
-                        firebase.auth().currentUser.sendEmailVerification({
-                            url: 'http://localhost:3000/thanks'
-                        })
-                    }).then(()=>{
-                    firebase.firestore().collection(email).add({
+                await firebase.auth().createUserWithEmailAndPassword(email,password);
+                await firebase.auth().currentUser.sendEmailVerification({
+                    url: 'http://localhost:3000/thanks'
+                });
+                await firebase.firestore().collection('users').doc(email).set({
                         email: email,
                         name:name,
                         surname:surname,
@@ -101,12 +99,8 @@ function Register(props) {
                         preferredPaymentMethod: null,
                         loyaltyCard: null,
                         basket:[]
-                    });
-                }).then(()=>{
-                    props.history.push("/confirm");
-                }).catch((err)=>{
-                    alert(err.message);
                 });
+                await props.history.push("/confirm");
             }catch(error){
                 alert(error.message);
             }

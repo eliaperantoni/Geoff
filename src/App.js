@@ -11,6 +11,7 @@ import Confirm from "components/Confirm";
 import Orders from "components/Orders";
 import Item from "components/Item";
 import Card from "components/basic/Card";
+import Test from "components/Test";
 
 const StyledApp = styled.div`
     display: flex;
@@ -42,6 +43,9 @@ function App() {
                     </Route>
                     <Route path="/register">
                         <Register/>
+                    </Route>
+                    <Route path="/test">
+                        <Test/>
                     </Route>
                     <Route path="/confirm">
                         <Confirm/>

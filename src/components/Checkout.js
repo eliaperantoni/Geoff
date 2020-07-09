@@ -11,22 +11,9 @@ import Icon from '@mdi/react';
 import {
     mdiCreditCard,
 } from '@mdi/js';
-
-const Container = styled(Card)`
-    top:0;
-    min-width: 400px;
-    min-height: 500px; 
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background:#E5E5E5;
-    overflow: hidden;
-`;
+import Wrapper from "components/Wrapper";
 
 const Form = styled(Card)`
-    margin-top:70px;
     display:flex;
     flex-direction: column;
     align-items: center;
@@ -73,8 +60,7 @@ const Imm = styled.img`
 
 function Checkout(props) {
     return (
-        <Container>
-            <Header/>
+        <Wrapper>
             <Form>
                 <Upper>
                     <Price>22.50€</Price>
@@ -88,7 +74,7 @@ function Checkout(props) {
                     <Button style={{marginTop:'20px'}}>Change payment method</Button>
                 </Upper>
             </Form>
-        </Container>
+        </Wrapper>
     );
 }
 export default withRouter(Checkout)

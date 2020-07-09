@@ -15,7 +15,7 @@ const Container = styled(Card)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background:#E5E5E5;
+    background:#f2f7fb;
     overflow: hidden;
 `;
 
@@ -31,15 +31,6 @@ const Form = styled(Card)`
     border-radius: 24px;
     box-shadow: 0 2px 64px rgba(232,238,243,0.5);
     padding: 48px 36px;
-`;
-
-const Upper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  
-  flex-grow: 0.2;
-  margin-top: auto;
 `;
 
 const Actions = styled.div`
