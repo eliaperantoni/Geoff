@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
-import {mdiCart} from "@mdi/js";
+import styled, {css} from 'styled-components';
+import {mdiCart, mdiClose} from "@mdi/js";
 
 import Card from 'components/basic/Card.js';
 import IconButton from 'components/basic/IconButton.js';
@@ -12,6 +12,10 @@ const StyledItem = styled(Card)`
     height: 200px;
     width: 300px;
     padding: 0;
+
+    ${props => props.admin && css`
+        height: 260px;
+    `}
 `;
 
 const Info = styled.div`
@@ -34,6 +38,13 @@ const Name = styled.span`
     margin-bottom: 4px;
 `;
 
+const Stock = styled.span`
+    font-family: FuturaLight, sans-serif;
+    font-size: 1.8rem;
+    color: #A6AEB5;
+    margin-top: 12px;
+`;
+
 const StyledPrice = styled(Price)`
     font-family: FuturaLight, sans-serif;
     font-size: 1.2rem;
@@ -50,14 +61,15 @@ const Image = styled.div`
 
 function Item(props) {
     return (
-        <StyledItem>
+        <StyledItem admin={props.admin}>
             <Image image={props.image}/>
             <Info>
                 <InfoCol>
                     <Name>{props.name}</Name>
                     <StyledPrice price={props.price}/>
+                    <Stock>{props.stock}<span style={{fontSize: '1.4rem'}}> left</span></Stock>
                 </InfoCol>
-                <IconButton icon={mdiCart}/>
+                <IconButton type="danger" icon={props.admin ? mdiClose : mdiCart}/>
             </Info>
         </StyledItem>
     )

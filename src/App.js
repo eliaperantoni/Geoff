@@ -36,7 +36,7 @@ function App() {
             <Router>
                 <GlobalStyle/>
                 <Switch>
-                    <Route path="/">
+                    <Route exact path="/">
                         <Catalogue/>
                     </Route>
                     <Route path="/login">
@@ -55,7 +55,10 @@ function App() {
                         <Orders/>
                     </Route>
                     <Route path="/admin/orders">
-                        <Orders global={true}/>
+                        <Orders admin={true}/>
+                    </Route>
+                    <Route path="/admin/catalogue">
+                        <Catalogue admin={true}/>
                     </Route>
                     <Route>
                         <C404/>

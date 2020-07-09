@@ -222,7 +222,7 @@ export default class Orders extends Component {
     async componentDidMount() {
         let orders;
 
-        if(this.props.global)
+        if(this.props.admin)
             orders = await this.getGlobalOrders();
         else
             orders = await this.getUserOrders(await this.getUserEmail());

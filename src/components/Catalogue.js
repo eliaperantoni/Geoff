@@ -48,12 +48,20 @@ export default class Catalogue extends React.Component {
         if (this.state.query === "")
             items = this.state.items;
         else
-            items = this.state.items.filter(doesItemMatch)
+            items = this.state.items.filter(doesItemMatch);
+
+        let itemsComponents;
+        if (this.props.admin)
+            itemsComponents = items.map(item => (
+                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true} key={item.name}/>));
+        else
+            itemsComponents = items.map(item => (
+                <Item name={item.name} price={item.price} image={item.image} key={item.name}/>));
 
         return (
             <Wrapper onInput={this.onInput}>
                 <StyledCatalogue>
-                    {items.map(item => (<Item name={item.name} price={item.price} image={item.image} key={item.name}/>))}
+                    {itemsComponents}
                 </StyledCatalogue>
             </Wrapper>
         );
