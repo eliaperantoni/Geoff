@@ -117,6 +117,7 @@ const OrderDetailsSecondaryText = styled.div`
 `;
 
 function Order({order}) {
+    // Computes total price of all items in this order
     const totalPrice = order.items.map(item => item.price * item.quantity).reduce((val, acc) => val + acc, 0);
 
     return (
@@ -168,33 +169,65 @@ export default class Orders extends Component {
         };
     }
 
-    componentDidMount() {
-        const unsubscribe = firebase.auth().onAuthStateChanged(async ({email}) => {
-            unsubscribe();
-
-            const query = await firebase.firestore().collection(`/users/${email}/orders`).get();
-            const orders = query.docs.map(doc => ({number: doc.id, ...doc.data()}));
-
-            const promises = [];
-            const itemsCache = {};
-
-            for (const order of orders) {
-                for (const item of order.items) {
-                    promises.push((async () => {
-                        if (!itemsCache[item.itemID]) {
-                            const doc = await firebase.firestore().doc(`/items/${item.itemID}`).get();
-                            itemsCache[item.itemID] = doc.data();
-                        }
-
-                        Object.assign(item, {...itemsCache[item.itemID], ...item});
-                    })());
-                }
-            }
-
-            await Promise.all(promises);
-
-            this.setState({orders});
+    // Returns the email of the logged in user
+    async getUserEmail() {
+        const emailPromise = new Promise(resolve => {
+            const unsubscribe = firebase.auth().onAuthStateChanged(async ({email}) => {
+                unsubscribe();
+                resolve(email);
+            });
         });
+
+        return await emailPromise;
+    }
+
+    // Returns an array containing all orders of the user with the provided email
+    async getUserOrders(email) {
+        const query = await firebase.firestore().collection(`/users/${email}/orders`).get();
+        const orders = query.docs.map(doc => ({number: doc.id, ...doc.data()}));
+
+        const promises = [];
+        const itemsCache = {};
+
+        for (const order of orders) {
+            for (const item of order.items) {
+                promises.push((async () => {
+                    if (!itemsCache[item.itemID]) {
+                        const doc = await firebase.firestore().doc(`/items/${item.itemID}`).get();
+                        itemsCache[item.itemID] = doc.data();
+                    }
+
+                    Object.assign(item, {...itemsCache[item.itemID], ...item});
+                })());
+            }
+        }
+
+        await Promise.all(promises);
+
+        return orders;
+    }
+
+    // Returns an array of all orders of all users
+    async getGlobalOrders() {
+        const orders = [];
+
+        const query = await firebase.firestore().collection(`/users`).get();
+        for(const doc of query.docs) {
+            orders.push(...await this.getUserOrders(doc.id));
+        }
+
+        return orders;
+    }
+
+    async componentDidMount() {
+        let orders;
+
+        if(this.props.global)
+            orders = await this.getGlobalOrders();
+        else
+            orders = await this.getUserOrders(await this.getUserEmail());
+
+        this.setState({orders});
     }
 
     render() {
