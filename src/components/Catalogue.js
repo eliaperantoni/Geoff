@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import firebase from "firebase";
 
 import Item from "components/Item";
 import Wrapper from "components/Wrapper";
@@ -13,13 +14,27 @@ const StyledCatalogue = styled.div`
     grid-gap: 18px;
 `;
 
-export default function Catalogue(props) {
-    return (
-        <Wrapper>
-            <StyledCatalogue>
-                {Array(25).fill((<Item price={2200} name="Avocado" image="https://images.unsplash.com/photo-1499125562588-29fb8a56b5d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1489&q=80"/>))}
+export default class Catalogue extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            items: [],
+        };
+    }
 
-            </StyledCatalogue>
-        </Wrapper>
-    );
+    async componentDidMount() {
+        const query = await firebase.firestore().collection("/items").get();
+        const items = query.docs.map(doc => doc.data());
+        this.setState({items});
+    }
+
+    render() {
+        return (
+            <Wrapper>
+                <StyledCatalogue>
+                    {this.state.items.map(item => (<Item name={item.name} price={item.price} image={item.image}/>))}
+                </StyledCatalogue>
+            </Wrapper>
+        );
+    }
 }

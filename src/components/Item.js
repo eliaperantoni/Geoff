@@ -45,6 +45,7 @@ const Image = styled.div`
     background: url("${props => props.image}");
     border-radius: 24px 24px 0 0;
     background-size: cover;
+    background-position: center;
 `;
 
 function Item(props) {
