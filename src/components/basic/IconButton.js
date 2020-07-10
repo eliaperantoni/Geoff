@@ -30,9 +30,9 @@ const StyledIconButton = styled.div`
     justify-content: center;
 `;
 
-export default function IconButton({type, icon}){
+export default function IconButton({type, icon, onClick}){
     return(
-        <StyledIconButton type={type}>
+        <StyledIconButton type={type} onClick={onClick}>
             <Icon size={1} path={icon}/>
         </StyledIconButton>
     )

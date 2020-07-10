@@ -23,14 +23,23 @@ export default class Catalogue extends React.Component {
         };
     }
 
-    async componentDidMount() {
-        const query = await firebase.firestore().collection("/items").get();
-        const items = query.docs.map(doc => doc.data());
+    componentDidMount() {
+        this.refreshItems();
+    }
+
+    async refreshItems() {
+        const query = await firebase.firestore().collection("/items").where("deleted", "==", false).get();
+        const items = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
         this.setState({items});
     }
 
     onInput = e => {
         this.setState({query: e.target.value});
+    }
+
+    deleteItem = id => async () => {
+        await firebase.firestore().doc(`/items/${id}`).update({deleted: true});
+        await this.refreshItems();
     }
 
     render() {
@@ -53,7 +62,7 @@ export default class Catalogue extends React.Component {
         let itemsComponents;
         if (this.props.admin)
             itemsComponents = items.map(item => (
-                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true} key={item.name}/>));
+                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true} onDelete={this.deleteItem(item.id)} key={item.name}/>));
         else
             itemsComponents = items.map(item => (
                 <Item name={item.name} price={item.price} image={item.image} key={item.name}/>));
