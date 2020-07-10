@@ -10,6 +10,7 @@ import Confirm from "components/Confirm";
 import Orders from "components/Orders";
 import Test from "components/Test";
 import Catalogue from "./components/Catalogue";
+import Thanks from "./components/Thanks"
 
 const StyledApp = styled.div`
     display: flex;
@@ -59,6 +60,9 @@ function App() {
                     </Route>
                     <Route path="/admin/catalogue">
                         <Catalogue admin={true}/>
+                    </Route>
+                    <Route path="/thanks">
+                        <Thanks/>
                     </Route>
                     <Route>
                         <C404/>

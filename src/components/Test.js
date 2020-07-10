@@ -6,7 +6,7 @@ import Wrapper from "components/Wrapper";
 
 function Test(props) {
     return (
-         <Basket></Basket>
+         <Basket x={20} y={50}></Basket>
     );
 }
 export default withRouter(Test)

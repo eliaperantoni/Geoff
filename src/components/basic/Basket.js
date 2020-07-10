@@ -2,10 +2,9 @@ import React, {Component} from "react";
 import styled from "styled-components";
 import Button from "components/basic/Button.js"
 import OrderItem from "components/OrderItem"
-
 import Price from "components/basic/Price";
 import firebase from "firebase";
-import im from "img/avocado.png"
+import { withRouter } from "react-router-dom";
 
 const Box =  styled.div`
     margin-left: 50px;
@@ -51,13 +50,15 @@ const OrderTotalPrice = styled(Price)`
 `;
 
 
-export default class Basket extends Component {
+class Basket extends Component {
     constructor(props) {
         super(props);
         this.state = {
             products: [],
+            price : 0,
         };
     }
+
     // Returns the email of the logged in user
     async getUserEmail() {
         const emailPromise = new Promise(resolve => {
@@ -73,7 +74,7 @@ export default class Basket extends Component {
     async getUserProducts(email) {
         const query = await firebase.firestore().collection(`users`).doc(email).get();
         if(!query.exists){
-            alert("empry");
+            alert("empty");
         }else{
             return query.data().basket;
         }
@@ -82,27 +83,40 @@ export default class Basket extends Component {
     async componentDidMount() {
         let email = await this.getUserEmail();
         let products =  await this.getUserProducts(email);
-        alert(products);
-    }
+        let basket = [];
+        let price = 0;
+        for (const obj of products){
 
+            const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
+            let item = {...doc.data(), quantity: obj.quantity}
+            basket.push(item);
+            price += item.quantity * item.price;
+        }
+            this.setState({products:basket,price:price});
+        }
+
+
+    setPosition(){
+            return {position:"absolute",
+                    left: this.props.x,
+                    top: this.props.y,
+            }
+        }
     render(){
         return(
-        <Box>
+        <Box style={this.setPosition()}>
             <Triangle/>
             <Body>
                 <Scroll>
-                    <OrderItem item={{"image": im, "quantity":10, "name":"Avocado","price":10}}></OrderItem>
-                    <OrderItem item={{"image": im, "quantity":10, "name":"Avocado","price":10}}></OrderItem>
-                    <OrderItem item={{"image": im, "quantity":10, "name":"Avocado","price":10}}></OrderItem>
-                    <OrderItem item={{"image": im, "quantity":10, "name":"Avocado","price":10}}></OrderItem>
-                    <OrderItem item={{"image": im, "quantity":10, "name":"Avocado","price":10}}></OrderItem>
-                    <OrderItem item={{"image": im, "quantity":10, "name":"Avocado","price":10}}></OrderItem>
+                    {this.state.products.map(item => (<OrderItem item={item}/>))}
                 </Scroll>
-                <OrderTotalPrice price={10}/>
-                <Button style={{"margin-top":"10px"}}>Checkout</Button>
+                <OrderTotalPrice price={this.state.price}/>
+                <Button onClick={()=>{this.props.history.push("/checkout")}} style={{"margin-top":"10px"}}>Checkout</Button>
             </Body>
         </Box>
         );
     }
 }
+
+export default withRouter(Basket);
 

@@ -1,9 +1,10 @@
-import React from "react";
+import React, {Component} from "react";
 import styled from "styled-components";
 import * as firebase from "firebase/app";
 import Icon from '@mdi/react';
 import Input from "components/basic/Input";
 import { withRouter } from "react-router-dom"
+import Basket from "components/basic/Basket.js"
 import {
     mdiFaceProfile,
     mdiLogoutVariant,
@@ -53,30 +54,55 @@ const Actions = styled.div`
     justify-content: flex-end;
 `;
 
-function Header(props) {
-    async function logout() {
+class Header extends Component{
+    constructor(props) {
+        super(props);
+        this.state = {
+            showBasket:false,
+
+        };
+    }
+    logout =  async()=> {
         try {
             await firebase.auth().signOut();
-            props.history.push('/login');
+            this.props.history.push('/login');
         } catch (error) {
             alert(error.message);
         }
     }
 
-    return (
-        <StyledHeader className={props.className}>
-            <Title>Geoff</Title>
+    basket = ()=> {
+        this.setState({showBasket:!this.state.showBasket});
+    }
+    showBasket = ()=>{
+        if(this.state.showBasket){
+            let rec = document.getElementById(1).getBoundingClientRect();
+            return <Basket x={-395+rec.left +window.scrollX} y={rec.top+ window.scrollY+25}></Basket>
+        }
+    }
 
-            <StyledInput onInput={props.onInput} hide={props.hideInput} placeholder="Type here to search"/>
+    handleResize= (WindowSize, event)=> {
+        this.setState({showBasket:this.state.showBasket});
+    }
 
-            <Actions>
-                <Action path={mdiCart} size={1.8}/>
-                <Action path={mdiTextBoxMultiple}/>
-                <Action path={mdiFaceProfile}/>
-                <Action path={mdiLogoutVariant} onClick={logout}/>
-            </Actions>
-        </StyledHeader>
-    );
+    componentDidMount() {
+        window.addEventListener("resize", this.handleResize);
+    }
+    render() {
+        return (
+            <StyledHeader className={this.props.className}>
+                <Title>Geoff</Title>
+                <StyledInput onInput={this.props.onInput} hide={this.props.hideInput} placeholder="Type here to search"/>
+
+                <Actions>
+                    <Action path={mdiCart} size={1.8} onClick={this.basket}/>
+                    <Action path={mdiTextBoxMultiple}/>
+                    <Action path={mdiFaceProfile}/>
+                    <Action id="1" path={mdiLogoutVariant} onClick={this.logout}/>
+                </Actions>
+                {this.showBasket()}
+            </StyledHeader>
+        );
+    }
 }
-
 export default withRouter(Header);
