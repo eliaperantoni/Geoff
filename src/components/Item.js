@@ -67,9 +67,12 @@ function Item(props) {
                 <InfoCol>
                     <Name>{props.name}</Name>
                     <StyledPrice price={props.price}/>
-                    <Stock>{props.stock}<span style={{fontSize: '1.4rem'}}> left</span></Stock>
+                    {props.admin && (<Stock>{props.stock}<span style={{fontSize: '1.4rem'}}> left</span></Stock>)}
                 </InfoCol>
-                <IconButton type="danger" icon={props.admin ? mdiClose : mdiCart}/>
+                {props.admin
+                    ? (<IconButton type="danger" icon={mdiClose}/>)
+                    : (<IconButton type="primary" icon={mdiCart}/>)
+                }
             </Info>
         </StyledItem>
     )

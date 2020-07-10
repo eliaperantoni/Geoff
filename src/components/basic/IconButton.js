@@ -3,12 +3,14 @@ import React from "react";
 import Icon from "@mdi/react";
 
 const StyledIconButton = styled.div`
-    background: linear-gradient(-90deg, #00e74e, #6BE595);
-    box-shadow: 0 2px 8px rgba(90,198,127,0.81);
-    text-shadow: 0 2px 4px rgba(64,187,108,0.56);
-    path {
-        fill: #DFFFEA !important;
-    }
+    ${props => !props.type || props.type === "primary" && css`
+        background: linear-gradient(-90deg, #00e74e, #6BE595);
+        box-shadow: 0 2px 8px rgba(90,198,127,0.81);
+        text-shadow: 0 2px 4px rgba(64,187,108,0.56);
+        path {
+            fill: #DFFFEA !important;
+        }
+    `}
     
     ${props => props.type === "danger" && css`
         background: linear-gradient(-90deg, #D80142, #DD4673);
