@@ -4,6 +4,7 @@ import firebase from "firebase";
 
 import Item from "components/Item";
 import Wrapper from "components/Wrapper";
+import Loader from "components/basic/Loader";
 
 const StyledCatalogue = styled.div`
     flex: 1;
@@ -20,11 +21,13 @@ export default class Catalogue extends React.Component {
         this.state = {
             items: [],
             query: "",
+            loading: true,
         };
     }
 
-    componentDidMount() {
-        this.refreshItems();
+    async componentDidMount() {
+        await this.refreshItems();
+        this.setState({loading: false});
     }
 
     async refreshItems() {
@@ -38,8 +41,10 @@ export default class Catalogue extends React.Component {
     }
 
     deleteItem = id => async () => {
+        this.setState({items: [], loading: true});
         await firebase.firestore().doc(`/items/${id}`).update({deleted: true});
         await this.refreshItems();
+        this.setState({loading: false});
     }
 
     render() {
@@ -69,6 +74,7 @@ export default class Catalogue extends React.Component {
 
         return (
             <Wrapper onInput={this.onInput}>
+                <Loader loading={this.state.loading}/>
                 <StyledCatalogue>
                     {itemsComponents}
                 </StyledCatalogue>
