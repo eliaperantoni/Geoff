@@ -71,7 +71,7 @@ class Basket extends Component {
         return await emailPromise;
     }
     // Returns an array containing all products of the user with the provided email
-    async getUserProducts(email) {
+    async getUserBasket(email) {
         const query = await firebase.firestore().collection(`users`).doc(email).get();
         if(!query.exists){
             alert("empty");
@@ -82,18 +82,18 @@ class Basket extends Component {
 
     async componentDidMount() {
         let email = await this.getUserEmail();
-        let products =  await this.getUserProducts(email);
-        let basket = [];
+        let basket =  await this.getUserBasket(email);
+        let basketItems = [];
         let price = 0;
-        for (const obj of products){
+        for (const obj of basket){
 
             const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
             let item = {...doc.data(), quantity: obj.quantity}
-            basket.push(item);
+            basketItems.push(item);
             price += item.quantity * item.price;
         }
-            this.setState({products:basket,price:price});
-        }
+            this.setState({products:basketItems,price:price});
+    }
 
 
     setPosition(){
