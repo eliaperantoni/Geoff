@@ -61,7 +61,7 @@ const Image = styled.div`
 
 function Item(props) {
     return (
-        <StyledItem admin={props.admin}>
+        <StyledItem admin={props.admin} onClick={props.onClick}>
             <Image image={props.image}/>
             <Info>
                 <InfoCol>

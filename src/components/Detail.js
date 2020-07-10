@@ -3,52 +3,42 @@ import styled from 'styled-components';
 import Card from 'components/basic/Card.js';
 import Button from 'components/basic/Card.js';
 
-const Container = styled(Card)`
+const StyledDetail = styled(Card)`
     display: flex;
     flex-direction: column;
-    background-position: center center;
-    max-width: 500px;
-    max-heigth: 500px;
+    height: 400px;
+    width: 600px;
+    padding: 0;
 `;
 
-const Text = styled.p`
-    font-family: FuturaLight, sans-serif;
-    font-size: 24px;
-    color: #A4BBCD;
-    margin: 40px auto auto;
-`;
-
-const Bold = styled.p`
-    font-family: FuturaBold, sans-serif;
-    font-weight: bold;
-    color: #A4BBCD;
-`;
-
-const Divider = styled.div`
+const Info = styled.div`
     display: flex;
-    flex-direction: row;
-    justify-content: left;
-    align-items: right;
+    flex-direction: column;
+    padding: 36px 48px;
 `;
 
-function Detail(props) {
-    return (
-        <Container>
-            <img src={avocado}></img>
-            <Divider>
-                <div>
-                    <Bold>{props.title}</Bold>
-                    <Text>{props.price}</Text>
-                    <Text>{props.brand}</Text>
-                    {/* TAG temporaneo */}
-                    <Text>{props.tags}</Text>
-                </div>
+const Name = styled.div`
+    font-family: FuturaBold, sans-serif;
+    color: #6C7C89;
+    font-size: 2rem;
+`;
 
-                <div>
-                    <Button>Add to cart</Button>
-                </div>
-            </Divider>
-        </Container>
+const Image = styled.div`
+    flex: 1;
+    background: url("${props => props.image}");
+    border-radius: 24px 24px 0 0;
+    background-size: cover;
+    background-position: center;
+`;
+
+function Detail({item}) {
+    return (
+        <StyledDetail>
+            <Image image={item.image}/>
+            <Info>
+                <Name>{item.name}</Name>
+            </Info>
+        </StyledDetail>
     )
 }
 

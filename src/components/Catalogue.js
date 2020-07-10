@@ -5,6 +5,9 @@ import firebase from "firebase";
 import Item from "components/Item";
 import Wrapper from "components/Wrapper";
 import Loader from "components/basic/Loader";
+import Button from "components/basic/Button";
+import Detail from "components/Detail";
+import Popup from "reactjs-popup";
 
 const StyledCatalogue = styled.div`
     flex: 1;
@@ -15,6 +18,28 @@ const StyledCatalogue = styled.div`
     grid-gap: 18px;
 `;
 
+const AddItem = styled(Button).attrs(() => ({
+    children: "Add",
+}))`
+    grid-column: span 3;
+    height: 64px;
+    margin-bottom: 18px;
+`;
+
+const StyledPopup = styled(Popup)`
+    &-content {
+        background: none !important;
+        border: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    &-overlay {
+        background: rgba(68,84,100,0.61) !important;
+    }
+`;
+
 export default class Catalogue extends React.Component {
     constructor(props) {
         super(props);
@@ -22,6 +47,8 @@ export default class Catalogue extends React.Component {
             items: [],
             query: "",
             loading: true,
+            isModalOpen: false,
+            selectedItem: null,
         };
     }
 
@@ -47,6 +74,10 @@ export default class Catalogue extends React.Component {
         this.setState({loading: false});
     }
 
+    openItem = item => () => {
+        this.setState({isModalOpen: true, selectedItem: item})
+    }
+
     render() {
         const doesItemMatch = item => {
             const doesStringResemble = str => {
@@ -70,14 +101,25 @@ export default class Catalogue extends React.Component {
                 <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true} onDelete={this.deleteItem(item.id)} key={item.name}/>));
         else
             itemsComponents = items.map(item => (
-                <Item name={item.name} price={item.price} image={item.image} key={item.name}/>));
+                <Item name={item.name} price={item.price} image={item.image} onClick={this.openItem(item)} key={item.name}/>));
 
         return (
             <Wrapper onInput={this.onInput}>
                 <Loader loading={this.state.loading}/>
-                <StyledCatalogue>
+
+                <StyledPopup modal closeOnDocumentClick open={this.state.isModalOpen} onClose={() => {this.setState({isModalOpen: false})}}>
+                    {this.props.admin
+                        ? <div>TODO</div>
+                        : <Detail item={this.state.selectedItem}/>
+                    }
+                </StyledPopup>
+
+                {!this.state.loading && (
+                    <StyledCatalogue>
+                        {this.props.admin && (<AddItem onClick={() => {this.setState({isModalOpen: true})}}/>)}
                     {itemsComponents}
-                </StyledCatalogue>
+                    </StyledCatalogue>
+                )}
             </Wrapper>
         );
     }
