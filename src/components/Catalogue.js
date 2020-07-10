@@ -4,6 +4,7 @@ import firebase from "firebase";
 
 import Item from "components/Item";
 import Wrapper from "components/Wrapper";
+import Loader from "components/basic/Loader";
 
 const StyledCatalogue = styled.div`
     flex: 1;
@@ -20,17 +21,30 @@ export default class Catalogue extends React.Component {
         this.state = {
             items: [],
             query: "",
+            loading: true,
         };
     }
 
     async componentDidMount() {
-        const query = await firebase.firestore().collection("/items").get();
-        const items = query.docs.map(doc => doc.data());
+        await this.refreshItems();
+        this.setState({loading: false});
+    }
+
+    async refreshItems() {
+        const query = await firebase.firestore().collection("/items").where("deleted", "==", false).get();
+        const items = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
         this.setState({items});
     }
 
     onInput = e => {
         this.setState({query: e.target.value});
+    }
+
+    deleteItem = id => async () => {
+        this.setState({items: [], loading: true});
+        await firebase.firestore().doc(`/items/${id}`).update({deleted: true});
+        await this.refreshItems();
+        this.setState({loading: false});
     }
 
     render() {
@@ -53,13 +67,14 @@ export default class Catalogue extends React.Component {
         let itemsComponents;
         if (this.props.admin)
             itemsComponents = items.map(item => (
-                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true} key={item.name}/>));
+                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true} onDelete={this.deleteItem(item.id)} key={item.name}/>));
         else
             itemsComponents = items.map(item => (
                 <Item name={item.name} price={item.price} image={item.image} key={item.name}/>));
 
         return (
             <Wrapper onInput={this.onInput}>
+                <Loader loading={this.state.loading}/>
                 <StyledCatalogue>
                     {itemsComponents}
                 </StyledCatalogue>

@@ -7,6 +7,7 @@ import Wrapper from "components/Wrapper";
 import Card from "components/basic/Card";
 import Price from "components/basic/Price";
 import Tag from "components/basic/Tag";
+import Loader from "components/basic/Loader";
 
 const StyledItem = styled.div`
   display: flex;
@@ -166,6 +167,7 @@ export default class Orders extends Component {
         super(props);
         this.state = {
             orders: [],
+            loading: true,
         };
     }
 
@@ -212,7 +214,7 @@ export default class Orders extends Component {
         const orders = [];
 
         const query = await firebase.firestore().collection(`/users`).get();
-        for(const doc of query.docs) {
+        for (const doc of query.docs) {
             orders.push(...await this.getUserOrders(doc.id));
         }
 
@@ -222,21 +224,24 @@ export default class Orders extends Component {
     async componentDidMount() {
         let orders;
 
-        if(this.props.admin)
+        if (this.props.admin)
             orders = await this.getGlobalOrders();
         else
             orders = await this.getUserOrders(await this.getUserEmail());
 
-        this.setState({orders});
+        this.setState({orders, loading: false});
     }
 
     render() {
         return (
             <Wrapper hideInput={true}>
-                <OrdersContainer>
-                    <OrdersTitle/>
-                    {this.state.orders.map(order => (<Order order={order} key={order.number}/>))}
-                </OrdersContainer>
+                <Loader loading={this.state.loading}/>
+                {!this.state.loading && (
+                    <OrdersContainer>
+                        <OrdersTitle/>
+                        {this.state.orders.map(order => (<Order order={order} key={order.number}/>))}
+                    </OrdersContainer>
+                )}
             </Wrapper>
         );
     }
