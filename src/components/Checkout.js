@@ -234,7 +234,7 @@ class Checkout extends Component {
         if(correct){
             //CREO ORDINE
             const order = {
-                status:"confirmed",
+                status: ["confirmed", "process", "delivered"][Math.floor(Math.random() * 3)],
                 placedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 items: basket
             }
