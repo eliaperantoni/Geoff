@@ -101,6 +101,9 @@ export default class App extends React.Component {
                         <Route path="/thanks">
                             <Thanks/>
                         </Route>
+                        <Route path="/checkout">
+                            <Checkout/>
+                        </Route>
                         <Route>
                             <C404/>
                         </Route>
@@ -109,7 +112,5 @@ export default class App extends React.Component {
             </StyledApp>
         );
     }
-                    <Route path="/checkout">
-                        <Checkout/>
-                    </Route>
+
 }
