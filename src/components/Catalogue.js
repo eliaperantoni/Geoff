@@ -8,6 +8,7 @@ import Loader from "components/basic/Loader";
 import Button from "components/basic/Button";
 import Detail from "components/Detail";
 import Popup from "components/basic/Popup";
+import CreateItem from "components/CreateItem";
 
 const StyledCatalogue = styled.div`
     flex: 1;
@@ -124,7 +125,10 @@ export default class Catalogue extends React.Component {
 
                 <Popup open={this.state.isModalOpen} onClose={this.closeItem}>
                     {this.props.admin
-                        ? <div>TODO</div>
+                        ? <CreateItem onCreated={() => {
+                            this.refreshItems();
+                            this.setState({isModalOpen: false});
+                        }}/>
                         : <Detail item={this.state.selectedItem} onAddToCart={async quantity => {
                             await this.addToCart(this.state.selectedItem.id, quantity);
                             this.closeItem();
