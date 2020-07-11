@@ -11,6 +11,7 @@ import {Label} from "./basic/LabeledInput";
 import LabeledInput from "./basic/LabeledInput";
 import {mdiPencil} from "@mdi/js";
 import Icon from "@mdi/react";
+import {setLoading} from "App";
 
 const StyledCreateItem = styled(Card)`
     display: flex;
@@ -147,6 +148,8 @@ export default class CreateItem extends React.Component {
             return;
         }
 
+        setLoading(true);
+
         const itemRef = await firebase.firestore().collection(`/items`).add({
             name: this.state.name,
             brand: this.state.brand,
@@ -161,6 +164,8 @@ export default class CreateItem extends React.Component {
         await itemRef.update({
             image: await imageRef.getDownloadURL(),
         });
+
+        setLoading(false);
 
         if(this.props.onCreated) this.props.onCreated();
     }

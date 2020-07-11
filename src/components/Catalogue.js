@@ -9,6 +9,7 @@ import Button from "components/basic/Button";
 import Detail from "components/Detail";
 import Popup from "components/basic/Popup";
 import CreateItem from "components/CreateItem";
+import {setLoading} from "App";
 
 const StyledCatalogue = styled.div`
     flex: 1;
@@ -70,6 +71,8 @@ export default class Catalogue extends React.Component {
     }
 
     addToCart = async (itemID, quantity) => {
+        setLoading(true);
+
         const userRef = firebase.firestore().doc(`/users/${firebase.auth().currentUser.email}`);
 
         await firebase.firestore().runTransaction(async transaction => {
@@ -90,6 +93,8 @@ export default class Catalogue extends React.Component {
             });
             await transaction.update(userRef, user);
         });
+
+        setLoading(false);
     }
 
     render() {

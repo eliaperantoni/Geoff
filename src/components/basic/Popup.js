@@ -4,6 +4,7 @@ import PopupLib from "reactjs-popup";
 const Popup = styled(PopupLib).attrs(props => ({
     modal: true,
     closeOnDocumentClick: true,
+    ...props,
 }))`
     &-content {
         background: none !important;
