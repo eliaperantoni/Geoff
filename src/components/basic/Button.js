@@ -13,6 +13,12 @@ const Button = styled.button`
     height: 48px;
     padding: 0 64px;
     cursor: pointer;
+    &:disabled {
+      background: #dee5ea;
+      color:white;
+      box-shadow: none;
+      text-shadow: none;
+    }
 `;
 
 export default Button;

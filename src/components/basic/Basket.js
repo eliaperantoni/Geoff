@@ -58,6 +58,7 @@ class Basket extends Component {
             products: [],
             price : 0,
             loading: true,
+            checkout:false,
         };
     }
 
@@ -87,6 +88,7 @@ class Basket extends Component {
         let basket =  await this.getUserBasket(email);
         let basketItems = [];
         let price = 0;
+
         for (const obj of basket){
 
             const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
@@ -94,7 +96,7 @@ class Basket extends Component {
             basketItems.push(item);
             price += item.quantity * item.price;
         }
-        this.setState({products:basketItems,price:price,loading:false});
+        this.setState({products:basketItems,price:price,loading:false,checkout:!basket.length>0});
     }
 
     setPosition(){
@@ -122,7 +124,7 @@ class Basket extends Component {
         return(
             <Box style={this.setPosition()}>
                 {this.state.loading ?(
-                <p style={{marginLeft: "130px", marginTop:"100px"}}>
+                <p style={{marginLeft: "120px", marginTop:"100px"}}>
                     <Loader loading={this.state.loading}/>
                 </p>
                 ):(
@@ -132,7 +134,7 @@ class Basket extends Component {
                         {this.state.products.map(item => (<OrderItem handler={this.basketChange} item={item} quantity={item.quantity}/>))}
                     </Scroll>
                     <OrderTotalPrice price={this.state.price}/>
-                    <Button onClick={()=>{this.props.history.push("/checkout")}} style={{"margin-top":"10px"}}>Checkout</Button>
+                    <Button disabled = {this.state.checkout} onClick={()=>{this.props.history.push("/checkout")}} style={{"margin-top":"10px"}}>Checkout</Button>
                 </Body>)
                 }
 

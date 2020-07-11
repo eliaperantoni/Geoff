@@ -70,7 +70,12 @@ class Header extends Component{
             alert(error.message);
         }
     }
-
+    main =  async()=> {
+        this.props.history.push("/")
+    }
+    orders =  async()=> {
+        this.props.history.push("/orders");
+    }
     basket = ()=> {
         this.setState({showBasket:!this.state.showBasket});
     }
@@ -91,12 +96,12 @@ class Header extends Component{
     render() {
         return (
             <StyledHeader className={this.props.className}>
-                <Title>Geoff</Title>
+                <Title onClick={this.main}>Geoff</Title>
                 <StyledInput onInput={this.props.onInput} hide={this.props.hideInput} placeholder="Type here to search"/>
 
                 <Actions>
                     <Action path={mdiCart} size={1.8} onClick={this.basket}/>
-                    <Action path={mdiTextBoxMultiple}/>
+                    <Action path={mdiTextBoxMultiple} onClick={this.orders}/>
                     <Action path={mdiFaceProfile}/>
                     <Action id="1" path={mdiLogoutVariant} onClick={this.logout}/>
                 </Actions>

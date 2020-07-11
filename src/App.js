@@ -11,6 +11,7 @@ import Orders from "components/Orders";
 import Test from "components/Test";
 import Catalogue from "./components/Catalogue";
 import Thanks from "./components/Thanks"
+import Checkout from "./components/Checkout";
 
 const StyledApp = styled.div`
     display: flex;
@@ -63,6 +64,9 @@ function App() {
                     </Route>
                     <Route path="/thanks">
                         <Thanks/>
+                    </Route>
+                    <Route path="/checkout">
+                        <Checkout/>
                     </Route>
                     <Route>
                         <C404/>

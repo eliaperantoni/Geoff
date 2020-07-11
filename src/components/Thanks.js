@@ -1,10 +1,11 @@
-import React from "react";
+import React, {Component} from "react";
 import styled from "styled-components";
 
 import Card from "components/basic/Card";
 import Header from "components/basic/Header";
 import thanksSVG from "img/thanks.svg";
 import Wrapper from "./Wrapper";
+import {withRouter} from "react-router-dom";
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -63,18 +64,27 @@ const Par = styled.p`
     color: #AAB8C2;
 `;
 
-export default function () {
-    return (
-        <Wrapper hideInput={true}>
-            <Form>
-                <Image src={thanksSVG}/>
-                <Upper>
-                    <Par>
-                        <Title>Your order has been placed!</Title>
-                        #1234
-                    </Par>
-                </Upper>
-            </Form>
-        </Wrapper>
-    );
+class Thanks extends Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        const { data } = this.props.location
+        console.log(data)
+        return (
+            <Wrapper hideInput={true}>
+                <Form>
+                    <Image src={thanksSVG}/>
+                    <Upper>
+                        <Par>
+                            <Title>Your order has been placed!</Title>
+                            {data.order}
+                        </Par>
+                    </Upper>
+                </Form>
+            </Wrapper>
+        );
+    }
+
 }
+export default withRouter(Thanks);
