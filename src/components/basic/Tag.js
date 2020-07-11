@@ -7,7 +7,7 @@ const StyledTag = styled.div`
   color: #AEC4D6;
   font-family: FuturaBold, sans-serif;
   padding: 12px 16px 10px 16px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   text-transform: capitalize;
 `;
 

@@ -7,6 +7,7 @@ import FuturaBold from "fonts/futura_bold.ttf";
 const GlobalStyle = createGlobalStyle`
     html {
       min-height: 100vh;
+      user-select: none !important;
     }
 
     html, body, #root {
