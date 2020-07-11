@@ -14,6 +14,7 @@ const StyledDetail = styled(Card)`
     height: 600px;
     width: 800px;
     padding: 0;
+    box-shadow: none;
 `;
 
 const Content = styled.div`
@@ -112,12 +113,10 @@ export default class Detail extends React.Component {
         this.setState({quantity});
     }
 
-    onAddToCart = () => {
-        console.log("ADD TO CART");
-    }
-
     render() {
         const {item} = this.props;
+
+        if(!item) return (<div/>);
 
         return (
             <StyledDetail>
@@ -131,7 +130,7 @@ export default class Detail extends React.Component {
                             {item.tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
                         </Tags>
                     </Info>
-                    <AddToCart quantity={this.state.quantity} onQuantityChange={this.onQuantityChange} onAddToCart={this.onAddToCart}/>
+                    <AddToCart quantity={this.state.quantity} onQuantityChange={this.onQuantityChange} onAddToCart={() => this.props.onAddToCart(this.state.quantity)}/>
                 </Content>
             </StyledDetail>
         );

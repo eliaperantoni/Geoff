@@ -12,6 +12,7 @@ const StyledItem = styled(Card)`
     height: 200px;
     width: 300px;
     padding: 0;
+    cursor: pointer;
 
     ${props => props.admin && css`
         height: 260px;
@@ -61,7 +62,10 @@ const Image = styled.div`
 
 function Item(props) {
     return (
-        <StyledItem admin={props.admin} onClick={props.onClick}>
+        <StyledItem admin={props.admin} onClick={e => {
+            e.stopPropagation();
+            props.onClick();
+        }}>
             <Image image={props.image}/>
             <Info>
                 <InfoCol>
@@ -70,8 +74,14 @@ function Item(props) {
                     {props.admin && (<Stock>{props.stock}<span style={{fontSize: '1.4rem'}}> left</span></Stock>)}
                 </InfoCol>
                 {props.admin
-                    ? (<IconButton type="danger" icon={mdiClose} onClick={props.onDelete}/>)
-                    : (<IconButton type="primary" icon={mdiCart}/>)
+                    ? (<IconButton type="danger" icon={mdiClose} onClick={e => {
+                        e.stopPropagation();
+                        props.onDelete();
+                    }}/>)
+                    : (<IconButton type="primary" icon={mdiCart} onClick={e => {
+                        e.stopPropagation();
+                        props.onAddToCart();
+                    }}/>)
                 }
             </Info>
         </StyledItem>
