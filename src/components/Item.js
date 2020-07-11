@@ -12,7 +12,10 @@ const StyledItem = styled(Card)`
     height: 200px;
     width: 300px;
     padding: 0;
-    cursor: pointer;
+    
+    ${props => !props.admin && css `
+        cursor: pointer;
+    `}
 
     ${props => props.admin && css`
         height: 260px;
@@ -64,7 +67,8 @@ function Item(props) {
     return (
         <StyledItem admin={props.admin} onClick={e => {
             e.stopPropagation();
-            props.onClick();
+            if(props.onClick)
+                props.onClick();
         }}>
             <Image image={props.image}/>
             <Info>
