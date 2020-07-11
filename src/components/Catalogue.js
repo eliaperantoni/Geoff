@@ -46,7 +46,9 @@ export default class Catalogue extends React.Component {
     }
 
     async refreshItems() {
-        const query = await firebase.firestore().collection("/items").where("deleted", "==", false).get();
+        const query = await firebase.firestore().collection("/items")
+            .where("deleted", "==", false)
+            .where("stock", ">", 0).get();
         const items = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
         this.setState({items});
     }
