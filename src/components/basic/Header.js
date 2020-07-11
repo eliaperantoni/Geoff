@@ -27,6 +27,7 @@ const Title = styled.div`
     font-size: 36px;
     color: #DEE5EA;
     flex: 1;
+    cursor: pointer;
 `;
 
 const StyledInput = styled(Input)`
