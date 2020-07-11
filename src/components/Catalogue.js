@@ -64,6 +64,33 @@ export default class Catalogue extends React.Component {
         this.setState({isModalOpen: true, selectedItem: item})
     }
 
+    closeItem = () => {
+        this.setState({isModalOpen: false, selectedItem: null});
+    }
+
+    addToCart = async (itemID, quantity) => {
+        const userRef = firebase.firestore().doc(`/users/${firebase.auth().currentUser.email}`);
+
+        await firebase.firestore().runTransaction(async transaction => {
+            const userDoc = await transaction.get(userRef);
+            const user = userDoc.data();
+
+            for (const item of user.basket) {
+                if (item.itemID === itemID) {
+                    item.quantity += quantity;
+                    await transaction.update(userRef, user);
+                    return;
+                }
+            }
+
+            user.basket.push({
+                itemID: itemID,
+                quantity,
+            });
+            await transaction.update(userRef, user);
+        });
+    }
+
     render() {
         const doesItemMatch = item => {
             const doesStringResemble = str => {
@@ -84,26 +111,33 @@ export default class Catalogue extends React.Component {
         let itemsComponents;
         if (this.props.admin)
             itemsComponents = items.map(item => (
-                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true} onDelete={this.deleteItem(item.id)} key={item.name}/>));
+                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true}
+                      onDelete={this.deleteItem(item.id)} key={item.name}/>));
         else
             itemsComponents = items.map(item => (
-                <Item name={item.name} price={item.price} image={item.image} onClick={this.openItem(item)} key={item.name}/>));
+                <Item name={item.name} price={item.price} image={item.image} onClick={this.openItem(item)}
+                      onAddToCart={() => this.addToCart(item.id, 1)} key={item.name}/>));
 
         return (
             <Wrapper onInput={this.onInput}>
                 <Loader loading={this.state.loading}/>
 
-                <Popup open={this.state.isModalOpen} onClose={() => {this.setState({isModalOpen: false})}}>
+                <Popup open={this.state.isModalOpen} onClose={this.closeItem}>
                     {this.props.admin
                         ? <div>TODO</div>
-                        : <Detail item={this.state.selectedItem}/>
+                        : <Detail item={this.state.selectedItem} onAddToCart={async quantity => {
+                            await this.addToCart(this.state.selectedItem.id, quantity);
+                            this.closeItem();
+                        }}/>
                     }
                 </Popup>
 
                 {!this.state.loading && (
                     <StyledCatalogue>
-                        {this.props.admin && (<AddItem onClick={() => {this.setState({isModalOpen: true})}}/>)}
-                    {itemsComponents}
+                        {this.props.admin && (<AddItem onClick={() => {
+                            this.setState({isModalOpen: true})
+                        }}/>)}
+                        {itemsComponents}
                     </StyledCatalogue>
                 )}
             </Wrapper>
