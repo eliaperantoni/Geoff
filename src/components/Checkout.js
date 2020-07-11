@@ -50,6 +50,10 @@ const BoldText = styled.p`
     font-weight: bold;
     color: #A4BBCD;
     font-size: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 `;
 
 const Text = styled.p`
