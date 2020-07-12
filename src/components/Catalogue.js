@@ -33,7 +33,10 @@ export default class Catalogue extends React.Component {
         super(props);
         this.state = {
             items: [],
-            query: "",
+            query: {
+                text: "",
+                category: "",
+            },
             loading: true,
             isModalOpen: false,
             selectedItem: null,
@@ -54,7 +57,14 @@ export default class Catalogue extends React.Component {
     }
 
     onInput = e => {
-        this.setState({query: e.target.value});
+        const text = e.target.value;
+        this.setState(state => ({query: {...state.query, text}}));
+    }
+
+    onCategory = e => {
+        console.log(e);
+        const category = e.target.value;
+        this.setState(state => ({query: {...state.query, category}}));
     }
 
     deleteItem = id => async () => {
@@ -100,9 +110,9 @@ export default class Catalogue extends React.Component {
     }
 
     render() {
-        const doesItemMatch = item => {
+        const doesItemMatchText = item => {
             const doesStringResemble = str => {
-                return str.toLowerCase().includes(this.state.query.toLowerCase());
+                return str.toLowerCase().includes(this.state.query.text.toLowerCase());
             }
 
             return doesStringResemble(item.name) ||
@@ -110,11 +120,17 @@ export default class Catalogue extends React.Component {
                 item.tags.reduce((acc, tag) => acc || doesStringResemble(tag), false);
         }
 
-        let items;
-        if (this.state.query === "")
-            items = this.state.items;
-        else
-            items = this.state.items.filter(doesItemMatch);
+        const doesItemMatchCategory = item => item.category === this.state.query.category;
+
+        const filters = [];
+
+        if (this.state.query.text !== "") filters.push(doesItemMatchText);
+        if(this.state.query.category !== "") filters.push(doesItemMatchCategory);
+
+        const items = this.state.items.filter(item => {
+            for (const filter of filters) if(!filter(item)) return false;
+            return true;
+        });
 
         let itemsComponents;
         if (this.props.admin)
@@ -127,7 +143,7 @@ export default class Catalogue extends React.Component {
                       onAddToCart={() => this.addToCart(item.id, 1)} key={item.name}/>));
 
         return (
-            <Wrapper onInput={this.onInput}>
+            <Wrapper onInput={this.onInput} onCategory={this.onCategory}>
                 <Loader loading={this.state.loading}/>
 
                 <Popup open={this.state.isModalOpen} onClose={this.closeItem}>

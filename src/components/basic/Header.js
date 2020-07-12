@@ -2,15 +2,17 @@ import React, {Component} from "react";
 import styled from "styled-components";
 import * as firebase from "firebase/app";
 import Icon from '@mdi/react';
-import Input from "components/basic/Input";
 import { withRouter } from "react-router-dom"
 import Basket from "components/basic/Basket.js"
+import Input from "components/basic/Input.js"
+import Select from "components/basic/Select.js"
 import {
     mdiFaceProfile,
     mdiLogoutVariant,
     mdiCart,
     mdiTextBoxMultiple
 } from '@mdi/js';
+import categories from "categories";
 
 const StyledHeader = styled.div`
    display: flex;
@@ -30,9 +32,39 @@ const Title = styled.div`
     cursor: pointer;
 `;
 
-const StyledInput = styled(Input)`
+const InputContainer= styled.div`
     flex: 3;
+    border-radius: 18px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(176,195,215,0.26);
+    background: white;
+    
     ${props => props.hide && "visibility: hidden;"};
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+`;
+
+
+const Divider = styled.div`
+    align-self: stretch;
+    width: 1px;
+    background: rgba(132,156,177,0.24);
+    box-sizing: border-box;
+    margin: 14px 0 14px 14px;
+`;
+
+const StyledSelect = styled(Select)`
+    border-radius: 18px 0 0 18px;
+    box-shadow: none;
+    font-size: 18px;
+`;
+
+const StyledInput = styled(Input)`
+    border-radius: 0 18px 18px 0;
+    box-shadow: none;
+    flex: 1;
 `;
 
 const Action = styled(Icon).attrs(props => ({
@@ -98,7 +130,15 @@ class Header extends Component{
         return (
             <StyledHeader className={this.props.className}>
                 <Title onClick={this.main}>Geoff</Title>
-                <StyledInput onInput={this.props.onInput} hide={this.props.hideInput} placeholder="Type here to search"/>
+
+                <InputContainer hide={this.props.hideInput}>
+                    <StyledSelect onChange={this.props.onCategory}>
+                        <option value={""}>All Categories</option>
+                        {categories.map(c => (<option value={c.name} key={c.name}>{c.display}</option>))}
+                    </StyledSelect>
+                    <Divider/>
+                    <StyledInput onInput={this.props.onInput} placeholder="Type here to search"/>
+                </InputContainer>
 
                 <Actions>
                     <Action path={mdiCart} size={1.8} onClick={this.basket}/>
