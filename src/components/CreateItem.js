@@ -1,16 +1,16 @@
 import React from "react";
 import styled, {css} from "styled-components";
 import firebase from "firebase";
-import {pick} from "lodash";
+import categories from "categories";
 
 import Card from "components/basic/Card";
 import Button from "components/basic/Button";
 import IconButton from "components/basic/IconButton";
 import Input from "./basic/Input";
-import {Label} from "./basic/LabeledInput";
-import LabeledInput from "./basic/LabeledInput";
+import LabeledInput from "components/basic/LabeledInput";
+import Select from "components/basic/Select";
+import Labeled, {Label} from "components/basic/Labeled";
 import {mdiPencil} from "@mdi/js";
-import Icon from "@mdi/react";
 import {setLoading} from "App";
 
 const StyledCreateItem = styled(Card)`
@@ -76,6 +76,7 @@ export default class CreateItem extends React.Component {
         this.state = {
             name: "",
             brand: "",
+            category: "",
             price: "",
             tags: "",
             stock: "",
@@ -133,6 +134,16 @@ export default class CreateItem extends React.Component {
             return;
         }
 
+        if(this.state.category === "") {
+            alert("Must provide a category");
+            return;
+        }
+
+        if(this.state.image.file == null) {
+            alert("Must provide an image");
+            return;
+        }
+
         let tags = this.state.tags.split(",");
         tags = tags.filter(t => t !== "");
 
@@ -153,6 +164,7 @@ export default class CreateItem extends React.Component {
         const itemRef = await firebase.firestore().collection(`/items`).add({
             name: this.state.name,
             brand: this.state.brand,
+            category: this.state.category,
             tags,
             stock,
             price,
@@ -178,16 +190,21 @@ export default class CreateItem extends React.Component {
                 </Image>
                 <Form>
                     <input type="file" accept="image/*" hidden ref={this.imageRef} onChange={this.onImageChange}/>
-                    <StyledLabeledInput onChange={this.onChange("name")}
-                                        value={this.state.name}>Name</StyledLabeledInput>
-                    <StyledLabeledInput onChange={this.onChange("brand")}
-                                        value={this.state.brand}>Brand</StyledLabeledInput>
-                    <StyledLabeledInput onChange={this.onChange("price")}
-                                        value={this.state.price}>Price</StyledLabeledInput>
-                    <StyledLabeledInput onChange={this.onChange("tags")}
-                                        value={this.state.tags}>Tags</StyledLabeledInput>
-                    <StyledLabeledInput onChange={this.onChange("stock")}
-                                        value={this.state.stock}>Stock</StyledLabeledInput>
+
+                    <LabeledInput label="name" onChange={this.onChange("name")} value={this.state.name}/>
+                    <LabeledInput label="brand" onChange={this.onChange("brand")} value={this.state.brand}/>
+
+                    <Labeled label="Category">
+                        <Select value={this.state.category} onChange={this.onChange("category")}>
+                            <option value={""}/>
+                            {categories.map(c => (<option value={c.name}>{c.display}</option>))}
+                        </Select>
+                    </Labeled>
+
+                    <LabeledInput label="price" onChange={this.onChange("price")} value={this.state.price}/>
+                    <LabeledInput label="tags" onChange={this.onChange("tags")} value={this.state.tags}/>
+                    <LabeledInput label="stock" onChange={this.onChange("stock")} value={this.state.stock}/>
+
                     <Button onClick={this.createItem}>Create item</Button>
                 </Form>
             </StyledCreateItem>
