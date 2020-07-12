@@ -17,6 +17,7 @@ import Detail from "./Detail";
 import Popup from "./basic/Popup";
 import Loader from "./basic/Loader";
 import LabeledInput from "./basic/LabeledInput";
+import PaymentEdit from "./basic/PaymentEdit";
 
 const Form = styled(Card)`
     display:flex;
@@ -51,12 +52,6 @@ const BoldText = styled.p`
     color: #A4BBCD;
     font-size: 24px;
 `;
-
-const CardText = styled.div`
-    
-`;
-
-
 
 const Container = styled.div`
     min-width: 700px;
@@ -129,8 +124,11 @@ class User extends Component {
         this.state = {
             user:{},
             loading:true,
+            payments:{},
+            defaultMethod:null,
         };
     }
+
     async getUserEmail() {
         const emailPromise = new Promise(resolve => {
             const unsubscribe = firebase.auth().onAuthStateChanged(async ({email}) => {
@@ -148,25 +146,62 @@ class User extends Component {
         return {email:email,...doc.data()}
     }
 
-    async setDefaultPayment(method){
-        this.setState({ loading:true });
-        let email = await this.getUserEmail();
-        if(method){
-            await firebase.firestore().collection(`users`).doc(email).update({preferredPaymentMethod:method.id});
-        }else{
-            await firebase.firestore().collection(`users`).doc(email).update({preferredPaymentMethod:null});
-        }
+    async getUserPayments(email) {
+        const query = await await firebase.firestore().collection(`users/${email}/paymentMethods`).get();
 
-        this.setState({paymentMethod:method, isModalOpen:false, loading: false});
-
+        return query.docs.map(doc => ({id: doc.id,...doc.data()}));
     }
 
+    async setDefaultPayment(method){
+        if(method){
+            await firebase.firestore().collection(`users`).doc(this.state.user.email).update({preferredPaymentMethod:method.id});
+        }else{
+            await firebase.firestore().collection(`users`).doc(this.state.user.email).update({preferredPaymentMethod:null});
+        }
+
+
+    }
+    async deletePaymant(method){
+        if(method){
+            await firebase.firestore().collection('users').doc(this.state.user.email).collection('paymentMethods').doc(method.id).delete();
+        }
+    }
+
+    async getDefaultPaymentInList(user,payments){
+        let defaultMethod=null;
+        for (const obj of payments){
+            if(obj.id === user.preferredPaymentMethod){
+                defaultMethod=obj;
+                break;
+            }
+        }
+        return defaultMethod;
+    }
     async componentDidMount() {
         let user = await this.getUser();
+        let payments = await this.getUserPayments(user.email);
+        let defaultM = await this.getDefaultPaymentInList(user,payments);
+
         this.setState({
             user:user,
-            loading:false
+            loading:false,
+            payments:payments,
+            defaultMethod:defaultM,
         })
+    }
+    methodClick = async(method,action)=>{
+        this.setState({loading:true});
+        if(action==="set"){
+            await this.setDefaultPayment(method);
+            this.setState({defaultMethod:method,loading:false});
+        }else if(action==="remove"){
+            await this.deletePaymant(method);
+            let payments = await this.getUserPayments(this.state.user.email);
+            let defaultM = await this.getDefaultPaymentInList(this.state.user,payments);
+            this.setState({defaultMethod:defaultM,payments:payments,loading:false});
+
+        }
+
     }
     render(){
 
@@ -178,11 +213,11 @@ class User extends Component {
                     <Background>
                         <BoldText>Loyality card</BoldText>
                         <LoyaltyCard>
-                            <CardText>
+                            <div>
                                 {this.state.user.name+ " " +this.state.user.surname}
                                 <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyalityCard ? (this.state.user.loyalityCard):(0)} pt</p>
                                 <p style={{textAlign:"right"}}>Geoff</p>
-                            </CardText>
+                            </div>
                         </LoyaltyCard>
                         <BoldText>Personal Information</BoldText>
                         <div style={{display:"flex", flexDirection:"row"}}>
@@ -200,7 +235,12 @@ class User extends Component {
                         <Button style={{marginTop:"20px"}}>Update</Button>
                         <BoldText>Payment Methods</BoldText>
                         <PaymentsContainer>
-
+                            <PaymentEdit method={null} isDefault={null===this.state.defaultMethod} click={this.methodClick}>
+                            </PaymentEdit>
+                            {this.state.payments.map(method =>(
+                                <PaymentEdit method={method} isDefault={this.state.defaultMethod && method.id===this.state.defaultMethod.id} click={this.methodClick}>
+                                </PaymentEdit>))
+                            }
                         </PaymentsContainer>
                         <ButtonContainer>
                             <Button style={{width:"100%",marginRight:"20px"}}>Add card</Button>

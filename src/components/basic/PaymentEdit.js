@@ -1,9 +1,20 @@
 import styled, {css} from "styled-components";
 import React from "react";
 import Icon from "@mdi/react";
-import {mdiCashMultiple, mdiContactlessPayment, mdiCreditCard} from "@mdi/js";
+import {mdiCashMultiple, mdiContactlessPayment, mdiCreditCard, mdiStar,mdiClose} from "@mdi/js";
+import IconButton from "./IconButton";
 
-
+const BoldText = styled.p`
+    font-family: FuturaBold, sans-serif;
+    font-weight: bold;
+    color: #A4BBCD;
+    font-size: 24px;
+      
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+`;
 const Container = styled.div`
     display: flex;
     flex-direction: row;
@@ -11,6 +22,13 @@ const Container = styled.div`
     justify-content: space-between;
 
 `
+const ButtonContainer = styled.div`      
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 130px;
+`;
 function getMethodIcon(method){
     //mdiCreditCard
     if(method === null){
@@ -40,13 +58,21 @@ function getMethodString(method){
 
 }
 
-export default function PaymentEdit({method, isDefault, onClick}){
-
+export default function PaymentEdit({method, isDefault, click}){
     return(
         <Container>
-            <BoldText><Icon path={this.getMethodIcon(this.state.paymentMethod)} size={1.7}/> {this.getMethodString(this.state.paymentMethod)}</BoldText>
+            <BoldText>
+                <Icon path={getMethodIcon(method)} size={1.7}/>{getMethodString(method)}
+            </BoldText>
+            <ButtonContainer>
+                {!isDefault ?(
+                    <IconButton type={"primary"} icon={mdiStar} onClick={()=>click(method,"set")}/>
+                ):(<div></div>)}
+                {method &&(
+                    <IconButton style={{marginTop: "30px"}}  type={"danger"} icon={mdiClose} onClick={()=>click(method,"remove")}/>
+                )}
 
-
+            </ButtonContainer>
         </Container>
     )
 }
