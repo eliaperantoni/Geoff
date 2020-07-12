@@ -106,7 +106,7 @@ export default class App extends React.Component {
                             <Checkout/>
                         </Route>
                         <User path="/user">
-                            <Checkout/>
+                            <User/>
                         </User>
                         <Route>
                             <C404/>

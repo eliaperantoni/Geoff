@@ -118,7 +118,7 @@ const ButtonContainer = styled.div`
     flex-grow: 1;
     justify-content: space-between;
 `
-const Label = styled(LabeledInput)`
+const StyledLabeledInput = styled(LabeledInput)`
     margin-top:20px;
 `;
 
@@ -187,14 +187,14 @@ class User extends Component {
                         <BoldText>Personal Information</BoldText>
                         <div style={{display:"flex", flexDirection:"row"}}>
                             <UserInformation style={{marginTop:"-20px"}}>
-                                <Label children={"NAME"} value={this.state.user.name}/>
-                                <Label children={"CITY"} value={this.state.user.city}/>
-                                <Label children={"CAP"}  value={this.state.user.cap}/>
+                                <StyledLabeledInput label={"NAME"} value={this.state.user.name}/>
+                                <StyledLabeledInput label={"CITY"} value={this.state.user.city}/>
+                                <StyledLabeledInput label={"CAP"}  value={this.state.user.cap}/>
                             </UserInformation>
                             <UserInformation style={{marginTop:"-20px",marginLeft:"20px"}}>
-                                <Label children={"SURNAME"} value={this.state.user.surname}/>
-                                <Label children={"ADDRESS"} value={this.state.user.address}/>
-                                <Label children={"PHONE NUMBER"} value={this.state.user.phone}/>
+                                <StyledLabeledInput label={"SURNAME"} value={this.state.user.surname}/>
+                                <StyledLabeledInput label={"ADDRESS"} value={this.state.user.address}/>
+                                <StyledLabeledInput label={"PHONE NUMBER"} value={this.state.user.phone}/>
                             </UserInformation>
                         </div>
                         <Button style={{marginTop:"20px"}}>Update</Button>
