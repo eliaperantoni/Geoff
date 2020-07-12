@@ -13,6 +13,7 @@ import Catalogue from "./components/Catalogue";
 import Thanks from "./components/Thanks"
 import PuffLoader from "react-spinners/PuffLoader";
 import Checkout from "./components/Checkout";
+import User from "./components/User";
 
 const StyledApp = styled.div`
     display: flex;
@@ -104,6 +105,9 @@ export default class App extends React.Component {
                         <Route path="/checkout">
                             <Checkout/>
                         </Route>
+                        <User path="/user">
+                            <Checkout/>
+                        </User>
                         <Route>
                             <C404/>
                         </Route>
