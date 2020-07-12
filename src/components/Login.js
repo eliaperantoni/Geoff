@@ -5,7 +5,8 @@ import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Input from "components/basic/Input";
 import authenticationSVG from "img/authentication.svg";
-import { withRouter } from "react-router-dom"
+import { withRouter } from "react-router-dom";
+import {setLoading} from "../App";
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -46,21 +47,23 @@ const Image = styled.img`
     margin-top: -140px;
 `;
 
-const Par = styled.p`
-    margin-top:20px;
-    font-family: FuturaLight, sans-serif;
-    font-size: 22px;
-`;
-
 function Login(props) {
 	const [email,setEmail] = useState('')
     const [password, setPassword] = useState('');
     async  function login() {
+        setLoading(true);
         try{
             await firebase.auth().signInWithEmailAndPassword(email,password);
-            props.history.push("/checkout");
+            const user = await firebase.firestore().doc(`/users/${email}`).get();
+            if(user.data().isAdmin) {
+                props.history.push("/admin/catalogue");
+            } else {
+                props.history.push("/");
+            }
         }catch(error){
             alert(error.message)
+        } finally {
+            setLoading(false);
         }
     }
     function register(){
@@ -76,7 +79,6 @@ function Login(props) {
                     <Button type="submit" onClick={login}>Login</Button>
                     <Button onClick={register}>Don't have an account?</Button>
                 </Actions>
-                <Par>Forgot password ?</Par>
             </Form>
         </Container>
     );

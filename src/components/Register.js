@@ -98,7 +98,8 @@ function Register(props) {
                         phone:phone,
                         preferredPaymentMethod: null,
                         loyaltyCard: null,
-                        basket:[]
+                        basket:[],
+                        isAdmin: false,
                 });
                 await props.history.push("/confirm");
             }catch(error){
