@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 
 const Button = styled.button`
     background: linear-gradient(-90deg, #00e74e, #6BE595);
@@ -13,12 +13,18 @@ const Button = styled.button`
     height: 48px;
     padding: 0 64px;
     cursor: pointer;
+    
     &:disabled {
       background: #dee5ea;
       color:white;
       box-shadow: none;
       text-shadow: none;
     }
+    
+    ${props => props.disabled && css`
+        filter: saturate(10%);
+        cursor: default;
+    `}
 `;
 
 export default Button;
