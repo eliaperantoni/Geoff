@@ -7,6 +7,7 @@ import Input from "components/basic/Input";
 import authenticationSVG from "img/authentication.svg";
 import { withRouter } from "react-router-dom";
 import {setLoading} from "../App";
+import Auth from "controller/Auth";
 
 const Container = styled(Card)`
     min-width: 400px;
@@ -53,9 +54,9 @@ function Login(props) {
     async  function login() {
         setLoading(true);
         try{
-            await firebase.auth().signInWithEmailAndPassword(email,password);
-            const user = await firebase.firestore().doc(`/users/${email}`).get();
-            if(user.data().isAdmin) {
+            const auth = Auth.getInstance();
+            await auth.login(email, password);
+            if(auth.user.isAdmin) {
                 props.history.push("/admin/catalogue");
             } else {
                 props.history.push("/");

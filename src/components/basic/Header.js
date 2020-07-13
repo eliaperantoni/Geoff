@@ -13,6 +13,7 @@ import {
     mdiTextBoxMultiple
 } from '@mdi/js';
 import categories from "categories";
+import Auth from "controller/Auth";
 
 const StyledHeader = styled.div`
    display: flex;
@@ -97,7 +98,8 @@ class Header extends Component{
     }
     logout =  async()=> {
         try {
-            await firebase.auth().signOut();
+            const auth = Auth.getInstance();
+            await auth.logout();
             this.props.history.push('/login');
         } catch (error) {
             alert(error.message);
