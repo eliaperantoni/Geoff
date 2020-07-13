@@ -1,25 +1,46 @@
 import styled, {css} from "styled-components";
 import React from "react";
 import Icon from "@mdi/react";
+import {darken} from "polished";
 
-const StyledIconButton = styled.div`
-    ${props => (!props.type || props.type === "primary") && css`
-        background: linear-gradient(-90deg, #00e74e, #6BE595);
-        box-shadow: 0 2px 8px rgba(90,198,127,0.81);
-        text-shadow: 0 2px 4px rgba(64,187,108,0.56);
-        path {
-            fill: #DFFFEA !important;
-        }
-    `}
+const StyledIconButton = styled.div`    
+    ${props => {
+        const colors = {
+            primary: {
+                gradient: ["#00e74e", "#6BE595"],
+                text: "#e0f8e7",
+                boxShadow: "rgba(90,198,127,0.81)",
+                textShadow: "rgba(64,187,108,0.56)",
+            },
+            danger: {
+                gradient: ["#D80142", "#DD4673"],
+                text: "#FFD2E0",
+                boxShadow: "#AD1341",
+                textShadow: "#FFD2E0",
+            },
+        };
     
-    ${props => props.type === "danger" && css`
-        background: linear-gradient(-90deg, #D80142, #DD4673);
-        box-shadow: 0 2px 8px #AD1341;
-        text-shadow: 0 2px 4px #FFD2E0;
-        path {
-            fill: #FFD2E0 !important;
-        }
-    `}
+        const theme = colors[props.type || "primary"];
+        const darkenAmount = 0.1;
+        
+        return css`
+            background: linear-gradient(-90deg, ${theme.gradient[0]}, ${theme.gradient[1]});
+            box-shadow: 0 2px 8px ${theme.boxShadow};
+            text-shadow: 0 2px 4px ${theme.textShadow};
+            path {
+                fill: ${theme.text} !important;
+            }
+
+            &:hover {
+                background: linear-gradient(-90deg, ${darken(darkenAmount, theme.gradient[0])}, ${darken(darkenAmount, theme.gradient[1])});
+                box-shadow: 0 2px 8px ${darken(darkenAmount, theme.boxShadow)};
+                text-shadow: 0 2px 4px ${darken(darkenAmount, theme.textShadow)};
+                path {
+                    fill: ${darken(darkenAmount, theme.text)} !important;
+                }
+            }
+        `;
+    }}
     
     border-radius: 8px;
     
