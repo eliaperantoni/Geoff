@@ -68,9 +68,10 @@ class Login extends React.Component {
     }
 
     login = async () => {
-        setLoading(true);
         const {email, password} = this.state;
         try {
+            setLoading(true);
+
             const auth = Auth.getInstance();
             await auth.login(email.str, password.str);
             if (auth.user.isAdmin) {

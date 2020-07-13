@@ -1,114 +1,130 @@
-import React, {useState} from "react";
+import React from "react";
 import styled from "styled-components";
 import * as firebase from "firebase/app";
 
 import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Input from "components/basic/Input";
-import { withRouter } from "react-router-dom"
+import {withRouter} from "react-router-dom"
+import Validation from "../controller/Validation";
+import {setLoading} from "App";
 
-const Container = styled(Card)`
-    min-width: 400px;
-    min-height: 500px; 
-    flex: 1;
+const StyledRegister = styled(Card)`
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background:#f2f7fb;
-    overflow: hidden;
-`;
-
-const Form = styled(Card)`
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    text-align:center;
-    min-width: 400px;
-    min-height: 550px; 
-    background: #FAFDFF;
-    border-radius: 24px;
-    box-shadow: 0 2px 64px rgba(232,238,243,0.5);
-    padding: 48px 36px;
-`;
-
-const Upper = styled.div`
-  display: flex;
-  min-width: 350px;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-  > * {
-    margin-bottom: 10px;
-    &:last-child {
-        margin-bottom: 0;
+    margin: auto;
+    width: 500px;
+    
+    > * {
+        margin-bottom: 18px;
+        &:last-child {
+            margin-bottom: 0;
+        }
     }
-  }
 `;
-const Par = styled.p`
-    margin-top:20px;
-    font-family: FuturaBold, sans-serif;
-    font-size: 22px;
-`;
-function Register(props) {
-	const [email,setEmail]         =useState('nico.fretti@gmail.com');
-    const [password,setPassword]   =useState('123123');
-    const [cpassword,setCPassword] =useState('123123');
-    const [name,setName]           =useState('123123');
-    const [surname,setSurname]     =useState('123123');
-    const [city,setCity]           =useState('123123');
-    const [address,setAddress]     =useState('123123');
-    const [cap,setCap]             =useState('123123');
-    const [phone,setPhone]         =useState('+39123123123');
-    return (
-        <Container>
-            <Form>
-                <Par>Create a New Account</Par>
-                <Upper>
-                    <Input  placeholder="Email" onChange={e => setEmail(e.target.value)}/>
-                    <Input  type="password" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
-                    <Input  type="password" placeholder="Confirm Password" onChange={e => setCPassword(e.target.value)}/>
-                    <Input  placeholder="Name" onChange={e => setName(e.target.value)}/>
-                    <Input  placeholder="Surname" onChange={e => setSurname(e.target.value)}/>
-                    <Input  placeholder="City" onChange={e => setCity(e.target.value)}/>
-                    <Input  placeholder="Address" onChange={e => setAddress(e.target.value)}/>
-                    <Input  type="number" placeholder="CAP" onChange={e => setCap(e.target.value)}/>
-                    <Input  type="tel" pattern="[+]{1}[0-9]{11,14}" placeholder="Phone +398888888888" onChange={e => setPhone(e.target.value)}/>
-                    <Button onClick={register}>Register</Button>
-                </Upper>
-            </Form>
-        </Container>
-    );
 
-    async function register(){
-        if(password === cpassword){
-            try{
+class Register extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: {str: "", valid: false, touched: false},
+            password: {str: "", valid: false, touched: false},
+            confirmPassword: {str: "", valid: false, touched: false},
+            name: {str: "", valid: false, touched: false},
+            surname: {str: "", valid: false, touched: false},
+            city: {str: "", valid: false, touched: false},
+            address: {str: "", valid: false, touched: false},
+            cap: {str: "", valid: false, touched: false},
+            phone: {str: "", valid: false, touched: false},
+        };
+    }
 
-                await firebase.auth().createUserWithEmailAndPassword(email,password);
-                await firebase.auth().currentUser.sendEmailVerification({
-                    url: 'http://localhost:3000/thanks'
-                });
-                await firebase.firestore().collection('users').doc(email).set({
-                        email: email,
-                        name:name,
-                        surname:surname,
-                        city: city,
-                        address: address,
-                        cap: cap,
-                        phone:phone,
-                        preferredPaymentMethod: null,
-                        loyaltyCard: null,
-                        basket:[],
-                        isAdmin: false,
-                });
-                await props.history.push("/confirm");
-            }catch(error){
-                alert(error.message);
-            }
-        }else{
-            alert("password don't match");
+    onChange = field => e => {
+        const str = e.target.value;
+
+        const validation = {
+            email: Validation.email,
+            password: Validation.password,
+            confirmPassword: Validation.all(Validation.password, Validation.exactly(() => this.state.password.str)),
+            name: Validation.nonEmptyString,
+            surname: Validation.nonEmptyString,
+            city: Validation.nonEmptyString,
+            address: Validation.nonEmptyString,
+            cap: Validation.cap,
+            phone: Validation.phone,
         }
 
+        this.setState(state => {
+            state[field] = {
+                str,
+                touched: true,
+                valid: validation[field](str),
+            };
+
+            return state;
+        });
+    }
+
+    onBlur = field => () => {
+        this.setState(state => {
+            state[field].touched = true;
+
+            return state;
+        });
+    }
+
+    register = async () => {
+        const [
+            email, password, name, surname, city, address, cap, phone
+        ] = ["email", "password", "name", "surname", "city", "address", "cap", "phone"].map(f => this.state[f].str);
+
+        try {
+            setLoading(true);
+
+            await firebase.auth().createUserWithEmailAndPassword(email, password);
+            await firebase.auth().currentUser.sendEmailVerification();
+            await firebase.firestore().doc(`/users/${email}`).set({
+                email: email,
+                name: name,
+                surname: surname,
+                city: city,
+                address: address,
+                cap: cap,
+                phone: phone,
+                preferredPaymentMethod: null,
+                loyaltyCard: null,
+                basket: [],
+                isAdmin: false,
+            });
+            this.props.history.push("/confirm");
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    render() {
+        const validatedField = Validation.validatedField.bind(this);
+        const canRegister = ["email", "password", "confirmPassword", "name", "surname", "city", "address", "cap", "phone"]
+            .map(f => this.state[f].valid).reduce((t, acc) => t && acc);
+
+        return (
+            <StyledRegister>
+                <Input placeholder="Email" {...validatedField("email")}/>
+                <Input placeholder="Password" type="password" {...validatedField.call(this, "password")}/>
+                <Input placeholder="Confirm Password"
+                       type="password" {...validatedField.bind(this)("confirmPassword")}/>
+                <Input placeholder="Name" {...validatedField.call(this, "name")}/>
+                <Input placeholder="Surname" {...validatedField.call(this, "surname")}/>
+                <Input placeholder="City" {...validatedField.call(this, "city")}/>
+                <Input placeholder="Address" {...validatedField.call(this, "address")}/>
+                <Input placeholder="CAP" {...validatedField.call(this, "cap")}/>
+                <Input placeholder="Phone" {...validatedField.call(this, "phone")}/>
+                <Button disabled={!canRegister} onClick={this.register}>Register</Button>
+            </StyledRegister>
+        );
     }
 }
+
 export default withRouter(Register)
