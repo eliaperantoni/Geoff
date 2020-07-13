@@ -1,52 +1,34 @@
 import React from "react";
 import styled from "styled-components";
-import firebase from "firebase.js";
 import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import Input from "components/basic/Input";
 import authenticationSVG from "img/authentication.svg";
 import {withRouter} from "react-router-dom";
-import {setLoading} from "../App";
+import {setLoading} from "App";
 import Auth from "controller/Auth";
 import Validation from "controller/Validation";
 
-const Container = styled(Card)`
-    min-width: 400px;
-    min-height: 500px; 
-    flex: 1;
+const StyledLogin = styled(Card)`
+    margin: auto;
+
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background:#f2f7fb;
-    overflow: hidden;
-`;
-
-const Form = styled(Card)`
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    text-align:center;
-    min-width: 400px;
-    min-height: 550px; 
-    background: #FAFDFF;
-    margin-top:50px;
-    border-radius: 24px;
-    box-shadow: 0 2px 64px rgba(232,238,243,0.5);
-    padding: 48px 36px;
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
+    align-items: stretch;
+    
+    > * {
+        margin-bottom: 18px;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
 `;
 
 const Image = styled.img`
-    max-width: 340px;
-    max-height: 340px;
-    margin-top: -140px;
+    width: 400px;
+    height: 400px;
+    align-self: center;
+    margin-top: -200px;
 `;
 
 class Login extends React.Component {
@@ -111,24 +93,20 @@ class Login extends React.Component {
         const canLogin = this.state.email.valid && this.state.password.valid;
 
         return (
-            <Container>
-                <Form>
-                    <Image src={authenticationSVG}/>
-                    <Actions>
-                        <Input placeholder="Email" value={this.state.email.str}
-                               onChange={this.onChange("email")}
-                               onBlur={this.onBlur("email")}
-                               invalid={!this.state.email.valid && this.state.email.touched}/>
-                        <Input type="password" placeholder="Password"
-                               value={this.state.password.str}
-                               onChange={this.onChange("password")}
-                               onBlur={this.onBlur("password")}
-                               invalid={!this.state.password.valid && this.state.password.touched}/>
-                        <Button disabled={!canLogin} onClick={this.login}>Login</Button>
-                        <Button onClick={this.goToRegister} type="secondary">Don't have an account?</Button>
-                    </Actions>
-                </Form>
-            </Container>
+            <StyledLogin>
+                <Image src={authenticationSVG}/>
+                <Input placeholder="Email" value={this.state.email.str}
+                       onChange={this.onChange("email")}
+                       onBlur={this.onBlur("email")}
+                       invalid={!this.state.email.valid && this.state.email.touched}/>
+                <Input type="password" placeholder="Password"
+                       value={this.state.password.str}
+                       onChange={this.onChange("password")}
+                       onBlur={this.onBlur("password")}
+                       invalid={!this.state.password.valid && this.state.password.touched}/>
+                <Button disabled={!canLogin} onClick={this.login}>Login</Button>
+                <Button onClick={this.goToRegister} type="secondary">Don't have an account?</Button>
+            </StyledLogin>
         );
     }
 }
