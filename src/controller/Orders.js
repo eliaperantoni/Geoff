@@ -3,7 +3,9 @@ import firebase from "firebase";
 export default class Orders {
     // Returns an array containing all orders of the user with the provided email
     static async getUserOrders(email) {
-        const query = await firebase.firestore().collection(`/users/${email}/orders`).get();
+        const query = await firebase.firestore()
+            .collection(`/users/${email}/orders`)
+            .orderBy("placedAt", "desc").get();
         const orders = query.docs.map(doc => ({number: doc.id, ...doc.data()}));
 
         const promises = [];
