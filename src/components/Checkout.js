@@ -173,13 +173,13 @@ class Checkout extends Component {
     }
 
     async setDefaultPayment(method){
-        this.setState({ loading:true });
-        let email = await this.getUserEmail();
+        //this.setState({ loading:true });
+        /*let email = await this.getUserEmail();
         if(method){
             await firebase.firestore().collection(`users`).doc(email).update({preferredPaymentMethod:method.id});
         }else{
             await firebase.firestore().collection(`users`).doc(email).update({preferredPaymentMethod:null});
-        }
+        }*/
 
         this.setState({paymentMethod:method, isModalOpen:false, loading: false});
 
@@ -210,7 +210,7 @@ class Checkout extends Component {
     closeModal = () => {
         this.setState({isModalOpen: false});
     }
-    closeModal = () => {
+    closeModalBasket = () => {
         this.setState({modalBasket: false});
     }
     async buy(){
@@ -274,7 +274,6 @@ class Checkout extends Component {
 
     }
     render(){
-
         return (
             <Wrapper hideInput={true}>
                 {this.state.loading ?(<Loader loading={this.state.loading}/>):(
@@ -317,11 +316,4 @@ class Checkout extends Component {
         );
     }
 }
-export default withRouter(Checkout)
-/*
-*                                     {this.state.paymentMethod &&(
-                                        <PaymentOption onClick={()=>this.setDefaultPayment(null)} >
-                                            <Icon path={this.getMethodIcon(null)} size={1.7}/>
-                                            <BoldText>{this.getMethodString(null)}</BoldText>
-                                        </PaymentOption>
-                                    )}*/
+export default withRouter(Checkout);
