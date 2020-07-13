@@ -14,10 +14,9 @@ import Thanks from "./components/Thanks"
 import PuffLoader from "react-spinners/PuffLoader";
 import Checkout from "./components/Checkout";
 import User from "./components/User";
-
 import {GuardProvider, GuardedRoute} from 'react-router-guards';
-
 import Auth from "controller/Auth";
+import "font.css";
 
 const StyledApp = styled.div`
     display: flex;

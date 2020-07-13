@@ -1,0 +1,13 @@
+@font-face {
+    font-family: EuclidCircular;
+    src: url("./fonts/euclid_circular.ttf");
+}
+
+@font-face {
+    font-family: FuturaLight;
+    src: url("./fonts/futura_light.ttf");
+}
+@font-face {
+    font-family: FuturaBold;
+    src: url("./fonts/futura_bold.ttf");
+}
