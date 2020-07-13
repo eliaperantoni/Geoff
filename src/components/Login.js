@@ -51,32 +51,12 @@ class Login extends React.Component {
         window.removeEventListener("keydown", this.enterListener);
     }
 
-    onChange = field => e => {
-        const str = e.target.value;
+    onChange = Validation.onChange({
+        email: Validation.email,
+        password: Validation.password,
+    }).bind(this);
 
-        const validation = {
-            email: Validation.email,
-            password: Validation.password,
-        }
-
-        this.setState(state => {
-            state[field] = {
-                str,
-                touched: true,
-                valid: validation[field](str),
-            };
-
-            return state;
-        });
-    }
-
-    onBlur = field => () => {
-        this.setState(state => {
-            state[field].touched = true;
-
-            return state;
-        });
-    }
+    onBlur = Validation.onBlur.bind(this);
 
     login = async () => {
         const {email, password} = this.state;
@@ -101,21 +81,16 @@ class Login extends React.Component {
         this.props.history.push("/register")
     }
 
-    canLogin = () => this.state.email.valid && this.state.password.valid;
+    canLogin = () => Validation.allValid(this.state, ["email", "password"]);
 
     render() {
+        const validatedField = Validation.validatedField.bind(this);
+
         return (
             <StyledLogin>
                 <Image src={authenticationSVG}/>
-                <Input placeholder="Email" value={this.state.email.str}
-                       onChange={this.onChange("email")}
-                       onBlur={this.onBlur("email")}
-                       invalid={!this.state.email.valid && this.state.email.touched}/>
-                <Input type="password" placeholder="Password"
-                       value={this.state.password.str}
-                       onChange={this.onChange("password")}
-                       onBlur={this.onBlur("password")}
-                       invalid={!this.state.password.valid && this.state.password.touched}/>
+                <Input placeholder="Email" {...validatedField("email")}/>
+                <Input placeholder="Password" type="password" {...validatedField("password")}/>
                 <Button disabled={!this.canLogin()} onClick={this.login}>Login</Button>
                 <Button onClick={this.goToRegister} type="secondary">Don't have an account?</Button>
             </StyledLogin>

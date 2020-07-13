@@ -22,4 +22,33 @@ export default class Validation {
             invalid: !this.state[field].valid && this.state[field].touched,
         };
     };
+
+    static onChange = validators => function (field) {
+        return function(e) {
+            if (validators.hasOwnProperty(field)) {
+                this.setState({
+                    [field]: {
+                        str: e.target.value,
+                        valid: validators[field](e.target.value),
+                        touched: true,
+                    },
+                });
+            } else {
+                this.setState({
+                    [field]: e.target.value,
+                });
+            }
+        }.bind(this);
+    }
+
+    static onBlur = function (field) {
+        return function() {
+            this.setState(state => {
+                state[field].touched = true;
+                return state;
+            });
+        }.bind(this);
+    }
+
+    static allValid = (state, fields) => fields.map(f => state[f].valid).reduce((t, acc) => t && acc)
 }

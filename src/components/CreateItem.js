@@ -90,37 +90,15 @@ export default class CreateItem extends React.Component {
 
     imageRef = React.createRef();
 
-    onChange = field => e => {
-        const validation = {
-            name: Validation.nonEmptyString,
-            brand: Validation.nonEmptyString,
-            stock: Validation.int({min: 1}),
-            price: Validation.price,
-            category: Validation.nonEmptyString,
-        }
+    onChange = Validation.onChange({
+        name: Validation.nonEmptyString,
+        brand: Validation.nonEmptyString,
+        stock: Validation.int({min: 1}),
+        price: Validation.price,
+        category: Validation.nonEmptyString,
+    }).bind(this);
 
-        if (validation.hasOwnProperty(field)) {
-            this.setState({
-                [field]: {
-                    str: e.target.value,
-                    valid: validation[field](e.target.value),
-                    touched: true,
-                },
-            });
-        } else {
-            this.setState({
-                [field]: e.target.value,
-            });
-        }
-    }
-
-    onBlur = field => () => {
-        console.log("BLUR");
-        this.setState(state => {
-            state[field].touched = true;
-            return state;
-        });
-    }
+    onBlur = Validation.onBlur.bind(this);
 
     pickImage = () => {
         this.imageRef.current.click();
@@ -166,13 +144,8 @@ export default class CreateItem extends React.Component {
     }
 
     render() {
-        const canCreateItem =
-            this.state.category.valid
-            && this.state.name.valid
-            && this.state.brand.valid
-            && this.state.price.valid
-            && this.state.stock.valid
-            && this.state.image.file != null;
+        const validatedField = Validation.validatedField.bind(this);
+        const canCreateItem = Validation.allValid(this.state, ["category", "name", "brand", "price", "stock"]) && this.state.image.file != null;
 
         return (
             <StyledCreateItem>
@@ -182,29 +155,19 @@ export default class CreateItem extends React.Component {
                 <Form>
                     <input type="file" accept="image/*" hidden ref={this.imageRef} onChange={this.onImageChange}/>
 
-                    <LabeledInput label="name" onChange={this.onChange("name")} value={this.state.name.str}
-                                  onBlur={this.onBlur("name")}
-                                  invalid={!this.state.name.valid && this.state.name.touched}/>
-                    <LabeledInput label="brand" onChange={this.onChange("brand")} value={this.state.brand.str}
-                                  onBlur={this.onBlur("brand")}
-                                  invalid={!this.state.brand.valid && this.state.brand.touched}/>
+                    <LabeledInput label="name" {...validatedField("name")}/>
+                    <LabeledInput label="brand" {...validatedField("brand")}/>
 
                     <Labeled label="Category" >
-                        <Select value={this.state.category.str} onChange={this.onChange("category")}
-                                onBlur={this.onBlur("category")}
-                                invalid={!this.state.category.valid && this.state.category.touched}>
+                        <Select {...validatedField("category")}>
                             <option value={""}/>
                             {categories.map(c => (<option value={c.name} key={c.name}>{c.display}</option>))}
                         </Select>
                     </Labeled>
 
                     <LabeledInput label="tags" onChange={this.onChange("tags")} value={this.state.tags}/>
-                    <LabeledInput label="price" onChange={this.onChange("price")} value={this.state.price.str}
-                                  onBlur={this.onBlur("price")}
-                                  invalid={!this.state.price.valid && this.state.price.touched}/>
-                    <LabeledInput label="stock" onChange={this.onChange("stock")} value={this.state.stock.str}
-                                  onBlur={this.onBlur("stock")}
-                                  invalid={!this.state.stock.valid && this.state.stock.touched}/>
+                    <LabeledInput label="price" {...validatedField("price")}/>
+                    <LabeledInput label="stock" {...validatedField("stock")}/>
 
                     <Button disabled={!canCreateItem} onClick={this.createItem}>Create item</Button>
                 </Form>

@@ -39,39 +39,19 @@ class Register extends React.Component {
         };
     }
 
-    onChange = field => e => {
-        const str = e.target.value;
+    onChange = Validation.onChange({
+        email: Validation.email,
+        password: Validation.password,
+        confirmPassword: Validation.all(Validation.password, Validation.exactly(() => this.state.password.str)),
+        name: Validation.nonEmptyString,
+        surname: Validation.nonEmptyString,
+        city: Validation.nonEmptyString,
+        address: Validation.nonEmptyString,
+        cap: Validation.cap,
+        phone: Validation.phone,
+    }).bind(this);
 
-        const validation = {
-            email: Validation.email,
-            password: Validation.password,
-            confirmPassword: Validation.all(Validation.password, Validation.exactly(() => this.state.password.str)),
-            name: Validation.nonEmptyString,
-            surname: Validation.nonEmptyString,
-            city: Validation.nonEmptyString,
-            address: Validation.nonEmptyString,
-            cap: Validation.cap,
-            phone: Validation.phone,
-        }
-
-        this.setState(state => {
-            state[field] = {
-                str,
-                touched: true,
-                valid: validation[field](str),
-            };
-
-            return state;
-        });
-    }
-
-    onBlur = field => () => {
-        this.setState(state => {
-            state[field].touched = true;
-
-            return state;
-        });
-    }
+    onBlur = Validation.onBlur.bind(this);
 
     register = async () => {
         const [
@@ -106,8 +86,7 @@ class Register extends React.Component {
 
     render() {
         const validatedField = Validation.validatedField.bind(this);
-        const canRegister = ["email", "password", "confirmPassword", "name", "surname", "city", "address", "cap", "phone"]
-            .map(f => this.state[f].valid).reduce((t, acc) => t && acc);
+        const canRegister = Validation.allValid(this.state, ["email", "password", "confirmPassword", "name", "surname", "city", "address", "cap", "phone"]);
 
         return (
             <StyledRegister>
