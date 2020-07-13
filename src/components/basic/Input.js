@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 
 const Input = styled.input`
     outline: none;
@@ -21,6 +21,11 @@ const Input = styled.input`
           -webkit-appearance: none;
           margin: 0;
     }
+    
+    ${props => props.invalid && css`
+        background: #DB3063;
+        color: white;
+    `}
 `;
 
 export default Input;

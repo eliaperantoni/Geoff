@@ -12,6 +12,7 @@ import Select from "components/basic/Select";
 import Labeled, {Label} from "components/basic/Labeled";
 import {mdiPencil} from "@mdi/js";
 import {setLoading} from "App";
+import Validation from "controller/Validation";
 
 const StyledCreateItem = styled(Card)`
     display: flex;
@@ -74,12 +75,12 @@ export default class CreateItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
-            brand: "",
-            category: "",
-            price: "",
+            name: {str: "", valid: false, touched: false},
+            brand: {str: "", valid: false, touched: false},
+            price: {str: "", valid: false, touched: false},
+            stock: {str: "", valid: false, touched: false},
+            category: {str: "", valid: false, touched: false},
             tags: "",
-            stock: "",
             image: {
                 url: null,
                 file: null,
@@ -90,18 +91,35 @@ export default class CreateItem extends React.Component {
     imageRef = React.createRef();
 
     onChange = field => e => {
-        if (field === "price") {
-            // Only allow one dot
-            if (this.state.price.includes(".") && e.nativeEvent.data === '.') return;
+        const validation = {
+            name: Validation.nonEmptyString,
+            brand: Validation.nonEmptyString,
+            stock: Validation.int({min: 1}),
+            price: Validation.price,
+            category: Validation.nonEmptyString,
+        }
 
-            this.setState({price: e.target.value.replace(/[^\d.]/, '')});
-        } else if (field === "stock") {
-            this.setState({stock: e.target.value.replace(/\D/, '')});
+        if (validation.hasOwnProperty(field)) {
+            this.setState({
+                [field]: {
+                    str: e.target.value,
+                    valid: validation[field](e.target.value),
+                    touched: true,
+                },
+            });
         } else {
             this.setState({
                 [field]: e.target.value,
             });
         }
+    }
+
+    onBlur = field => () => {
+        console.log("BLUR");
+        this.setState(state => {
+            state[field].touched = true;
+            return state;
+        });
     }
 
     pickImage = () => {
@@ -124,54 +142,19 @@ export default class CreateItem extends React.Component {
     }
 
     createItem = async () => {
-        if(this.state.name === "") {
-            alert("Must provide a name");
-            return;
-        }
-
-        if(this.state.brand === "") {
-            alert("Must provide a brand");
-            return;
-        }
-
-        if(this.state.category === "") {
-            alert("Must provide a category");
-            return;
-        }
-
-        if(this.state.image.file == null) {
-            alert("Must provide an image");
-            return;
-        }
-
-        let tags = this.state.tags.split(",");
-        tags = tags.filter(t => t !== "");
-
-        const stock = parseInt(this.state.stock);
-        if(isNaN(stock)) {
-            alert("Invalid stock");
-            return;
-        }
-
-        const price = Math.floor(parseFloat(this.state.price) * 100);
-        if(isNaN(price)) {
-            alert("Invalid price");
-            return;
-        }
-
         setLoading(true);
 
         const itemRef = await firebase.firestore().collection(`/items`).add({
-            name: this.state.name,
-            brand: this.state.brand,
-            category: this.state.category,
-            tags,
-            stock,
-            price,
+            name: this.state.name.str,
+            brand: this.state.brand.str,
+            category: this.state.category.str,
+            tags: this.state.tags.split(",").filter(t => t !== ""),
+            stock: parseInt(this.state.stock.str),
+            price: Math.floor(parseFloat(this.state.price.str) * 100),
             deleted: false,
         });
 
-        const imageRef = firebase.storage().ref( `/items/${itemRef.id}`);
+        const imageRef = firebase.storage().ref(`/items/${itemRef.id}`);
         await imageRef.put(this.state.image.file);
         await itemRef.update({
             image: await imageRef.getDownloadURL(),
@@ -179,10 +162,18 @@ export default class CreateItem extends React.Component {
 
         setLoading(false);
 
-        if(this.props.onCreated) this.props.onCreated();
+        if (this.props.onCreated) this.props.onCreated();
     }
 
     render() {
+        const canCreateItem =
+            this.state.category.valid
+            && this.state.name.valid
+            && this.state.brand.valid
+            && this.state.price.valid
+            && this.state.stock.valid
+            && this.state.image.file != null;
+
         return (
             <StyledCreateItem>
                 <Image image={this.state.image.url}>
@@ -191,21 +182,31 @@ export default class CreateItem extends React.Component {
                 <Form>
                     <input type="file" accept="image/*" hidden ref={this.imageRef} onChange={this.onImageChange}/>
 
-                    <LabeledInput label="name" onChange={this.onChange("name")} value={this.state.name}/>
-                    <LabeledInput label="brand" onChange={this.onChange("brand")} value={this.state.brand}/>
+                    <LabeledInput label="name" onChange={this.onChange("name")} value={this.state.name.str}
+                                  onBlur={this.onBlur("name")}
+                                  invalid={!this.state.name.valid && this.state.name.touched}/>
+                    <LabeledInput label="brand" onChange={this.onChange("brand")} value={this.state.brand.str}
+                                  onBlur={this.onBlur("brand")}
+                                  invalid={!this.state.brand.valid && this.state.brand.touched}/>
 
-                    <Labeled label="Category">
-                        <Select value={this.state.category} onChange={this.onChange("category")}>
+                    <Labeled label="Category" >
+                        <Select value={this.state.category.str} onChange={this.onChange("category")}
+                                onBlur={this.onBlur("category")}
+                                invalid={!this.state.category.valid && this.state.category.touched}>
                             <option value={""}/>
-                            {categories.map(c => (<option value={c.name}>{c.display}</option>))}
+                            {categories.map(c => (<option value={c.name} key={c.name}>{c.display}</option>))}
                         </Select>
                     </Labeled>
 
-                    <LabeledInput label="price" onChange={this.onChange("price")} value={this.state.price}/>
                     <LabeledInput label="tags" onChange={this.onChange("tags")} value={this.state.tags}/>
-                    <LabeledInput label="stock" onChange={this.onChange("stock")} value={this.state.stock}/>
+                    <LabeledInput label="price" onChange={this.onChange("price")} value={this.state.price.str}
+                                  onBlur={this.onBlur("price")}
+                                  invalid={!this.state.price.valid && this.state.price.touched}/>
+                    <LabeledInput label="stock" onChange={this.onChange("stock")} value={this.state.stock.str}
+                                  onBlur={this.onBlur("stock")}
+                                  invalid={!this.state.stock.valid && this.state.stock.touched}/>
 
-                    <Button onClick={this.createItem}>Create item</Button>
+                    <Button disabled={!canCreateItem} onClick={this.createItem}>Create item</Button>
                 </Form>
             </StyledCreateItem>
         );

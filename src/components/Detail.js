@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import Card from 'components/basic/Card.js';
 import Price from 'components/basic/Price.js';
 import Tag from 'components/basic/Tag.js';
 import IconButton from "components/basic/IconButton";
 import Input from "components/basic/Input";
+import Validation from "controller/Validation";
 
 import {mdiCart} from "@mdi/js";
 
@@ -83,56 +84,48 @@ const StyledAddToCart = styled.div`
     align-items: center;
 `;
 
-const QuantityInput = styled(Input).attrs(props => ({
-    type: "number",
-    min: 1,
-}))`
+const QuantityInput = styled(Input)`
     width: 128px;
     margin-right: -24px;
 `;
 
+function AddToCart({onAddToCart}) {
+    const [quantity, setQuantity] = useState({
+        str: "1",
+        valid: true,
+    });
 
-function AddToCart({quantity, onQuantityChange, onAddToCart}) {
     return (
         <StyledAddToCart>
-            <QuantityInput value={quantity} onChange={e => onQuantityChange(parseInt(e.target.value.replace(/\D/,'')))}/>
-            <IconButton icon={mdiCart} size={1.8} onClick={onAddToCart}/>
+            <QuantityInput value={quantity.str} onChange={e => {
+                setQuantity({
+                    str: e.target.value,
+                    valid: Validation.int({min: 1})(e.target.value),
+                });
+            }}/>
+            <IconButton disabled={!quantity.valid} icon={mdiCart} size={1.8} onClick={() => {
+                if (quantity.valid)
+                    onAddToCart(parseInt(quantity.str));
+            }}/>
         </StyledAddToCart>
     );
 }
 
-export default class Detail extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            quantity: 1,
-        }
-    }
-
-    onQuantityChange = quantity => {
-        this.setState({quantity});
-    }
-
-    render() {
-        const {item} = this.props;
-
-        if(!item) return (<div/>);
-
-        return (
-            <StyledDetail>
-                <Image image={item.image}/>
-                <Content>
-                    <Info>
-                        <Name>{item.name}</Name>
-                        <StyledPrice price={item.price}/>
-                        <Brand>{item.brand}</Brand>
-                        <Tags>
-                            {item.tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
-                        </Tags>
-                    </Info>
-                    <AddToCart quantity={this.state.quantity} onQuantityChange={this.onQuantityChange} onAddToCart={() => this.props.onAddToCart(this.state.quantity)}/>
-                </Content>
-            </StyledDetail>
-        );
-    }
+export default function Detail({item, onAddToCart}) {
+    return (
+        <StyledDetail>
+            <Image image={item.image}/>
+            <Content>
+                <Info>
+                    <Name>{item.name}</Name>
+                    <StyledPrice price={item.price}/>
+                    <Brand>{item.brand}</Brand>
+                    <Tags>
+                        {item.tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
+                    </Tags>
+                </Info>
+                <AddToCart onAddToCart={onAddToCart}/>
+            </Content>
+        </StyledDetail>
+    );
 }

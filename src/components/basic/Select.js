@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 
 const Input = styled.select`
     outline: none;
@@ -23,6 +23,16 @@ const Input = styled.select`
           -webkit-appearance: none;
           margin: 0;
     }
+    
+    ${props => props.invalid && css`
+        background: #DB3063;
+        color: white;
+        
+        option {
+            color: #849cb1;
+            background: white;
+        }
+    `}
 `;
 
 export default Input;

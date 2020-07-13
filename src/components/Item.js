@@ -78,12 +78,10 @@ function Item(props) {
                     {props.admin && (<Stock>{props.stock}<span style={{fontSize: '1.4rem'}}> left</span></Stock>)}
                 </InfoCol>
                 {props.admin
-                    ? (<IconButton type="danger" icon={mdiClose} onClick={e => {
-                        e.stopPropagation();
+                    ? (<IconButton type="danger" icon={mdiClose} onClick={() => {
                         props.onDelete();
                     }}/>)
-                    : (<IconButton type="primary" icon={mdiCart} onClick={e => {
-                        e.stopPropagation();
+                    : (<IconButton type="primary" icon={mdiCart} onClick={() => {
                         props.onAddToCart();
                     }}/>)
                 }
