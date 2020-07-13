@@ -41,12 +41,6 @@ export default function Input({validationFunc, onChange, ...rest}) {
                 payload.valid = valid;
             }
             if(onChange) onChange(payload);
-        }} onBlur={() => {
-            if(validationFunc) {
-                const valid = validationFunc(e.target.value);
-                setValidationError(!valid);
-                if(onChange) onChange(payload);
-            }
-        }} invalid={validationError} {...rest}/>)
+        }}  invalid={validationError} {...rest}/>)
     );
 }
