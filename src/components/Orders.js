@@ -9,6 +9,9 @@ import Price from "components/basic/Price";
 import Tag from "components/basic/Tag";
 import Loader from "components/basic/Loader";
 
+import OrdersController from "controller/Orders";
+import Auth from "controller/Auth";
+
 const StyledItem = styled.div`
   display: flex;
   flex-direction: row;
@@ -171,63 +174,13 @@ export default class Orders extends Component {
         };
     }
 
-    // Returns the email of the logged in user
-    async getUserEmail() {
-        const emailPromise = new Promise(resolve => {
-            const unsubscribe = firebase.auth().onAuthStateChanged(async ({email}) => {
-                unsubscribe();
-                resolve(email);
-            });
-        });
-
-        return await emailPromise;
-    }
-
-    // Returns an array containing all orders of the user with the provided email
-    async getUserOrders(email) {
-        const query = await firebase.firestore().collection(`/users/${email}/orders`).get();
-        const orders = query.docs.map(doc => ({number: doc.id, ...doc.data()}));
-
-        const promises = [];
-        const itemsCache = {};
-
-        for (const order of orders) {
-            for (const item of order.items) {
-                promises.push((async () => {
-                    if (!itemsCache[item.itemID]) {
-                        const doc = await firebase.firestore().doc(`/items/${item.itemID}`).get();
-                        itemsCache[item.itemID] = doc.data();
-                    }
-
-                    Object.assign(item, {...itemsCache[item.itemID], ...item});
-                })());
-            }
-        }
-
-        await Promise.all(promises);
-
-        return orders;
-    }
-
-    // Returns an array of all orders of all users
-    async getGlobalOrders() {
-        const orders = [];
-
-        const query = await firebase.firestore().collection(`/users`).get();
-        for (const doc of query.docs) {
-            orders.push(...await this.getUserOrders(doc.id));
-        }
-
-        return orders;
-    }
-
     async componentDidMount() {
         let orders;
 
         if (this.props.admin)
-            orders = await this.getGlobalOrders();
+            orders = await OrdersController.getGlobalOrders();
         else
-            orders = await this.getUserOrders(await this.getUserEmail());
+            orders = await OrdersController.getUserOrders(Auth.getInstance().user.email);
 
         this.setState({orders, loading: false});
     }
