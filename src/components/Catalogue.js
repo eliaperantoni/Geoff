@@ -56,14 +56,11 @@ export default class Catalogue extends React.Component {
         this.setState({items});
     }
 
-    onInput = e => {
-        const text = e.target.value;
+    onSearch = text => {
         this.setState(state => ({query: {...state.query, text}}));
     }
 
-    onCategory = e => {
-        console.log(e);
-        const category = e.target.value;
+    onCategory = category => {
         this.setState(state => ({query: {...state.query, category}}));
     }
 
@@ -143,7 +140,7 @@ export default class Catalogue extends React.Component {
                       onAddToCart={() => this.addToCart(item.id, 1)} key={item.name}/>));
 
         return (
-            <Wrapper onInput={this.onInput} onCategory={this.onCategory}>
+            <Wrapper onSearch={this.onSearch} onCategory={this.onCategory}>
                 <Loader loading={this.state.loading}/>
 
                 <Popup open={this.state.isModalOpen} onClose={this.closeItem}>

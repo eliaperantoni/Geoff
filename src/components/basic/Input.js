@@ -1,6 +1,7 @@
-import styled from "styled-components";
+import React, {useState} from "react";
+import styled, {css} from "styled-components";
 
-const Input = styled.input`
+const StyledInput = styled.input`
     outline: none;
     border: none;
     border-radius: 18px;
@@ -21,6 +22,31 @@ const Input = styled.input`
           -webkit-appearance: none;
           margin: 0;
     }
+    
+    ${props => props.invalid && !props.quiet && css`
+        background: #DB3063;
+        color: white;
+    `}
 `;
 
-export default Input;
+export default function Input({validationFunc, onChange, ...rest}) {
+    const [validationError, setValidationError] = useState(false);
+
+    return (
+        (<StyledInput onChange={e => {
+            const payload = {str: e.target.value};
+            if(validationFunc) {
+                const valid = validationFunc(e.target.value);
+                setValidationError(!valid);
+                payload.valid = valid;
+            }
+            if(onChange) onChange(payload);
+        }} onBlur={() => {
+            if(validationFunc) {
+                const valid = validationFunc(e.target.value);
+                setValidationError(!valid);
+                if(onChange) onChange(payload);
+            }
+        }} invalid={validationError} {...rest}/>)
+    );
+}

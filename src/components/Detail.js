@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import Card from 'components/basic/Card.js';
 import Price from 'components/basic/Price.js';
 import Tag from 'components/basic/Tag.js';
 import IconButton from "components/basic/IconButton";
 import Input from "components/basic/Input";
+import Validation from "controller/Validation";
 
 import {mdiCart} from "@mdi/js";
 
@@ -83,20 +84,18 @@ const StyledAddToCart = styled.div`
     align-items: center;
 `;
 
-const QuantityInput = styled(Input).attrs(props => ({
-    type: "number",
-    min: 1,
-}))`
+const QuantityInput = styled(Input)`
     width: 128px;
     margin-right: -24px;
 `;
 
-
 function AddToCart({quantity, onQuantityChange, onAddToCart}) {
     return (
         <StyledAddToCart>
-            <QuantityInput value={quantity} onChange={e => onQuantityChange(parseInt(e.target.value.replace(/\D/,'')))}/>
-            <IconButton icon={mdiCart} size={1.8} onClick={onAddToCart}/>
+            <QuantityInput quiet={true} value={quantity.str} onChange={e => {
+                onQuantityChange({str: e.target.value, valid: e.valid});
+            }} validationFunc={Validation.int({min: 1})}/>
+            <IconButton disabled={!quantity.valid} icon={mdiCart} size={1.8} onClick={onAddToCart}/>
         </StyledAddToCart>
     );
 }
@@ -105,12 +104,16 @@ export default class Detail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            quantity: 1,
+            quantity: {str: "1", valid: true},
         }
     }
 
     onQuantityChange = quantity => {
         this.setState({quantity});
+    }
+
+    onAddToCart = () => {
+        this.props.onAddToCart(parseInt(this.state.quantity.str));
     }
 
     render() {
@@ -130,7 +133,7 @@ export default class Detail extends React.Component {
                             {item.tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
                         </Tags>
                     </Info>
-                    <AddToCart quantity={this.state.quantity} onQuantityChange={this.onQuantityChange} onAddToCart={() => this.props.onAddToCart(this.state.quantity)}/>
+                    <AddToCart quantity={this.state.quantity} onQuantityChange={this.onQuantityChange} onAddToCart={this.onAddToCart}/>
                 </Content>
             </StyledDetail>
         );

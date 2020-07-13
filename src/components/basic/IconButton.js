@@ -36,11 +36,19 @@ const StyledIconButton = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    ${props => props.disabled && css`
+        filter: saturate(10%);
+        cursor: default;
+    `}
 `;
 
-export default function IconButton({type, icon, onClick, className, size=1}){
+export default function IconButton({disabled, onClick, icon, size=1, ...rest}){
     return(
-        <StyledIconButton type={type} onClick={onClick} className={className} size={size}>
+        <StyledIconButton disabled={disabled} size={size} {...rest} onClick={e => {
+            e.stopPropagation();
+            if(!disabled && onClick) onClick();
+        }}>
             <Icon size={size} path={icon}/>
         </StyledIconButton>
     )

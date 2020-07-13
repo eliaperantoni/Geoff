@@ -12,6 +12,7 @@ import Select from "components/basic/Select";
 import Labeled, {Label} from "components/basic/Labeled";
 import {mdiPencil} from "@mdi/js";
 import {setLoading} from "App";
+import Validation from "controller/Validation";
 
 const StyledCreateItem = styled(Card)`
     display: flex;
@@ -74,12 +75,12 @@ export default class CreateItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
-            brand: "",
+            name: {str: "", valid: true},
+            brand: {str: "", valid: true},
+            price: {str: "", valid: true},
+            stock: {str: "", valid: true},
             category: "",
-            price: "",
             tags: "",
-            stock: "",
             image: {
                 url: null,
                 file: null,
@@ -90,13 +91,13 @@ export default class CreateItem extends React.Component {
     imageRef = React.createRef();
 
     onChange = field => e => {
-        if (field === "price") {
-            // Only allow one dot
-            if (this.state.price.includes(".") && e.nativeEvent.data === '.') return;
-
-            this.setState({price: e.target.value.replace(/[^\d.]/, '')});
-        } else if (field === "stock") {
-            this.setState({stock: e.target.value.replace(/\D/, '')});
+        if (["stock", "price", "name", "brand"].includes(field)) {
+            this.setState({
+                [field]: {
+                    str: e.target.value,
+                    valid: e.valid,
+                },
+            });
         } else {
             this.setState({
                 [field]: e.target.value,
@@ -191,8 +192,8 @@ export default class CreateItem extends React.Component {
                 <Form>
                     <input type="file" accept="image/*" hidden ref={this.imageRef} onChange={this.onImageChange}/>
 
-                    <LabeledInput label="name" onChange={this.onChange("name")} value={this.state.name}/>
-                    <LabeledInput label="brand" onChange={this.onChange("brand")} value={this.state.brand}/>
+                    <LabeledInput label="name" onChange={this.onChange("name")} value={this.state.name.str} validationFunc={Validation.nonEmptyString}/>
+                    <LabeledInput label="brand" onChange={this.onChange("brand")} value={this.state.brand.str} validationFunc={Validation.nonEmptyString}/>
 
                     <Labeled label="Category">
                         <Select value={this.state.category} onChange={this.onChange("category")}>
@@ -201,9 +202,9 @@ export default class CreateItem extends React.Component {
                         </Select>
                     </Labeled>
 
-                    <LabeledInput label="price" onChange={this.onChange("price")} value={this.state.price}/>
                     <LabeledInput label="tags" onChange={this.onChange("tags")} value={this.state.tags}/>
-                    <LabeledInput label="stock" onChange={this.onChange("stock")} value={this.state.stock}/>
+                    <LabeledInput label="price" onChange={this.onChange("price")} value={this.state.price.str} validationFunc={Validation.price}/>
+                    <LabeledInput label="stock" onChange={this.onChange("stock")} value={this.state.stock.str} validationFunc={Validation.int({min: 1})}/>
 
                     <Button onClick={this.createItem}>Create item</Button>
                 </Form>

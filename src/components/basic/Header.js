@@ -134,12 +134,12 @@ class Header extends Component{
                 <Title onClick={this.main}>Geoff</Title>
 
                 <InputContainer hide={this.props.hideInput}>
-                    <StyledSelect onChange={this.props.onCategory}>
+                    <StyledSelect onChange={e => this.props.onCategory(e.target.value)}>
                         <option value={""}>All Categories</option>
                         {categories.map(c => (<option value={c.name} key={c.name}>{c.display}</option>))}
                     </StyledSelect>
                     <Divider/>
-                    <StyledInput onInput={this.props.onInput} placeholder="Type here to search"/>
+                    <StyledInput onChange={e => this.props.onSearch(e.target.value)} placeholder="Type here to search"/>
                 </InputContainer>
 
                 <Actions>
