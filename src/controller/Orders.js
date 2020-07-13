@@ -29,13 +29,13 @@ export default class Orders {
 
     // Returns an array of all orders of all users
     static async getGlobalOrders() {
-        const orders = [];
-
         const query = await firebase.firestore().collection(`/users`).get();
+        const promises = [];
+
         for (const doc of query.docs) {
-            orders.push(...await Orders.getUserOrders(doc.id));
+            promises.push((async () => await Orders.getUserOrders(doc.id))());
         }
 
-        return orders;
+        return (await Promise.all(promises)).flat(1);
     }
 }
