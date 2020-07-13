@@ -114,6 +114,9 @@ class Header extends Component{
         if(this.auth.user.isAdmin) this.props.history.push("/admin/orders");
         else this.props.history.push("/orders");
     }
+    user =  async()=> {
+        this.props.history.push("/user");
+    }
     basket = ()=> {
         this.setState({showBasket:!this.state.showBasket});
     }
