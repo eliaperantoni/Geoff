@@ -96,6 +96,7 @@ class Header extends Component{
 
         };
     }
+    auth = Auth.getInstance();
     logout =  async()=> {
         try {
             const auth = Auth.getInstance();
@@ -106,10 +107,12 @@ class Header extends Component{
         }
     }
     main =  async()=> {
-        this.props.history.push("/")
+        if(this.auth.user.isAdmin) this.props.history.push("/admin/catalogue");
+        else this.props.history.push("/");
     }
     orders =  async()=> {
-        this.props.history.push("/orders");
+        if(this.auth.user.isAdmin) this.props.history.push("/admin/orders");
+        else this.props.history.push("/orders");
     }
     basket = ()=> {
         this.setState({showBasket:!this.state.showBasket});
@@ -143,9 +146,12 @@ class Header extends Component{
                 </InputContainer>
 
                 <Actions>
-                    <Action path={mdiCart} size={1.8} onClick={this.basket}/>
+                    {!this.auth.user.isAdmin && (<Action path={mdiCart} size={1.8} onClick={this.basket}/>)}
+
                     <Action path={mdiTextBoxMultiple} onClick={this.orders}/>
-                    <Action path={mdiFaceProfile}/>
+
+                    {!this.auth.user.isAdmin && (<Action path={mdiFaceProfile}/>)}
+
                     <Action id="1" path={mdiLogoutVariant} onClick={this.logout}/>
                 </Actions>
                 {this.showBasket()}
