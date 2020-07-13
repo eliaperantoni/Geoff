@@ -22,12 +22,13 @@ const Container = styled.div`
     justify-content: space-between;
 
 `
-const ButtonContainer = styled.div`      
-    display: flex;
+const ButtonContainer = styled.div`
+    display:flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    width: 130px;
+    justify-items: center;
+    width: 120px;
 `;
 function getMethodIcon(method){
     //mdiCreditCard
@@ -69,7 +70,7 @@ export default function PaymentEdit({method, isDefault, click}){
                     <IconButton type={"primary"} icon={mdiStar} onClick={()=>click(method,"set")}/>
                 ):(<div></div>)}
                 {method &&(
-                    <IconButton style={{marginTop: "30px"}}  type={"danger"} icon={mdiClose} onClick={()=>click(method,"remove")}/>
+                    <IconButton type={"danger"} icon={mdiClose} onClick={()=>click(method,"remove")}/>
                 )}
 
             </ButtonContainer>

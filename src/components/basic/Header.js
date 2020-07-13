@@ -114,6 +114,9 @@ class Header extends Component{
         if(this.auth.user.isAdmin) this.props.history.push("/admin/orders");
         else this.props.history.push("/orders");
     }
+    user =  async()=> {
+        this.props.history.push("/user");
+    }
     basket = ()=> {
         this.setState({showBasket:!this.state.showBasket});
     }
@@ -150,7 +153,7 @@ class Header extends Component{
 
                     <Action path={mdiTextBoxMultiple} onClick={this.orders}/>
 
-                    {!this.auth.user.isAdmin && (<Action path={mdiFaceProfile}/>)}
+                    {!this.auth.user.isAdmin && (<Action onClick={this.user} path={mdiFaceProfile}/>)}
 
                     <Action id="1" path={mdiLogoutVariant} onClick={this.logout}/>
                 </Actions>

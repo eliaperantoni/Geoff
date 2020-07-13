@@ -173,13 +173,13 @@ class Checkout extends Component {
     }
 
     async setDefaultPayment(method){
-        this.setState({ loading:true });
-        let email = await this.getUserEmail();
+        //this.setState({ loading:true });
+        /*let email = await this.getUserEmail();
         if(method){
             await firebase.firestore().collection(`users`).doc(email).update({preferredPaymentMethod:method.id});
         }else{
             await firebase.firestore().collection(`users`).doc(email).update({preferredPaymentMethod:null});
-        }
+        }*/
 
         this.setState({paymentMethod:method, isModalOpen:false, loading: false});
 
@@ -210,12 +210,12 @@ class Checkout extends Component {
     closeModal = () => {
         this.setState({isModalOpen: false});
     }
-    closeModal = () => {
+    closeModalBasket = () => {
         this.setState({modalBasket: false});
     }
     async buy(){
-        let email = await this.getUserEmail();
-        let basket = await this.getUserBasket(email);
+        let user = await this.getUser();
+        let basket = user.basket;
         let newBasket = [];
         let correct = true;
         this.setState({loading:true});
@@ -243,21 +243,23 @@ class Checkout extends Component {
                 items: basket
             }
             //RIMUOVO L'ORDINE DALLO STOCK
+            let points = user.loyaltyCard;
             for (const obj of basket){
                 let doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
                 let item = {...doc.data()}
                 const diff = item.stock - obj.quantity;
+                points += obj.quantity*item.price;
                 await firebase.firestore().collection(`items`).doc(doc.id).update({stock:diff});
             }
             //AGGIORNO IL BASKET
-            await firebase.firestore().collection(`users`).doc(email).update({basket:[]});
+            await firebase.firestore().collection(`users`).doc(user.email).update({basket:[],loyaltyCard:(points)});
             //AGGIUNGO L'ORDINE
-            let orderID = await firebase.firestore().collection('users').doc(email).collection('orders').add({...order});
+            let orderID = await firebase.firestore().collection('users').doc(user.email).collection('orders').add({...order});
 
             this.props.history.push({pathname:"/thanks", data: {order:orderID.id}});
         }else{
             //CARRELLO SBAGLIATO e LO CORREGGO
-            await firebase.firestore().collection(`users`).doc(email).update({basket:newBasket});
+            await firebase.firestore().collection(`users`).doc(user.email).update({basket:newBasket});
             let price = 0;
             for (const obj of newBasket){
                 const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
@@ -272,7 +274,6 @@ class Checkout extends Component {
 
     }
     render(){
-
         return (
             <Wrapper hideInput={true}>
                 {this.state.loading ?(<Loader loading={this.state.loading}/>):(
@@ -315,11 +316,4 @@ class Checkout extends Component {
         );
     }
 }
-export default withRouter(Checkout)
-/*
-*                                     {this.state.paymentMethod &&(
-                                        <PaymentOption onClick={()=>this.setDefaultPayment(null)} >
-                                            <Icon path={this.getMethodIcon(null)} size={1.7}/>
-                                            <BoldText>{this.getMethodString(null)}</BoldText>
-                                        </PaymentOption>
-                                    )}*/
+export default withRouter(Checkout);

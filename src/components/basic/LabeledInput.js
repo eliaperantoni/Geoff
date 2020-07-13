@@ -7,7 +7,7 @@ import {omit} from "lodash";
 export default function LabeledInput(props) {
     return (
         <Labeled label={props.label} className={props.className}>
-            <Input {...omit(props, ["className", "label"])}/>
+            <Input name={props.label} {...omit(props, ["className", "label"])}/>
         </Labeled>
     );
 }
