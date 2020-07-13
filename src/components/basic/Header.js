@@ -125,7 +125,7 @@ class Header extends Component{
     }
 
     handleResize= (WindowSize, event)=> {
-        this.setState({showBasket:this.state.showBasket});
+        this.forceUpdate();
     }
 
     componentDidMount() {
