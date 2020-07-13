@@ -38,7 +38,7 @@ const StyledIconButton = styled.div`
     justify-content: center;
     
     ${props => props.disabled && css`
-        filter: saturate(10%);
+        filter: saturate(20%);
         cursor: default;
     `}
 `;

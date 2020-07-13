@@ -125,7 +125,7 @@ class Login extends React.Component {
                                onBlur={this.onBlur("password")}
                                invalid={!this.state.password.valid && this.state.password.touched}/>
                         <Button disabled={!canLogin} onClick={this.login}>Login</Button>
-                        <Button onClick={this.goToRegister}>Don't have an account?</Button>
+                        <Button onClick={this.goToRegister} type="secondary">Don't have an account?</Button>
                     </Actions>
                 </Form>
             </Container>
