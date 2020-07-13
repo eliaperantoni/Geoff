@@ -89,53 +89,43 @@ const QuantityInput = styled(Input)`
     margin-right: -24px;
 `;
 
-function AddToCart({quantity, onQuantityChange, onAddToCart}) {
+function AddToCart({onAddToCart}) {
+    const [quantity, setQuantity] = useState({
+        str: "1",
+        valid: true,
+    });
+
     return (
         <StyledAddToCart>
-            <QuantityInput quiet={true} value={quantity.str} onChange={e => {
-                onQuantityChange({str: e.target.value, valid: e.valid});
-            }} validationFunc={Validation.int({min: 1})}/>
-            <IconButton disabled={!quantity.valid} icon={mdiCart} size={1.8} onClick={onAddToCart}/>
+            <QuantityInput value={quantity.str} onChange={e => {
+                setQuantity({
+                    str: e.target.value,
+                    valid: Validation.int({min: 1})(e.target.value),
+                });
+            }}/>
+            <IconButton disabled={!quantity.valid} icon={mdiCart} size={1.8} onClick={() => {
+                if (quantity.valid)
+                    onAddToCart(parseInt(quantity.str));
+            }}/>
         </StyledAddToCart>
     );
 }
 
-export default class Detail extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            quantity: {str: "1", valid: true},
-        }
-    }
-
-    onQuantityChange = quantity => {
-        this.setState({quantity});
-    }
-
-    onAddToCart = () => {
-        this.props.onAddToCart(parseInt(this.state.quantity.str));
-    }
-
-    render() {
-        const {item} = this.props;
-
-        if(!item) return (<div/>);
-
-        return (
-            <StyledDetail>
-                <Image image={item.image}/>
-                <Content>
-                    <Info>
-                        <Name>{item.name}</Name>
-                        <StyledPrice price={item.price}/>
-                        <Brand>{item.brand}</Brand>
-                        <Tags>
-                            {item.tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
-                        </Tags>
-                    </Info>
-                    <AddToCart quantity={this.state.quantity} onQuantityChange={this.onQuantityChange} onAddToCart={this.onAddToCart}/>
-                </Content>
-            </StyledDetail>
-        );
-    }
+export default function Detail({item, onAddToCart}) {
+    return (
+        <StyledDetail>
+            <Image image={item.image}/>
+            <Content>
+                <Info>
+                    <Name>{item.name}</Name>
+                    <StyledPrice price={item.price}/>
+                    <Brand>{item.brand}</Brand>
+                    <Tags>
+                        {item.tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
+                    </Tags>
+                </Info>
+                <AddToCart onAddToCart={onAddToCart}/>
+            </Content>
+        </StyledDetail>
+    );
 }

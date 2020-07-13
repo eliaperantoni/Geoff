@@ -76,7 +76,8 @@ export default class Catalogue extends React.Component {
     }
 
     closeItem = () => {
-        this.setState({isModalOpen: false, selectedItem: null});
+        this.setState({isModalOpen: false});
+        this.setState({selectedItem: null});
     }
 
     addToCart = async (itemID, quantity) => {

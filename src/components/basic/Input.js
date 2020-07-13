@@ -1,7 +1,6 @@
-import React, {useState} from "react";
 import styled, {css} from "styled-components";
 
-const StyledInput = styled.input`
+const Input = styled.input`
     outline: none;
     border: none;
     border-radius: 18px;
@@ -23,24 +22,10 @@ const StyledInput = styled.input`
           margin: 0;
     }
     
-    ${props => props.invalid && !props.quiet && css`
+    ${props => props.invalid && css`
         background: #DB3063;
         color: white;
     `}
 `;
 
-export default function Input({validationFunc, onChange, ...rest}) {
-    const [validationError, setValidationError] = useState(false);
-
-    return (
-        (<StyledInput onChange={e => {
-            const payload = {str: e.target.value};
-            if(validationFunc) {
-                const valid = validationFunc(e.target.value);
-                setValidationError(!valid);
-                payload.valid = valid;
-            }
-            if(onChange) onChange(payload);
-        }}  invalid={validationError} {...rest}/>)
-    );
-}
+export default Input;
