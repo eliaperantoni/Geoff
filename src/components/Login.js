@@ -40,12 +40,23 @@ class Login extends React.Component {
         }
     }
 
+    enterListener;
+    componentDidMount() {
+        this.enterListener = window.addEventListener("keydown", e => {
+            if(e.key === "Enter" && this.canLogin()) this.login();
+        });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.enterListener);
+    }
+
     onChange = field => e => {
         const str = e.target.value;
 
         const validation = {
             email: Validation.email,
-            password: Validation.nonEmptyString,
+            password: Validation.password,
         }
 
         this.setState(state => {
@@ -90,9 +101,9 @@ class Login extends React.Component {
         this.props.history.push("/register")
     }
 
-    render() {
-        const canLogin = this.state.email.valid && this.state.password.valid;
+    canLogin = () => this.state.email.valid && this.state.password.valid;
 
+    render() {
         return (
             <StyledLogin>
                 <Image src={authenticationSVG}/>
@@ -105,7 +116,7 @@ class Login extends React.Component {
                        onChange={this.onChange("password")}
                        onBlur={this.onBlur("password")}
                        invalid={!this.state.password.valid && this.state.password.touched}/>
-                <Button disabled={!canLogin} onClick={this.login}>Login</Button>
+                <Button disabled={!this.canLogin()} onClick={this.login}>Login</Button>
                 <Button onClick={this.goToRegister} type="secondary">Don't have an account?</Button>
             </StyledLogin>
         );
