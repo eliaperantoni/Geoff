@@ -153,7 +153,7 @@ class Header extends Component{
 
                     <Action path={mdiTextBoxMultiple} onClick={this.orders}/>
 
-                    {!this.auth.user.isAdmin && (<Action path={mdiFaceProfile}/>)}
+                    {!this.auth.user.isAdmin && (<Action onClick={this.user} path={mdiFaceProfile}/>)}
 
                     <Action id="1" path={mdiLogoutVariant} onClick={this.logout}/>
                 </Actions>

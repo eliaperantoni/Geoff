@@ -214,8 +214,8 @@ class Checkout extends Component {
         this.setState({modalBasket: false});
     }
     async buy(){
-        let email = await this.getUserEmail();
-        let basket = await this.getUserBasket(email);
+        let user = await this.getUser();
+        let basket = user.basket;
         let newBasket = [];
         let correct = true;
         this.setState({loading:true});
@@ -243,21 +243,23 @@ class Checkout extends Component {
                 items: basket
             }
             //RIMUOVO L'ORDINE DALLO STOCK
+            let points = user.loyaltyCard;
             for (const obj of basket){
                 let doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
                 let item = {...doc.data()}
                 const diff = item.stock - obj.quantity;
+                points += obj.quantity*item.price;
                 await firebase.firestore().collection(`items`).doc(doc.id).update({stock:diff});
             }
             //AGGIORNO IL BASKET
-            await firebase.firestore().collection(`users`).doc(email).update({basket:[]});
+            await firebase.firestore().collection(`users`).doc(user.email).update({basket:[],loyaltyCard:(points)});
             //AGGIUNGO L'ORDINE
-            let orderID = await firebase.firestore().collection('users').doc(email).collection('orders').add({...order});
+            let orderID = await firebase.firestore().collection('users').doc(user.email).collection('orders').add({...order});
 
             this.props.history.push({pathname:"/thanks", data: {order:orderID.id}});
         }else{
             //CARRELLO SBAGLIATO e LO CORREGGO
-            await firebase.firestore().collection(`users`).doc(email).update({basket:newBasket});
+            await firebase.firestore().collection(`users`).doc(user.email).update({basket:newBasket});
             let price = 0;
             for (const obj of newBasket){
                 const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();

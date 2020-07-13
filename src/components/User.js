@@ -255,7 +255,7 @@ class User extends Component {
                         <LoyaltyCard>
                             <div>
                                 {this.state.user.name+ " " +this.state.user.surname}
-                                <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyalityCard ? (this.state.user.loyalityCard):(0)} pt</p>
+                                <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyaltyCard ? (this.state.user.loyaltyCard/100):(0)} pt</p>
                                 <p style={{textAlign:"right"}}>Geoff</p>
                             </div>
                         </LoyaltyCard>
