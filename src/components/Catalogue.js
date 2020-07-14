@@ -208,7 +208,7 @@ export default class Catalogue extends React.Component {
         if (this.state.query.text !== "") filters.push(doesItemMatchText);
         if (this.state.query.category !== "") filters.push(doesItemMatchCategory);
 
-        let items = this.state.items.filter(item => {
+        let items = JSON.parse(JSON.stringify(this.state.items)).filter(item => {
             for (const filter of filters) if (!filter(item)) return false;
             return true;
         });
@@ -224,6 +224,15 @@ export default class Catalogue extends React.Component {
         items = items.sort(sortFunctions[sort.target]);
 
         if (sort.order === "desc") items.reverse();
+
+        for(const item of items) {
+            for(const basketItem of this.state.basket) {
+                if(item.id !== basketItem.itemID) continue;
+
+                item.stock -= basketItem.quantity;
+                console.log("ITEM", item.id, item.stock);
+            }
+        }
 
         let itemsComponents;
         if (this.props.admin) {
@@ -264,26 +273,22 @@ export default class Catalogue extends React.Component {
 
                 <Popup open={this.state.addStockModal}
                        onClose={() => {
-                           this.setState({addStockModal: false});
-                           this.setState({selectedItem: null});
+                           this.setState({addStockModal: false, selectedItem: null});
                        }}>
                     <AddStock onAddStock={async inc => {
                         this.addStock(inc);
-                        this.setState({addStockModal: false});
-                        this.setState({selectedItem: null});
+                        this.setState({addStockModal: false, selectedItem: null});
                     }}/>
                 </Popup>
 
                 <Popup open={this.state.detailModal}
                        onClose={() => {
-                           this.setState({detailModal: false});
-                           this.setState({selectedItem: null});
+                           this.setState({detailModal: false, selectedItem: null});
                        }}>
                     <Detail item={this.state.selectedItem}
                             onAddToCart={async quantity => {
                                 this.addToCart(this.state.selectedItem.id, quantity);
-                                this.setState({detailModal: false});
-                                this.setState({selectedItem: null});
+                                this.setState({detailModal: false, selectedItem: null});
                             }}/>
                 </Popup>
 

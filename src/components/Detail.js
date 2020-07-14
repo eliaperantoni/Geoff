@@ -114,6 +114,8 @@ function AddToCart({onAddToCart, maxAvailableStock}) {
 }
 
 export default function Detail({item, onAddToCart}) {
+    if(!item) return (<div/>);
+
     return (
         <StyledDetail>
             <Image image={item.image}/>
