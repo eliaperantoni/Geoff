@@ -222,7 +222,9 @@ class User extends Component {
     }
 
     requireLoyalityCard = async()=>{
-        await firebase.firestore().collection('users').doc(this.state.user.email).update({loyaltyCard:0});
+        await firebase.firestore().collection('users').doc(this.state.user.email).update(
+            {loyaltyCard:{points:0, number:Math.floor(Math.random() * (999999999)),createdAt:firebase.firestore.FieldValue.serverTimestamp()}
+                    });
         this.setState({user:await this.getUser()});
     }
 
@@ -257,13 +259,13 @@ class User extends Component {
                     <BoldText style={{paddingLeft:"20px",margin:"0px",fontSize: "36px"}}>{this.state.user.name+ " " +this.state.user.surname}</BoldText>
                     <Background>
                         <BoldText>Loyality card</BoldText>
-                            {((!this.state.user.loyaltyCard) && (this.state.user.loyaltyCard!==0)) ? (
+                            {(!this.state.user.loyaltyCard) ? (
                                 <Button onClick={()=>this.requireLoyalityCard()}>Require card</Button>
                             ):(
                                 <LoyaltyCard>
                                     <div>
                                         {this.state.user.name+ " " +this.state.user.surname}
-                                        <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyaltyCard ? (Math.floor(this.state.user.loyaltyCard/100)):(0)} pt</p>
+                                        <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyaltyCard.points ? (Math.floor(this.state.user.loyaltyCard.points/100)):(0)} pt</p>
                                         <p style={{textAlign:"right"}}>Geoff</p>
                                     </div>
                                 </LoyaltyCard>
