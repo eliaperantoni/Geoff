@@ -8,6 +8,7 @@ import {withRouter} from "react-router-dom";
 import {setLoading} from "App";
 import Auth from "controller/Auth";
 import Validation from "controller/Validation";
+import * as firebase from "firebase";
 
 const StyledLogin = styled(Card)`
     margin: auto;
@@ -62,14 +63,20 @@ class Login extends React.Component {
         const {email, password} = this.state;
         try {
             setLoading(true);
-
             const auth = Auth.getInstance();
             await auth.login(email.str, password.str);
-            if (auth.user.isAdmin) {
-                this.props.history.push("/admin/catalogue");
-            } else {
+            if(await auth.isVerifiedEmail()){
+                if (auth.user.isAdmin) {
+                    this.props.history.push("/admin/catalogue");
+                }
                 this.props.history.push("/");
+            }else{
+                await firebase.auth().currentUser.sendEmailVerification();
+                await auth.logout();
+                this.props.history.push("/confirm");
             }
+
+
         } catch (error) {
             alert(error.message)
         } finally {

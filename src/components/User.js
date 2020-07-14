@@ -4,47 +4,11 @@ import Card from "components/basic/Card"
 import Button from "components/basic/Button";
 import { withRouter } from "react-router-dom"
 import firebase from "firebase.js";
-
-import Icon from '@mdi/react';
-import {
-    mdiCreditCard,
-    mdiCashMultiple,
-    mdiContactlessPayment,
-} from '@mdi/js';
 import Wrapper from "components/Wrapper";
-import Price from "./basic/Price";
-import Detail from "./Detail";
 import Popup from "./basic/Popup";
 import Loader from "./basic/Loader";
 import LabeledInput from "./basic/LabeledInput";
 import PaymentEdit from "./basic/PaymentEdit";
-
-const Form = styled(Card)`
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    text-align:center;
-    width: 600px;
-    min-height: 500px; 
-    background: #FAFDFF;
-    border-radius: 24px;
-    box-shadow: 0 2px 64px rgba(232,238,243,0.5);
-    padding: 48px 36px;
-`;
-
-const Upper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-`;
-
-const TotalPrice = styled(Price)`
-    font-family: FuturaBold, sans-serif;
-    font-size: 96px;
-    color: #A4BBCD;
-    margin:auto;
-`;
 
 const BoldText = styled.p`
     font-family: FuturaBold, sans-serif;
@@ -61,12 +25,14 @@ const Container = styled.div`
     flex-grow: 1;
     justify-content: space-between;
 `
+
 const Background = styled(Card)`
     min-width: 700px;
     min-height: 600px;
     display: flex;
     flex-direction: column;
 `
+
 const LoyaltyCard = styled(Card)`
     height: 90px;
     width: 200px;
@@ -86,6 +52,7 @@ const PaymentsContainer= styled.div`
     flex-grow: 1;
     justify-content: space-between;
 `
+
 const UserInformation = styled.div`
     min-width: 400px;
     min-height: 200px;
@@ -94,6 +61,7 @@ const UserInformation = styled.div`
     flex-grow: 1;
     justify-content: space-between;
 `
+
 const ButtonContainer = styled.div`
     display: flex;
     flex-direction: row;
@@ -101,6 +69,7 @@ const ButtonContainer = styled.div`
     margin:0;
     justify-content: space-between;
 `
+
 const StyledLabeledInput = styled(LabeledInput)`
     margin-top:20px;
 `;
@@ -159,11 +128,13 @@ class User extends Component {
             await firebase.firestore().collection(`users`).doc(this.state.user.email).update({preferredPaymentMethod:null});
         }
     }
+
     async deletePayment(method){
         if(method){
             await firebase.firestore().collection('users').doc(this.state.user.email).collection('paymentMethods').doc(method.id).delete();
         }
     }
+
     async getDefaultPaymentInList(user,payments){
         let defaultMethod=null;
         for (const obj of payments){
