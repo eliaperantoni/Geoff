@@ -13,7 +13,15 @@ export default class Validation {
     static exactly = getMatch => str => getMatch() === str;
     static creditCardNumber = str => /\d{4}\s\d{4}\s\d{4}\s\d{4}/.test(str);
     static creditCardCVV = str => /\d{3}/.test(str);
-    static creditCardExpirationDate = str => /\d\d\/\d\d/.test(str);
+    static creditCardExpirationDate = str => {
+        if(!/\d\d\/\d\d/.test(str)) return false;
+
+        const [month, year] = str.split("/").map(piece => parseInt(piece));
+        if(month < 1 || month > 12) return false;
+        if(year < 0 || year > 25) return false;
+
+        return true;
+    };
 
     static all = (...validators) => str => validators.map(v => v(str)).reduce((t, acc) => t && acc);
 
