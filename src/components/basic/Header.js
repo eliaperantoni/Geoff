@@ -90,9 +90,11 @@ const Actions = styled.div`
 
 class Header extends Component{
     constructor(props) {
+        console.log(props);
         super(props);
         this.state = {
             showBasket:false,
+            hiddenBasket: props.hiddenBasket,
 
         };
     }
@@ -121,7 +123,7 @@ class Header extends Component{
         this.setState({showBasket:!this.state.showBasket});
     }
     showBasket = ()=>{
-        if(this.state.showBasket){
+        if(this.state.showBasket && !this.state.hiddenBasket){
             let rec = document.getElementById(1).getBoundingClientRect();
             return <Basket x={-395+rec.left +window.scrollX} y={rec.top+ window.scrollY+25}></Basket>
         }
@@ -135,6 +137,7 @@ class Header extends Component{
         window.addEventListener("resize", this.handleResize);
     }
     render() {
+        console.log(!this.state.hiddenBasket)
         return (
             <StyledHeader className={this.props.className}>
                 <Title onClick={this.main}>Geoff</Title>
@@ -161,16 +164,16 @@ class Header extends Component{
 
                     <StyledInput onChange={e => this.props.onSearch(e.target.value)} placeholder="Type here to search"/>
                 </InputContainer>
+                    <Actions>
+                        {(!this.auth.user.isAdmin && !this.state.hiddenBasket) && (<Action path={mdiCart} size={1.8} onClick={this.basket}/>)}
 
-                <Actions>
-                    {!this.auth.user.isAdmin && (<Action path={mdiCart} size={1.8} onClick={this.basket}/>)}
+                        <Action path={mdiTextBoxMultiple} onClick={this.orders}/>
 
-                    <Action path={mdiTextBoxMultiple} onClick={this.orders}/>
+                        {!this.auth.user.isAdmin && (<Action onClick={this.user} path={mdiFaceProfile}/>)}
 
-                    {!this.auth.user.isAdmin && (<Action onClick={this.user} path={mdiFaceProfile}/>)}
+                        <Action id="1" path={mdiLogoutVariant} onClick={this.logout}/>
+                    </Actions>
 
-                    <Action id="1" path={mdiLogoutVariant} onClick={this.logout}/>
-                </Actions>
                 {this.showBasket()}
             </StyledHeader>
         );

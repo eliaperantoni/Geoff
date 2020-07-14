@@ -60,51 +60,8 @@ class OrderItem extends Component {
         this.state ={
             item:props.item,
             quantity: props.quantity,
-            handler : props.handler,
+            onCh : props.onCh,
         }
-    }
-    async getUserEmail() {
-        const emailPromise = new Promise(resolve => {
-            const unsubscribe = firebase.auth().onAuthStateChanged(async ({email}) => {
-                unsubscribe();
-                resolve(email);
-            });
-        });
-
-        return await emailPromise;
-    }
-    // Returns an array containing all products of the user with the provided email
-    async modifyUserBasket(email,itemID,value) {
-        const query = await firebase.firestore().collection(`users`).doc(email).get();
-
-        if(!query.exists){
-            alert("empty");
-            return null;
-        }else{
-            const basket = query.data().basket;
-            basket.map((obj,index)=>{
-                if(obj.itemID === itemID){
-                    if(value>0){
-                        basket[index].quantity =  parseInt(value, 10);
-                    }else{
-                        basket.splice(index,1);
-                    }
-                }
-            })
-            return basket;
-        }
-    }
-    changeItem= async (value)=> {
-        //if(!value.nativeEvent.inputType){
-            let val = value.target.value;
-            if(val===""){
-                    val = -1;//RIMUOVO L'ELEMENTO DOPO
-            }
-            let email = await this.getUserEmail();
-            let basket = await this.modifyUserBasket(email,this.state.item.itemID,val)
-            await firebase.firestore().collection(`users`).doc(email).update({basket:basket});
-            await this.state.handler();
-        //}
     }
     render(){
         return (
@@ -114,10 +71,12 @@ class OrderItem extends Component {
                 <ItemName>{this.state.item.name}</ItemName>
                 <ItemUnitPrice price={this.state.item.price}/>
             </ItemDetails>
-            <ItemTotalOrder style={{"marginLeft":"20px"}} readonly maxlength="999" type="number" value={this.state.quantity} onChange={e => this.changeItem(e)}/>
+            <ItemTotalOrder style={{"marginLeft":"20px"}} readonly maxlength="999" type="number" value={this.state.quantity}
+                            onChange={(e)=>this.state.onCh(this.state.item,e.target.value)}/>
         </StyledItem>
         );
     }
 }
+
 export default OrderItem;
 
