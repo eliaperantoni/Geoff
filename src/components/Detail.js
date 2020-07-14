@@ -10,6 +10,8 @@ import Validation from "controller/Validation";
 import {mdiCart} from "@mdi/js";
 
 const StyledDetail = styled(Card)`
+    z-index: 5;
+
     display: flex;
     flex-direction: column;
     height: 600px;
@@ -89,7 +91,7 @@ const QuantityInput = styled(Input)`
     margin-right: -24px;
 `;
 
-function AddToCart({onAddToCart}) {
+function AddToCart({onAddToCart, maxAvailableStock}) {
     const [quantity, setQuantity] = useState({
         str: "1",
         valid: true,
@@ -100,7 +102,7 @@ function AddToCart({onAddToCart}) {
             <QuantityInput value={quantity.str} onChange={e => {
                 setQuantity({
                     str: e.target.value,
-                    valid: Validation.int({min: 1})(e.target.value),
+                    valid: Validation.int({min: 1, max: maxAvailableStock})(e.target.value),
                 });
             }}/>
             <IconButton disabled={!quantity.valid} icon={mdiCart} size={1.8} onClick={() => {
@@ -112,6 +114,8 @@ function AddToCart({onAddToCart}) {
 }
 
 export default function Detail({item, onAddToCart}) {
+    if(!item) return (<div/>);
+
     return (
         <StyledDetail>
             <Image image={item.image}/>
@@ -124,7 +128,7 @@ export default function Detail({item, onAddToCart}) {
                         {item.tags.map(tag => (<Tag key={tag}>{tag}</Tag>))}
                     </Tags>
                 </Info>
-                <AddToCart onAddToCart={onAddToCart}/>
+                <AddToCart onAddToCart={onAddToCart} maxAvailableStock={item.stock}/>
             </Content>
         </StyledDetail>
     );

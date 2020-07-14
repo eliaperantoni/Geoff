@@ -41,15 +41,16 @@ class Login extends React.Component {
         }
     }
 
-    enterListener;
     componentDidMount() {
-        this.enterListener = window.addEventListener("keydown", e => {
-            if(e.key === "Enter" && this.canLogin()) this.login();
-        });
+        window.addEventListener("keydown", this.onKeyDown);
     }
 
     componentWillUnmount() {
-        window.removeEventListener("keydown", this.enterListener);
+        window.removeEventListener("keydown", this.onKeyDown);
+    }
+
+    onKeyDown = e => {
+        if(e.key === "Enter" && this.canLogin()) this.login();
     }
 
     onChange = Validation.onChange({

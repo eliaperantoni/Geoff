@@ -140,11 +140,25 @@ class Header extends Component{
                 <Title onClick={this.main}>Geoff</Title>
 
                 <InputContainer hide={this.props.hideInput}>
+                    <StyledSelect onChange={e => this.props.onSortTarget(e.target.value)}>
+                        <option value="name">By name</option>
+                        <option value="brand">By brand</option>
+                        <option value="price">By price</option>
+                    </StyledSelect>
+                    <Divider/>
+
+                    <StyledSelect onChange={e => this.props.onSortOrder(e.target.value)}>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </StyledSelect>
+                    <Divider/>
+
                     <StyledSelect onChange={e => this.props.onCategory(e.target.value)}>
                         <option value={""}>All Categories</option>
                         {categories.map(c => (<option value={c.name} key={c.name}>{c.display}</option>))}
                     </StyledSelect>
                     <Divider/>
+
                     <StyledInput onChange={e => this.props.onSearch(e.target.value)} placeholder="Type here to search"/>
                 </InputContainer>
 
