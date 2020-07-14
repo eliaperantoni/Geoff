@@ -6,6 +6,9 @@ import Price from "components/basic/Price";
 import firebase from "firebase";
 import { withRouter } from "react-router-dom";
 import Loader from "./Loader";
+import Auth from "controller/Auth";
+
+const auth = Auth.getInstance();
 
 const Box =  styled.div`
     margin-left: 50px;
@@ -59,44 +62,50 @@ class Basket extends Component {
             price : 0,
             loading: true,
             checkout:false,
+            cacheItem:[],
         };
     }
 
-    // Returns the email of the logged in user
-    async getUserEmail() {
-        const emailPromise = new Promise(resolve => {
-            const unsubscribe = firebase.auth().onAuthStateChanged(async ({email}) => {
-                unsubscribe();
-                resolve(email);
+    listenerRemover;
+    async componentDidMount() {
+
+        this.setState({loading:true});
+
+        this.listenerRemover = firebase.firestore().doc(`/users/${auth.user.email}`).onSnapshot(async snap =>  {
+            this.setState({loading:true});
+            const user = snap.data();
+            const basket = user.basket;
+            const products = []
+            let price = 0;
+            for (const obj of basket){
+                let ref = false;
+                for (const item in this.state.cacheItem){
+                    if(obj.itemID === item.itemID){
+                        ref = item;
+                        break;
+                    }
+                }
+                if(!ref){
+                    const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
+                    let item = {...doc.data(), quantity: obj.quantity, itemID:obj.itemID}
+                    this.state.cacheItem.push(item);
+                    ref = item;
+                }
+                //elem contiene la referenza
+                products.push(ref);
+                price += ref.quantity * ref.price;
+            }
+            this.setState({
+                products: products,
+                loading:false,
+                price:price,
+                checkout: !products.length>0,
             });
         });
-
-        return await emailPromise;
-    }
-    // Returns an array containing all products of the user with the provided email
-    async getUserBasket(email) {
-        const query = await firebase.firestore().collection(`users`).doc(email).get();
-        if(!query.exists){
-            alert("empty");
-        }else{
-            return query.data().basket;
-        }
     }
 
-    async componentDidMount() {
-        let email = await this.getUserEmail();
-        let basket =  await this.getUserBasket(email);
-        let basketItems = [];
-        let price = 0;
-
-        for (const obj of basket){
-
-            const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
-            let item = {...doc.data(), quantity: obj.quantity, itemID:obj.itemID}
-            basketItems.push(item);
-            price += item.quantity * item.price;
-        }
-        this.setState({products:basketItems,price:price,loading:false,checkout:!basket.length>0});
+    componentWillUnmount() {
+        this.listenerRemover();
     }
 
     setPosition(){
@@ -106,20 +115,23 @@ class Basket extends Component {
             }
         }
 
-    basketChange = async()=>{
-        let email = await this.getUserEmail();
-        let basket =  await this.getUserBasket(email);
-        let basketItems = [];
-        let price = 0;
-        this.setState({loading:true});
-        for (const obj of basket){
-            const doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
-            let item = {...doc.data(), quantity: obj.quantity, itemID:obj.itemID}
-            basketItems.push(item);
-            price += item.quantity * item.price;
+    basketChange = (element,value)=>{
+        if(value === ""){
+            value = -1;
         }
-        this.setState({products:basketItems,price:price,loading:false});
+        const basket = this.state.products;
+        basket.map((obj,index)=>{
+            if(obj.itemID === element.itemID){
+                if(value>0){
+                    basket[index].quantity =  parseInt(value, 10);
+                }else{
+                    basket.splice(index,1);
+                }
+            }
+        })
+        firebase.firestore().collection('users').doc(auth.user.email).update({basket:basket});
     }
+
     render(){
         return(
             <Box style={this.setPosition()}>
@@ -131,14 +143,12 @@ class Basket extends Component {
                 <Body>
                     <Triangle/>
                     <Scroll>
-                        {this.state.products.map(item => (<OrderItem handler={this.basketChange} item={item} quantity={item.quantity}/>))}
+                        {this.state.products.map(item => (<OrderItem onCh={(this.basketChange)} item={item} quantity={item.quantity}/>))}
                     </Scroll>
                     <OrderTotalPrice price={this.state.price}/>
-                    <Button disabled = {this.state.checkout} onClick={()=>{this.props.history.push("/checkout")}} style={{"margin-top":"10px"}}>Checkout</Button>
+                    <Button disabled = {this.state.checkout} onClick={()=>{this.props.history.push("/checkout")}} style={{marginTop:"10px"}}>Checkout</Button>
                 </Body>)
                 }
-
-
             </Box>
             );
     }
