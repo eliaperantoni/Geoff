@@ -32,12 +32,12 @@ const ItemDetails = styled.div`
 
 const ItemName = styled.span`
   font-family: FuturaBold, sans-serif;
-  font-size: 0.9rem;
+  font-size: 1.0rem;
 `;
 
 const ItemUnitPrice = styled(Price)`
   font-family: FuturaLight, sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
 `;
 
 const ItemTotalOrder = styled.input`
@@ -95,13 +95,16 @@ class OrderItem extends Component {
         }
     }
     changeItem= async (value)=> {
-        if(value===""){
-            value=-1;//RIMUOVO L'ELEMENTO DOPO
-        }
-        let email = await this.getUserEmail();
-        let basket = await this.modifyUserBasket(email,this.state.item.itemID,value)
-        await firebase.firestore().collection(`users`).doc(email).update({basket:basket});
-        await this.state.handler();
+        //if(!value.nativeEvent.inputType){
+            let val = value.target.value;
+            if(val===""){
+                    val = -1;//RIMUOVO L'ELEMENTO DOPO
+            }
+            let email = await this.getUserEmail();
+            let basket = await this.modifyUserBasket(email,this.state.item.itemID,val)
+            await firebase.firestore().collection(`users`).doc(email).update({basket:basket});
+            await this.state.handler();
+        //}
     }
     render(){
         return (
@@ -111,7 +114,7 @@ class OrderItem extends Component {
                 <ItemName>{this.state.item.name}</ItemName>
                 <ItemUnitPrice price={this.state.item.price}/>
             </ItemDetails>
-            <ItemTotalOrder maxlength="999" type="number" value={this.state.quantity} onChange={e => this.changeItem(e.target.value)}/>
+            <ItemTotalOrder style={{"marginLeft":"20px"}} readonly maxlength="999" type="number" value={this.state.quantity} onChange={e => this.changeItem(e)}/>
         </StyledItem>
         );
     }

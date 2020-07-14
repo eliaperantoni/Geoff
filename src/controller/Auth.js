@@ -38,7 +38,9 @@ export default class Auth {
         await firebase.auth().signOut();
         this.user = null;
     }
-
+    isVerifiedEmail = async () => {
+        return firebase.auth().currentUser.emailVerified;
+    }
     loadUser = async email => {
         const userDoc = await firebase.firestore().doc(`/users/${email}`).get();
         this.user = {email, ...userDoc.data()};

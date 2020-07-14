@@ -129,7 +129,6 @@ export default class App extends React.Component {
                                 <GuardedRoute exact path="/user" meta={{only: "user"}}>
                                     <User/>
                                 </GuardedRoute>
-
                                 <GuardedRoute exact path="/admin/catalogue" meta={{only: "admin"}}>
                                     <Catalogue admin={true}/>
                                 </GuardedRoute>

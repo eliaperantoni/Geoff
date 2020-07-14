@@ -69,7 +69,7 @@ export default function () {
                 <Image src={confirmSVG}/>
                 <Upper>
                     <Title>Check your email!</Title>
-                    <Par>We have sent you an email to confirm your account<br />. Click on the link and you’ll be redirected to the homepage</Par>
+                    <Par>We have sent you an email to confirm your account.<br />Click on the link and you’ll be redirected to the homepage</Par>
                 </Upper>
 
             </Form>

@@ -240,10 +240,11 @@ class Checkout extends Component {
             const order = {
                 status: ["confirmed", "process", "delivered"][Math.floor(Math.random() * 3)],
                 placedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                paymentMethod: this.getMethodString(this.state.paymentMethod),
                 items: basket
             }
             //RIMUOVO L'ORDINE DALLO STOCK
-            let points = user.loyaltyCard;
+            let points = user.loyaltyCard.points;
             for (const obj of basket){
                 let doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
                 let item = {...doc.data()}
@@ -252,7 +253,7 @@ class Checkout extends Component {
                 await firebase.firestore().collection(`items`).doc(doc.id).update({stock:diff});
             }
             //AGGIORNO IL BASKET
-            await firebase.firestore().collection(`users`).doc(user.email).update({basket:[],loyaltyCard:(points)});
+            await firebase.firestore().collection(`users`).doc(user.email).update({basket:[],loyaltyCard:({points:points})});
             //AGGIUNGO L'ORDINE
             let orderID = await firebase.firestore().collection('users').doc(user.email).collection('orders').add({...order});
 
