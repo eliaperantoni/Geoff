@@ -11,6 +11,9 @@ export default class Validation {
     static password = str => str.length >= 6;
     static nonEmptyString = str => str.length > 0;
     static exactly = getMatch => str => getMatch() === str;
+    static creditCardNumber = str => /\d{4}\s\d{4}\s\d{4}\s\d{4}/.test(str);
+    static creditCardCVV = str => /\d{3}/.test(str);
+    static creditCardExpirationDate = str => /\d\d\/\d\d/.test(str);
 
     static all = (...validators) => str => validators.map(v => v(str)).reduce((t, acc) => t && acc);
 

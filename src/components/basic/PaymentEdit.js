@@ -69,7 +69,7 @@ export default function PaymentEdit({method, isDefault, click}){
                 {!isDefault ?(
                     <IconButton type={"primary"} icon={mdiStar} onClick={()=>click(method.id, "set")}/>
                 ):(<div></div>)}
-                {method &&(
+                {method && method.type !== "cash" && (
                     <IconButton type={"danger"} icon={mdiClose} onClick={()=>click(method.id, "remove")}/>
                 )}
 

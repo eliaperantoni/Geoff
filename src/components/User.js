@@ -128,6 +128,16 @@ class User extends Component {
     }
 
     async deletePaymentMethod(id) {
+        if(this.state.preferredPaymentMethod === id) {
+            for(const paymentMethod of this.state.paymentMethods) {
+                if(paymentMethod.type === "cash") {
+                    await firebase.firestore().doc(`/users/${auth.user.email}`).update({
+                        preferredPaymentMethod: paymentMethod.id,
+                    });
+                    break
+                }
+            }
+        }
         await firebase.firestore().doc(`/users/${auth.user.email}/paymentMethods/${id}`).delete();
     }
 
@@ -224,6 +234,14 @@ class User extends Component {
             },
         )
 
+        this.setState({
+            card: {
+                number: {str: "", valid: false, touched: false},
+                cvv: {str: "", valid: false, touched: false},
+                expirationDate: {str: "", valid: false, touched: false},
+            }
+        });
+
         this.setState({modalCard: false});
     }
 
@@ -235,6 +253,13 @@ class User extends Component {
                 password: this.state.paypal.password.str,
             }
         )
+
+        this.setState({
+            paypal: {
+                email: {str: "", valid: false, touched: false},
+                password: {str: "", valid: false, touched: false},
+            },
+        });
 
         this.setState({modalPayPal: false});
     }
@@ -341,7 +366,7 @@ class User extends Component {
                                                             state.card.number = {
                                                                 str: val,
                                                                 touched: true,
-                                                                valid: Validation.nonEmptyString(val),
+                                                                valid: Validation.creditCardNumber(val),
                                                             }
                                                             return state;
                                                         });
@@ -363,7 +388,7 @@ class User extends Component {
                                                                     state.card.cvv = {
                                                                         str: val,
                                                                         touched: true,
-                                                                        valid: Validation.nonEmptyString(val),
+                                                                        valid: Validation.creditCardCVV(val),
                                                                     }
                                                                     return state;
                                                                 });
@@ -376,7 +401,7 @@ class User extends Component {
                                                             }}/>
                                     </div>
                                     <div style={{width: "100%", marginLeft: "20px"}}>
-                                        <StyledLabeledInput style={{width: "100%"}} label={"expiry date"}
+                                        <StyledLabeledInput style={{width: "100%"}} label={"expiration date (mm/yy)"}
                                                             value={this.state.card.expirationDate.str}
                                                             invalid={!this.state.card.expirationDate.valid && this.state.card.expirationDate.touched}
                                                             onChange={e => {
@@ -385,7 +410,7 @@ class User extends Component {
                                                                     state.card.expirationDate = {
                                                                         str: val,
                                                                         touched: true,
-                                                                        valid: Validation.nonEmptyString(val),
+                                                                        valid: Validation.creditCardExpirationDate(val),
                                                                     }
                                                                     return state;
                                                                 });
@@ -429,6 +454,7 @@ class User extends Component {
                                                     }}
                                 />
                                 <StyledLabeledInput style={{width: "100%"}} label={"password"}
+                                                    type="password"
                                                     invalid={!this.state.paypal.password.valid && this.state.paypal.password.touched}
                                                     value={this.state.paypal.password.str}
                                                     onChange={e => {
