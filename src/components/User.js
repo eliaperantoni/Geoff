@@ -221,6 +221,11 @@ class User extends Component {
         this.setState({userApp:ne})
     }
 
+    requireLoyalityCard = async()=>{
+        await firebase.firestore().collection('users').doc(this.state.user.email).update({loyaltyCard:0});
+        this.setState({user:await this.getUser()});
+    }
+
     addCard = async () => {
         this.setState({loading: true, modalCard:false});
         let cvv = document.getElementsByName("cvv")[0].value;
@@ -243,8 +248,8 @@ class User extends Component {
         //TODO CONTROLLO INPUT
         this.setState({loading: false,payments: await this.getUserPayments(this.state.user.email)});
     }
-    render(){
 
+    render(){
         return (
             <Wrapper hideInput={true}>
                 {this.state.loading ?(<Loader loading={this.state.loading}/>):(
@@ -252,13 +257,19 @@ class User extends Component {
                     <BoldText style={{paddingLeft:"20px",margin:"0px",fontSize: "36px"}}>{this.state.user.name+ " " +this.state.user.surname}</BoldText>
                     <Background>
                         <BoldText>Loyality card</BoldText>
-                        <LoyaltyCard>
-                            <div>
-                                {this.state.user.name+ " " +this.state.user.surname}
-                                <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyaltyCard ? (this.state.user.loyaltyCard/100):(0)} pt</p>
-                                <p style={{textAlign:"right"}}>Geoff</p>
-                            </div>
-                        </LoyaltyCard>
+                            {((!this.state.user.loyaltyCard) && (this.state.user.loyaltyCard!==0)) ? (
+                                <Button onClick={()=>this.requireLoyalityCard()}>Require card</Button>
+                            ):(
+                                <LoyaltyCard>
+                                    <div>
+                                        {this.state.user.name+ " " +this.state.user.surname}
+                                        <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyaltyCard ? (Math.floor(this.state.user.loyaltyCard/100)):(0)} pt</p>
+                                        <p style={{textAlign:"right"}}>Geoff</p>
+                                    </div>
+                                </LoyaltyCard>
+                            )}
+
+
                         <BoldText>Personal Information</BoldText>
                         <div style={{display:"flex", flexDirection:"row"}}>
                             <UserInformation style={{marginTop:"-20px"}}>
