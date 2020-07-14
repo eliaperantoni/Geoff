@@ -276,7 +276,7 @@ class Checkout extends Component {
     }
     render(){
         return (
-            <Wrapper hideInput={true}>
+            <Wrapper hiddenBasket={true} hideInput={true}>
                 {this.state.loading ?(<Loader loading={this.state.loading}/>):(
                     <Form>
                         <Upper>

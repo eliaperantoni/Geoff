@@ -18,6 +18,7 @@ const Box =  styled.div`
     background-color: #fafdff;
     border-radius: 8px;
     cursor: pointer;
+    z-index: 999;
 `;
 const Triangle = styled.div`
     width: 0;

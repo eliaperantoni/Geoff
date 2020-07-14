@@ -77,5 +77,6 @@ class OrderItem extends Component {
         );
     }
 }
+
 export default OrderItem;
 

@@ -27,10 +27,10 @@ const StyledFooter = styled(Footer)`
   margin-top: auto;
 `;
 
-export default function Wrapper({children, hideInput=false, onSearch, onCategory, onSortTarget, onSortOrder}) {
+export default function Wrapper({children, hideInput=false, onSearch, onCategory, onSortTarget, onSortOrder, hiddenBasket=false}) {
     return (
         <StyledWrapper>
-            <StyledHeader hideInput={hideInput} onSearch={onSearch} onCategory={onCategory} onSortTarget={onSortTarget} onSortOrder={onSortOrder}/>
+            <StyledHeader hideInput={hideInput} hiddenBasket={hiddenBasket} onSearch={onSearch} onCategory={onCategory} onSortTarget={onSortTarget} onSortOrder={onSortOrder}/>
             <ChildrenWrapper>
                 {children}
             </ChildrenWrapper>
