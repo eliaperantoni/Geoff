@@ -1,16 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 import styled, {css} from 'styled-components';
 import {mdiCart, mdiClose, mdiPlus} from "@mdi/js";
-import firebase from "firebase";
 
 import Card from 'components/basic/Card.js';
 import IconButton from 'components/basic/IconButton.js';
 import Price from 'components/basic/Price.js';
-import Input from 'components/basic/Input.js';
-import Button from 'components/basic/Button.js';
-import Popup from 'components/basic/Popup.js';
-import Validation from 'controller/Validation';
-import {setLoading} from "App";
 
 const StyledItem = styled(Card)`
     display: flex;
@@ -18,6 +12,8 @@ const StyledItem = styled(Card)`
     height: 200px;
     width: 300px;
     padding: 0;
+    
+    position: relative;
     
     ${props => !props.admin && css`
         cursor: pointer;
@@ -28,7 +24,8 @@ const StyledItem = styled(Card)`
     `}
     
     ${props => props.disabled && css`
-        filter: saturate(20%) blur(1px);
+        filter: saturate(20%) opacity(70%);
+        pointer-events: none;
     `}
 `;
 

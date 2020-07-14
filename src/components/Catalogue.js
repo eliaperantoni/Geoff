@@ -186,7 +186,6 @@ export default class Catalogue extends React.Component {
             itemsComponents = items.map(item => (
                 <Item item={item}
                       key={item.name}
-                      disabled={item.stock <= 0}
 
                       admin={true}
                       onDelete={this.deleteItem(item.id)}
