@@ -10,6 +10,8 @@ import Validation from "controller/Validation";
 import {mdiCart} from "@mdi/js";
 
 const StyledDetail = styled(Card)`
+    z-index: 5;
+
     display: flex;
     flex-direction: column;
     height: 600px;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import firebase from "firebase";
 
@@ -10,6 +10,9 @@ import Detail from "components/Detail";
 import Popup from "components/basic/Popup";
 import CreateItem from "components/CreateItem";
 import {setLoading} from "App";
+import Card from "./basic/Card";
+import Validation from "../controller/Validation";
+import Input from "./basic/Input";
 
 const StyledCatalogue = styled.div`
     flex: 1;
@@ -28,6 +31,50 @@ const AddItem = styled(Button).attrs(() => ({
     margin-bottom: 18px;
 `;
 
+const StyledAddStock = styled(Card)`
+    z-index: 5;
+
+    display: flex;
+    flex-direction: column;
+    box-shadow: none;
+    
+    > * {
+        margin-bottom: 18px;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+`;
+
+function AddStock({onAddStock}) {
+    const [quantity, setQuantity] = useState({
+        str: "",
+        valid: false,
+        touched: false,
+    });
+
+    const onChange = e => {
+        const val = e.target.value;
+        setQuantity({
+            str: val,
+            valid: Validation.int({min: 1})(val),
+            touched: true,
+        })
+    }
+
+    return (
+        <StyledAddStock>
+            <Input placeholder="Quantity to add" value={quantity.str} onBlur={() => {
+                setQuantity(state => ({...state, touched: true}))
+            }} onChange={onChange} invalid={!quantity.valid && quantity.touched}/>
+            <Button onClick={() => {
+                if (quantity.valid)
+                    onAddStock(parseInt(quantity.str));
+            }}>Add to stock</Button>
+        </StyledAddStock>
+    );
+}
+
 export default class Catalogue extends React.Component {
     constructor(props) {
         super(props);
@@ -38,8 +85,11 @@ export default class Catalogue extends React.Component {
                 category: "",
             },
             loading: true,
-            isModalOpen: false,
             selectedItem: null,
+
+            createItemModal: false,
+            addStockModal: false,
+            detailModal: false,
         };
     }
 
@@ -49,9 +99,7 @@ export default class Catalogue extends React.Component {
     }
 
     async refreshItems() {
-        const query = await firebase.firestore().collection("/items")
-            .where("deleted", "==", false)
-            .where("stock", ">", 0).get();
+        const query = await firebase.firestore().collection("/items").where("deleted", "==", false).get();
         const items = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
         this.setState({items});
     }
@@ -66,18 +114,21 @@ export default class Catalogue extends React.Component {
 
     deleteItem = id => async () => {
         this.setState({items: [], loading: true});
+
         await firebase.firestore().doc(`/items/${id}`).update({deleted: true});
+
         await this.refreshItems();
         this.setState({loading: false});
     }
 
-    openItem = item => () => {
-        this.setState({isModalOpen: true, selectedItem: item})
-    }
+    addStock = async inc => {
+        setLoading(true);
 
-    closeItem = () => {
-        this.setState({isModalOpen: false});
-        this.setState({selectedItem: null});
+        await firebase.firestore().doc(`/items/${this.state.selectedItem.id}`).update({
+            stock: firebase.firestore.FieldValue.increment(inc)
+        });
+
+        setLoading(false);
     }
 
     addToCart = async (itemID, quantity) => {
@@ -123,45 +174,88 @@ export default class Catalogue extends React.Component {
         const filters = [];
 
         if (this.state.query.text !== "") filters.push(doesItemMatchText);
-        if(this.state.query.category !== "") filters.push(doesItemMatchCategory);
+        if (this.state.query.category !== "") filters.push(doesItemMatchCategory);
 
         const items = this.state.items.filter(item => {
-            for (const filter of filters) if(!filter(item)) return false;
+            for (const filter of filters) if (!filter(item)) return false;
             return true;
         });
 
         let itemsComponents;
-        if (this.props.admin)
+        if (this.props.admin) {
             itemsComponents = items.map(item => (
-                <Item name={item.name} price={item.price} image={item.image} stock={item.stock} admin={true}
-                      onDelete={this.deleteItem(item.id)} key={item.name}/>));
-        else
+                <Item item={item}
+                      key={item.name}
+                      disabled={item.stock <= 0}
+
+                      admin={true}
+                      onDelete={this.deleteItem(item.id)}
+                      onAddStock={() => this.setState({addStockModal: true, selectedItem: item})}
+                />));
+        } else {
             itemsComponents = items.map(item => (
-                <Item name={item.name} price={item.price} image={item.image} onClick={this.openItem(item)}
-                      onAddToCart={() => this.addToCart(item.id, 1)} key={item.name}/>));
+                <Item item={item}
+                      key={item.name}
+                      disabled={item.stock <= 0}
+
+                      onClick={() => {
+                          this.setState({detailModal: true, selectedItem: item});
+                      }}
+                      onAddToCart={() => this.addToCart(item.id, 1)}
+                />));
+        }
 
         return (
             <Wrapper onSearch={this.onSearch} onCategory={this.onCategory}>
                 <Loader loading={this.state.loading}/>
 
-                <Popup open={this.state.isModalOpen} onClose={this.closeItem}>
-                    {this.props.admin
-                        ? <CreateItem onCreated={() => {
-                            this.refreshItems();
-                            this.setState({isModalOpen: false});
-                        }}/>
-                        : <Detail item={this.state.selectedItem} onAddToCart={async quantity => {
-                            await this.addToCart(this.state.selectedItem.id, quantity);
-                            this.closeItem();
-                        }}/>
-                    }
+                <Popup open={this.state.createItemModal}
+                       onClose={() => {
+                           this.setState({createItemModal: false})
+                       }}>
+                    <CreateItem onCreated={() => {
+                        this.setState({createItemModal: false});
+                        this.refreshItems();
+                    }}/>
+                </Popup>
+
+                <Popup open={this.state.addStockModal}
+                       onClose={() => {
+                           this.setState({addStockModal: false});
+                           this.setState({selectedItem: null});
+                       }}>
+                    <AddStock onAddStock={async inc => {
+                        await this.addStock(inc);
+
+                        this.setState({addStockModal: false});
+                        this.setState({selectedItem: null});
+
+                        this.setState({items: [], loading: true});
+                        await this.refreshItems();
+                        this.setState({loading: false});
+                    }}/>
+                </Popup>
+
+                <Popup open={this.state.detailModal}
+                       onClose={() => {
+                           this.setState({detailModal: false});
+                           this.setState({selectedItem: null});
+                       }}>
+                    <Detail item={this.state.selectedItem}
+                            onAddToCart={async quantity => {
+                                await this.addToCart(this.state.selectedItem.id, quantity);
+                                this.setState({detailModal: false});
+                                this.setState({selectedItem: null});
+                            }}/>
                 </Popup>
 
                 {!this.state.loading && (
                     <StyledCatalogue>
-                        {this.props.admin && (<AddItem onClick={() => {
-                            this.setState({isModalOpen: true})
-                        }}/>)}
+                        {this.props.admin && (
+                            <AddItem onClick={() => {
+                                this.setState({createItemModal: true})
+                            }}/>
+                        )}
                         {itemsComponents}
                     </StyledCatalogue>
                 )}
