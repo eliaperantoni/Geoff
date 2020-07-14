@@ -4,12 +4,10 @@ import firebase from "firebase";
 
 import Item from "components/Item";
 import Wrapper from "components/Wrapper";
-import Loader from "components/basic/Loader";
 import Button from "components/basic/Button";
 import Detail from "components/Detail";
 import Popup from "components/basic/Popup";
 import CreateItem from "components/CreateItem";
-import {setLoading} from "App";
 import Card from "./basic/Card";
 import Validation from "controller/Validation";
 import Auth from "controller/Auth";
@@ -92,7 +90,6 @@ export default class Catalogue extends React.Component {
                     order: "asc",
                 }
             },
-            loading: true,
             selectedItem: null,
 
 
@@ -105,33 +102,18 @@ export default class Catalogue extends React.Component {
     removeListeners = [];
 
     componentDidMount() {
-        const initialLoads = [];
-
-        new Promise(resolve => {
-            initialLoads.push(resolve)
-        });
-        new Promise(resolve => {
-            initialLoads.push(resolve)
-        });
-
         this.removeListeners.push(
             firebase.firestore().collection("/items").where("deleted", "==", false).onSnapshot(snap => {
                 const items = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
                 this.setState({items});
-
-                initialLoads[0]();
             })
         );
 
         this.removeListeners.push(
             firebase.firestore().doc(`/users/${auth.user.email}`).onSnapshot(snap => {
                 this.setState({basket: snap.data().basket});
-
-                initialLoads[1]();
             })
         );
-
-        Promise.all(initialLoads).then(() => this.setState({loading: false}));
     }
 
     componentWillUnmount() {
@@ -260,7 +242,6 @@ export default class Catalogue extends React.Component {
         return (
             <Wrapper onSearch={this.onSearch} onCategory={this.onCategory} onSortTarget={this.onSortTarget}
                      onSortOrder={this.onSortOrder}>
-                <Loader loading={this.state.loading}/>
 
                 <Popup open={this.state.createItemModal}
                        onClose={() => {
@@ -292,16 +273,14 @@ export default class Catalogue extends React.Component {
                             }}/>
                 </Popup>
 
-                {!this.state.loading && (
-                    <StyledCatalogue>
-                        {this.props.admin && (
-                            <AddItem onClick={() => {
-                                this.setState({createItemModal: true})
-                            }}/>
-                        )}
-                        {itemsComponents}
-                    </StyledCatalogue>
-                )}
+                <StyledCatalogue>
+                    {this.props.admin && (
+                        <AddItem onClick={() => {
+                            this.setState({createItemModal: true})
+                        }}/>
+                    )}
+                    {itemsComponents}
+                </StyledCatalogue>
             </Wrapper>
         );
     }

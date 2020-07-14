@@ -2,13 +2,18 @@ import React, {Component} from "react";
 import styled from "styled-components";
 import Card from "components/basic/Card"
 import Button from "components/basic/Button";
-import { withRouter } from "react-router-dom"
+import {withRouter} from "react-router-dom"
 import firebase from "firebase.js";
 import Wrapper from "components/Wrapper";
 import Popup from "./basic/Popup";
 import Loader from "./basic/Loader";
 import LabeledInput from "./basic/LabeledInput";
 import PaymentEdit from "./basic/PaymentEdit";
+import Auth from "controller/Auth";
+import Validation from "controller/Validation";
+import {setLoading} from "App";
+
+const auth = Auth.getInstance();
 
 const BoldText = styled.p`
     font-family: FuturaBold, sans-serif;
@@ -46,7 +51,7 @@ const LoyaltyCard = styled(Card)`
     color: #fafdff;
 `
 
-const PaymentsContainer= styled.div`
+const PaymentsContainer = styled.div`
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -85,216 +90,375 @@ const PopUpContainer = styled(Card)`
 `
 
 class User extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            user:{},
-            userApp:{},
-            loading:true,
-            payments:{},
-            defaultMethod:null,
-            modalCard:false,
-            modalPayPal:false,
+            initialLoaded: false,
+
+            paymentMethods: [],
+            preferredPaymentMethod: null,
+
+            modalCard: false,
+            modalPayPal: false,
+
+            name: null,
+            surname: null,
+            city: null,
+            address: null,
+            cap: null,
+            phone: null,
+
+            card: {
+                number: {str: "", valid: false, touched: false},
+                cvv: {str: "", valid: false, touched: false},
+                expirationDate: {str: "", valid: false, touched: false},
+            },
+
+            paypal: {
+                email: {str: "", valid: false, touched: false},
+                password: {str: "", valid: false, touched: false},
+            },
         };
     }
 
-    async getUserEmail() {
-        const emailPromise = new Promise(resolve => {
-            const unsubscribe = firebase.auth().onAuthStateChanged(async ({email}) => {
-                unsubscribe();
-                resolve(email);
-            });
+    async setDefaultPaymentMethod(id) {
+        await firebase.firestore().doc(`/users/${auth.user.email}`).update({
+            preferredPaymentMethod: id
         });
-
-        return await emailPromise;
     }
 
-    async getUser(){
-        let email = await this.getUserEmail();
-        const doc = await firebase.firestore().collection(`users`).doc(email).get();
-        return {email:email,...doc.data()}
+    async deletePaymentMethod(id) {
+        await firebase.firestore().doc(`/users/${auth.user.email}/paymentMethods/${id}`).delete();
     }
 
-    async getUserPayments(email) {
-        const query = await await firebase.firestore().collection(`users/${email}/paymentMethods`).get();
-        return query.docs.map(doc => ({id: doc.id,...doc.data()}));
+    removeListeners = [];
+
+    componentDidMount() {
+        setLoading(true);
+
+        const promises = [];
+        const resolvers = [];
+
+        promises.push(new Promise(resolve => {
+            resolvers.push(resolve)
+        }));
+        promises.push(new Promise(resolve => {
+            resolvers.push(resolve)
+        }));
+
+        this.removeListeners.push(firebase.firestore().doc(`/users/${auth.user.email}`).onSnapshot(snap => {
+            const user = snap.data();
+
+            this.setState({
+                preferredPaymentMethod: user.preferredPaymentMethod,
+
+                loyaltyCard: user.loyaltyCard,
+
+                name: {str: user.name, valid: true},
+                surname: {str: user.surname, valid: true},
+                city: {str: user.city, valid: true},
+                address: {str: user.address, valid: true},
+                cap: {str: user.cap, valid: true},
+                phone: {str: user.phone, valid: true},
+            });
+
+            resolvers[0]();
+        }));
+
+        this.removeListeners.push(firebase.firestore().collection(`/users/${auth.user.email}/paymentMethods`).onSnapshot(snap => {
+            this.setState({
+                paymentMethods: snap.docs.map(doc => ({id: doc.id, ...doc.data()})),
+            });
+
+            resolvers[1]();
+        }));
+
+        Promise.all(promises).then(() => {
+            this.setState({initialLoaded: true});
+            setLoading(false);
+        });
     }
 
-    async setDefaultPayment(method){
-        if(method){
-            await firebase.firestore().collection(`users`).doc(this.state.user.email).update({preferredPaymentMethod:method.id});
-        }else{
-            await firebase.firestore().collection(`users`).doc(this.state.user.email).update({preferredPaymentMethod:null});
+    componentWillUnmount() {
+        for (const removeListener of this.removeListeners) {
+            removeListener();
         }
     }
 
-    async deletePayment(method){
-        if(method){
-            await firebase.firestore().collection('users').doc(this.state.user.email).collection('paymentMethods').doc(method.id).delete();
+    methodClick = async (id, action) => {
+        if (action === "set") {
+            await this.setDefaultPaymentMethod(id);
+        } else if (action === "remove") {
+            await this.deletePaymentMethod(id);
         }
     }
 
-    async getDefaultPaymentInList(user,payments){
-        let defaultMethod=null;
-        for (const obj of payments){
-            if(obj.id === user.preferredPaymentMethod){
-                defaultMethod=obj;
-                break;
-            }
-        }
-        return defaultMethod;
+    updateUser = async () => {
+        await firebase.firestore().doc(`/users/${auth.user.email}`).update({
+            name: this.state.name.str,
+            surname: this.state.surname.str,
+            city: this.state.city.str,
+            address: this.state.address.str,
+            cap: this.state.cap.str,
+            phone: this.state.phone.str,
+        });
     }
 
-    async componentDidMount() {
-        let user = await this.getUser();
-        let payments = await this.getUserPayments(user.email);
-        let defaultM = await this.getDefaultPaymentInList(user,payments);
-
-        this.setState({
-            user:user,
-            loading:false,
-            payments:payments,
-            defaultMethod:defaultM,
-            userApp: {name:user.name,surname:user.surname,city:user.city,cap:user.cap,address: user.address,phone:user.phone}, // SOLO PER LO STATO INIZIALE
-        })
-    }
-
-    methodClick = async(method,action)=>{
-        this.setState({loading:true});
-        if(action==="set"){
-            await this.setDefaultPayment(method);
-            this.setState({defaultMethod:method,loading:false});
-        }else if(action==="remove"){
-            await this.deletePayment(method);
-            let payments = await this.getUserPayments(this.state.user.email);
-            let defaultM = await this.getDefaultPaymentInList(this.state.user,payments);
-            this.setState({defaultMethod:defaultM,payments:payments,loading:false});
-
-        }
-
-    }
-
-    updateUser = async()=>{
-        this.setState({ loading:true });
-        await firebase.firestore().collection('users').doc(this.state.user.email).update(this.state.userApp);
-        let user = await this.getUser();
-        this.setState({user:user,userApp: {name:user.name,surname:user.surname,city:user.city,cap:user.cap,address: user.address,phone:user.phone},loading:false});
-    }
-
-    changeInput = (target,value)=>{
-        let ne = this.state.userApp
-        if(target==="phone number"){
-            ne["phone"]=value
-        }else{
-            ne[target]=value
-        }
-        this.setState({userApp:ne})
-    }
-
-    requireLoyalityCard = async()=>{
-        await firebase.firestore().collection('users').doc(this.state.user.email).update(
-            {loyaltyCard:{points:0, number:Math.floor(Math.random() * (999999999)),createdAt:firebase.firestore.FieldValue.serverTimestamp()}
-                    });
-        this.setState({user:await this.getUser()});
+    requireLoyaltyCard = async () => {
+        await firebase.firestore().doc(`/users/${auth.user.email}`).update({
+            loyaltyCard: {
+                points: 0,
+                number: Math.floor(Math.random() * (999999999)),
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            },
+        });
     }
 
     addCard = async () => {
-        this.setState({loading: true, modalCard:false});
-        let cvv = document.getElementsByName("cvv")[0].value;
-        let number = document.getElementsByName("number")[0].value;
-        let expirationDate = document.getElementsByName("expiry date")[0].value;
-        await firebase.firestore().collection('users').doc(this.state.user.email).collection("paymentMethods").add(
-            {cvv:cvv, number:number, expirationDate:expirationDate, type:"card"}
-            )
-        //TODO CONTROLLO INPUT
-        this.setState({loading: false,payments: await this.getUserPayments(this.state.user.email)});
+        firebase.firestore().collection(`/users/${auth.user.email}/paymentMethods`).add(
+            {
+                type: "card",
+                cvv: this.state.card.cvv.str,
+                number: this.state.card.number.str,
+                expirationDate: this.state.card.expirationDate.str,
+            },
+        )
+
+        this.setState({modalCard: false});
     }
 
     addPaypal = async () => {
-        this.setState({loading: true, modalPayPal:false});
-        let email = document.getElementsByName("email")[0].value;
-        let password = document.getElementsByName("password")[0].value;
-        await firebase.firestore().collection('users').doc(this.state.user.email).collection("paymentMethods").add(
-            {email:email, password:password, type:"paypal"}
+        firebase.firestore().collection(`/users/${auth.user.email}/paymentMethods`).add(
+            {
+                type: "paypal",
+                email: this.state.paypal.email.str,
+                password: this.state.paypal.password.str,
+            }
         )
-        //TODO CONTROLLO INPUT
-        this.setState({loading: false,payments: await this.getUserPayments(this.state.user.email)});
+
+        this.setState({modalPayPal: false});
     }
 
-    render(){
+    render() {
+        if (!this.state.initialLoaded) return (<div/>);
+
+        const userInfoValidators = {
+            name: Validation.nonEmptyString,
+            surname: Validation.nonEmptyString,
+            city: Validation.nonEmptyString,
+            address: Validation.nonEmptyString,
+            cap: Validation.cap,
+            phone: Validation.phone,
+        };
+
+        const userInfoValidated = field => ({
+            value: this.state[field].str,
+            invalid: !this.state[field].valid,
+            label: field,
+            onChange: e => {
+                const val = e.target.value;
+                this.setState(state => {
+                    state[field] = {
+                        str: val,
+                        valid: userInfoValidators[field](val),
+                    }
+
+                    return state;
+                });
+            },
+        });
+
+        const userInfoValid = Validation.allValid(this.state, ["name", "surname", "city", "address", "cap", "phone"]);
+
         return (
             <Wrapper hideInput={true}>
-                {this.state.loading ?(<Loader loading={this.state.loading}/>):(
                 <Container>
-                    <BoldText style={{paddingLeft:"20px",margin:"0px",fontSize: "36px"}}>{this.state.user.name+ " " +this.state.user.surname}</BoldText>
+                    <BoldText style={{paddingLeft: "20px", margin: "0px", fontSize: "36px"}}>
+                        {this.state.name.str} {this.state.surname.str}
+                    </BoldText>
+
                     <Background>
                         <BoldText>Loyality card</BoldText>
-                            {(!this.state.user.loyaltyCard) ? (
-                                <Button onClick={()=>this.requireLoyalityCard()}>Require card</Button>
-                            ):(
-                                <LoyaltyCard>
-                                    <div>
-                                        {this.state.user.name+ " " +this.state.user.surname}
-                                        <p style={{fontSize: "36px",margin:"0"}}>{this.state.user.loyaltyCard.points ? (Math.floor(this.state.user.loyaltyCard.points/100)):(0)} pt</p>
-                                        <p style={{textAlign:"right"}}>Geoff</p>
-                                    </div>
-                                </LoyaltyCard>
-                            )}
+                        {this.state.loyaltyCard ? (
+                            <LoyaltyCard>
+                                <div>
+                                    {this.state.name.str} {this.state.surname.str}
+                                    <p style={{
+                                        fontSize: "36px",
+                                        margin: "0"
+                                    }}>{this.state.loyaltyCard.points ? (Math.floor(this.state.loyaltyCard.points / 100)) : (0)} pt</p>
+                                    <p style={{textAlign: "right"}}>Geoff</p>
+                                </div>
+                            </LoyaltyCard>
+                        ) : (
+                            <Button onClick={() => this.requireLoyaltyCard()}>Require card</Button>
+                        )}
 
 
                         <BoldText>Personal Information</BoldText>
-                        <div style={{display:"flex", flexDirection:"row"}}>
-                            <UserInformation style={{marginTop:"-20px"}}>
-                                <StyledLabeledInput label={"name"} onChange={(e)=>(this.changeInput(e.target.name,e.target.value))} value={this.state.userApp.name}/>
-                                <StyledLabeledInput label={"city"} onChange={(e)=>(this.changeInput(e.target.name,e.target.value))} value={this.state.userApp.city}/>
-                                <StyledLabeledInput label={"cap"}  onChange={(e)=>(this.changeInput(e.target.name,e.target.value))} value={this.state.userApp.cap}/>
+                        <div style={{display: "flex", flexDirection: "row"}}>
+                            <UserInformation style={{marginTop: "-20px"}}>
+                                <StyledLabeledInput {...userInfoValidated("name")}/>
+                                <StyledLabeledInput {...userInfoValidated("city")}/>
+                                <StyledLabeledInput {...userInfoValidated("cap")}/>
                             </UserInformation>
-                            <UserInformation style={{marginTop:"-20px",marginLeft:"20px"}}>
-                                <StyledLabeledInput label={"surname"} onChange={(e)=>(this.changeInput(e.target.name,e.target.value))} value={this.state.userApp.surname}/>
-                                <StyledLabeledInput label={"address"} onChange={(e)=>(this.changeInput(e.target.name,e.target.value))} value={this.state.userApp.address}/>
-                                <StyledLabeledInput label={"phone number"} onChange={(e)=>(this.changeInput(e.target.name,e.target.value))} value={this.state.userApp.phone}/>
+
+                            <UserInformation style={{marginTop: "-20px", marginLeft: "20px"}}>
+                                <StyledLabeledInput {...userInfoValidated("surname")}/>
+                                <StyledLabeledInput {...userInfoValidated("address")}/>
+                                <StyledLabeledInput {...userInfoValidated("phone")}/>
                             </UserInformation>
                         </div>
-                        <Button style={{marginTop:"20px"}} onClick={()=>this.updateUser()}>Update</Button>
+                        <Button style={{marginTop: "20px"}} onClick={() => this.updateUser()}
+                                disabled={!userInfoValid}>Update</Button>
+
                         <BoldText>Payment Methods</BoldText>
                         <PaymentsContainer>
-                            <PaymentEdit method={null} isDefault={null===this.state.defaultMethod} click={this.methodClick}>
-                            </PaymentEdit>
-                            {this.state.payments.map(method =>(
-                                <PaymentEdit method={method} isDefault={this.state.defaultMethod && method.id===this.state.defaultMethod.id} click={this.methodClick}>
-                                </PaymentEdit>))
+                            {
+                                this.state.paymentMethods.map(method => (
+                                    <PaymentEdit method={method}
+                                                 isDefault={this.state.preferredPaymentMethod === method.id}
+                                                 click={this.methodClick}/>
+                                ))
                             }
                         </PaymentsContainer>
+
                         <ButtonContainer>
-                            <Button style={{width:"100%",marginRight:"20px"}} onClick={()=>(this.setState({modalCard:true}))}>Add card</Button>
-                            <Button style={{width:"100%",marginLeft:"20px"}} onClick={()=>(this.setState({modalPayPal:true}))}>Add PayPal</Button>
+                            <Button style={{width: "100%", marginRight: "20px"}}
+                                    onClick={() => (this.setState({modalCard: true}))}>Add card</Button>
+                            <Button style={{width: "100%", marginLeft: "20px"}}
+                                    onClick={() => (this.setState({modalPayPal: true}))}>Add PayPal</Button>
                         </ButtonContainer>
-                        <Popup open={this.state.modalCard} onClose={()=>(this.setState({modalCard:false}))}>
+
+                        <Popup open={this.state.modalCard} onClose={() => (this.setState({modalCard: false}))}>
                             <PopUpContainer>
-                                <StyledLabeledInput label={"number"}/>
+                                <StyledLabeledInput label={"number"}
+                                                    invalid={!this.state.card.number.valid && this.state.card.number.touched}
+                                                    value={this.state.card.number.str}
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        this.setState(state => {
+                                                            state.card.number = {
+                                                                str: val,
+                                                                touched: true,
+                                                                valid: Validation.nonEmptyString(val),
+                                                            }
+                                                            return state;
+                                                        });
+                                                    }}
+                                                    onBlur={() => {
+                                                        this.setState(state => {
+                                                            state.card.number.touched = true;
+                                                            return state;
+                                                        });
+                                                    }}/>
+
                                 <ButtonContainer>
-                                    <div style={{width:"100%",marginRight:"20px"}}>
-                                        <StyledLabeledInput label={"cvv"}/>
+                                    <div style={{width: "100%", marginRight: "20px"}}>
+                                        <StyledLabeledInput label={"cvv"} value={this.state.card.cvv.str}
+                                                            invalid={!this.state.card.cvv.valid && this.state.card.cvv.touched}
+                                                            onChange={e => {
+                                                                const val = e.target.value;
+                                                                this.setState(state => {
+                                                                    state.card.cvv = {
+                                                                        str: val,
+                                                                        touched: true,
+                                                                        valid: Validation.nonEmptyString(val),
+                                                                    }
+                                                                    return state;
+                                                                });
+                                                            }}
+                                                            onBlur={() => {
+                                                                this.setState(state => {
+                                                                    state.card.cvv.touched = true;
+                                                                    return state;
+                                                                });
+                                                            }}/>
                                     </div>
-                                    <div style={{width:"100%",marginLeft:"20px"}}>
-                                        <StyledLabeledInput style={{width:"100%"}} label={"expiry date"}/>
+                                    <div style={{width: "100%", marginLeft: "20px"}}>
+                                        <StyledLabeledInput style={{width: "100%"}} label={"expiry date"}
+                                                            value={this.state.card.expirationDate.str}
+                                                            invalid={!this.state.card.expirationDate.valid && this.state.card.expirationDate.touched}
+                                                            onChange={e => {
+                                                                const val = e.target.value;
+                                                                this.setState(state => {
+                                                                    state.card.expirationDate = {
+                                                                        str: val,
+                                                                        touched: true,
+                                                                        valid: Validation.nonEmptyString(val),
+                                                                    }
+                                                                    return state;
+                                                                });
+                                                            }}
+                                                            onBlur={() => {
+                                                                this.setState(state => {
+                                                                    state.card.expirationDate.touched = true;
+                                                                    return state;
+                                                                });
+                                                            }}/>
                                     </div>
                                 </ButtonContainer>
-                                <Button onClick={()=>(this.addCard())}>Add credit card</Button>
+
+                                <Button
+                                    disabled={!this.state.card.number.valid || !this.state.card.cvv.valid || !this.state.card.expirationDate.valid}
+                                    onClick={() => (this.addCard())}>Add credit card</Button>
                             </PopUpContainer>
                         </Popup>
-                        <Popup open={this.state.modalPayPal} onClose={()=>(this.setState({modalPayPal:false}))}>
+
+                        <Popup open={this.state.modalPayPal} onClose={() => (this.setState({modalPayPal: false}))}>
                             <PopUpContainer>
-                                <StyledLabeledInput label={"email"}/>
-                                <StyledLabeledInput style={{width:"100%"}} label={"password"}/>
-                                <Button style={{marginTop:"40px"}} onClick={()=>(this.addPaypal())}>Add paypal</Button>
+                                <StyledLabeledInput label={"email"}
+                                                    invalid={!this.state.paypal.email.valid && this.state.paypal.email.touched}
+                                                    value={this.state.paypal.email.str}
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        this.setState(state => {
+                                                            state.paypal.email = {
+                                                                str: val,
+                                                                touched: true,
+                                                                valid: Validation.email(val),
+                                                            }
+                                                            return state;
+                                                        });
+                                                    }}
+                                                    onBlur={() => {
+                                                        this.setState(state => {
+                                                            state.paypal.email.touched = true;
+                                                            return state;
+                                                        });
+                                                    }}
+                                />
+                                <StyledLabeledInput style={{width: "100%"}} label={"password"}
+                                                    invalid={!this.state.paypal.password.valid && this.state.paypal.password.touched}
+                                                    value={this.state.paypal.password.str}
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        this.setState(state => {
+                                                            state.paypal.password = {
+                                                                str: val,
+                                                                touched: true,
+                                                                valid: Validation.nonEmptyString(val),
+                                                            }
+                                                            return state;
+                                                        });
+                                                    }}
+                                                    onBlur={() => {
+                                                        this.setState(state => {
+                                                            state.paypal.password.touched = true;
+                                                            return state;
+                                                        });
+                                                    }}
+                                />
+                                <Button style={{marginTop: "40px"}}
+                                        disabled={!this.state.paypal.email.valid || !this.state.paypal.password.valid}
+                                        onClick={() => (this.addPaypal())}>Add paypal</Button>
                             </PopUpContainer>
                         </Popup>
                     </Background>
-                </Container>)}
+                </Container>
             </Wrapper>
         );
     }
 }
+
 export default withRouter(User)

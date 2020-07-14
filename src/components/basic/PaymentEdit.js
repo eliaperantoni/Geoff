@@ -32,7 +32,7 @@ const ButtonContainer = styled.div`
 `;
 function getMethodIcon(method){
     //mdiCreditCard
-    if(method === null){
+    if(method.type === "cash"){
         return mdiCashMultiple;
     }
     if(method.type === "paypal"){
@@ -46,7 +46,7 @@ function getMethodIcon(method){
 
 function getMethodString(method){
     //"**** **** **** 1234"
-    if(method === null){
+    if(method.type === "cash"){
         return "Cash";
     }
     if(method.type === "paypal"){
@@ -67,10 +67,10 @@ export default function PaymentEdit({method, isDefault, click}){
             </BoldText>
             <ButtonContainer>
                 {!isDefault ?(
-                    <IconButton type={"primary"} icon={mdiStar} onClick={()=>click(method,"set")}/>
+                    <IconButton type={"primary"} icon={mdiStar} onClick={()=>click(method.id, "set")}/>
                 ):(<div></div>)}
                 {method &&(
-                    <IconButton type={"danger"} icon={mdiClose} onClick={()=>click(method,"remove")}/>
+                    <IconButton type={"danger"} icon={mdiClose} onClick={()=>click(method.id, "remove")}/>
                 )}
 
             </ButtonContainer>
