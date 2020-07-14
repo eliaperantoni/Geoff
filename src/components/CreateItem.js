@@ -40,14 +40,16 @@ const Form = styled.div`
 
 const StyledLabeledInput = styled(LabeledInput)`
     ${Input} {
-        font-size: 18px;
-        padding: 12px 18px;
-        border-radius: 9px;
+        border-radius: 12px;
+        font-size: 20px;
+        padding: 10px 16px;
     }
-    
-    ${Label} {
-        margin-left: 8px;
-    }
+`;
+
+const StyledSelect = styled(Select)`
+    border-radius: 12px;
+    font-size: 20px;
+    padding: 10px 16px;
 `;
 
 const Image = styled.div`
@@ -155,19 +157,19 @@ export default class CreateItem extends React.Component {
                 <Form>
                     <input type="file" accept="image/*" hidden ref={this.imageRef} onChange={this.onImageChange}/>
 
-                    <LabeledInput label="name" {...validatedField("name")}/>
-                    <LabeledInput label="brand" {...validatedField("brand")}/>
+                    <StyledLabeledInput label="name" {...validatedField("name")}/>
+                    <StyledLabeledInput label="brand" {...validatedField("brand")}/>
 
                     <Labeled label="Category" >
-                        <Select {...validatedField("category")}>
+                        <StyledSelect {...validatedField("category")}>
                             <option value={""}/>
                             {categories.map(c => (<option value={c.name} key={c.name}>{c.display}</option>))}
-                        </Select>
+                        </StyledSelect>
                     </Labeled>
 
-                    <LabeledInput label="tags" onChange={this.onChange("tags")} value={this.state.tags}/>
-                    <LabeledInput label="price" {...validatedField("price")}/>
-                    <LabeledInput label="stock" {...validatedField("stock")}/>
+                    <StyledLabeledInput label="tags" onChange={this.onChange("tags")} value={this.state.tags}/>
+                    <StyledLabeledInput label="price" {...validatedField("price")}/>
+                    <StyledLabeledInput label="stock" {...validatedField("stock")}/>
 
                     <Button disabled={!canCreateItem} onClick={this.createItem}>Create item</Button>
                 </Form>
