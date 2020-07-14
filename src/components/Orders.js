@@ -137,6 +137,9 @@ function Order({order}) {
                 <OrderDetailsSecondaryText>
                     {moment(order.placedAt.toDate()).format("DD MMMM YYYY HH:mm")}
                 </OrderDetailsSecondaryText>
+                <Tag>
+                    {order.paymentMethod}
+                </Tag>
                 <OrderDetailsSecondaryText>
                     #{order.number}
                 </OrderDetailsSecondaryText>

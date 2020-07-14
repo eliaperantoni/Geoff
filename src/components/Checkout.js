@@ -240,6 +240,7 @@ class Checkout extends Component {
             const order = {
                 status: ["confirmed", "process", "delivered"][Math.floor(Math.random() * 3)],
                 placedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                paymentMethod: this.getMethodString(this.state.paymentMethod),
                 items: basket
             }
             //RIMUOVO L'ORDINE DALLO STOCK
