@@ -63,7 +63,8 @@ class Register extends React.Component {
 
             await firebase.auth().createUserWithEmailAndPassword(email, password);
             await firebase.auth().currentUser.sendEmailVerification();
-            await firebase.firestore().doc(`/users/${email}`).set({
+            const userRef = firebase.firestore().doc(`/users/${email}`);
+            await userRef.set({
                 email: email,
                 name: name,
                 surname: surname,
@@ -76,6 +77,13 @@ class Register extends React.Component {
                 basket: [],
                 isAdmin: false,
             });
+            const paymentMethod = await firebase.firestore().collection(`/users/${email}/paymentMethods`).add({
+                type: "cash",
+            });
+            await userRef.update({
+                preferredPaymentMethod: paymentMethod.id,
+            });
+            await firebase.auth().signOut();
             this.props.history.push("/confirm");
         } catch (error) {
             alert(error.message);
