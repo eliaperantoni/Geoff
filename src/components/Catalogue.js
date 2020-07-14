@@ -11,8 +11,11 @@ import Popup from "components/basic/Popup";
 import CreateItem from "components/CreateItem";
 import {setLoading} from "App";
 import Card from "./basic/Card";
-import Validation from "../controller/Validation";
-import Input from "./basic/Input";
+import Validation from "controller/Validation";
+import Auth from "controller/Auth";
+import Input from "components/basic/Input";
+
+const auth = Auth.getInstance();
 
 const StyledCatalogue = styled.div`
     flex: 1;
@@ -105,6 +108,17 @@ export default class Catalogue extends React.Component {
     async refreshItems() {
         const query = await firebase.firestore().collection("/items").where("deleted", "==", false).get();
         const items = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
+
+        const user = await firebase.firestore().doc(`/users/${auth.user.email}`).get();
+
+        for(const item of items) {
+            for(const basketItem of user.data().basket) {
+                if(item.id !== basketItem.itemID) continue;
+
+                item.stock -= basketItem.quantity;
+            }
+        }
+
         this.setState({items});
     }
 
@@ -168,6 +182,10 @@ export default class Catalogue extends React.Component {
         });
 
         setLoading(false);
+
+        this.setState({items: [], loading: true});
+        await this.refreshItems();
+        this.setState({loading: false});
     }
 
     render() {

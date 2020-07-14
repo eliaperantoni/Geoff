@@ -41,6 +41,6 @@ export default class Auth {
 
     loadUser = async email => {
         const userDoc = await firebase.firestore().doc(`/users/${email}`).get();
-        this.user = userDoc.data();
+        this.user = {email, ...userDoc.data()};
     }
 }
