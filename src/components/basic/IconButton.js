@@ -7,13 +7,13 @@ const StyledIconButton = styled.div`
     ${props => {
         const colors = {
             primary: {
-                gradient: ["#00e74e", "#6BE595"],
+                gradient: ["#6BE595", "#00e74e"],
                 text: "#e0f8e7",
                 boxShadow: "rgba(90,198,127,0.81)",
                 textShadow: "rgba(64,187,108,0.56)",
             },
             danger: {
-                gradient: ["#D80142", "#DD4673"],
+                gradient: ["#DD4673", "#D80142"],
                 text: "#FFD2E0",
                 boxShadow: "#AD1341",
                 textShadow: "#FFD2E0",
@@ -21,23 +21,25 @@ const StyledIconButton = styled.div`
         };
     
         const theme = colors[props.type || "primary"];
-        const darkenAmount = 0.1;
         
         return css`
-            background: linear-gradient(-90deg, ${theme.gradient[0]}, ${theme.gradient[1]});
+            background: linear-gradient(90deg, ${theme.gradient[0]} 0%, ${theme.gradient[1]} 33%, ${darken(0.05, theme.gradient[1])} 66%, ${darken(0.10, theme.gradient[1])} 100%);
             box-shadow: 0 2px 8px ${theme.boxShadow};
             text-shadow: 0 2px 4px ${theme.textShadow};
             path {
                 fill: ${theme.text} !important;
             }
 
+            background-size: ${props.size * 48 * 3}px 1px;
+            
             &:hover {
-                background: linear-gradient(-90deg, ${darken(darkenAmount, theme.gradient[0])}, ${darken(darkenAmount, theme.gradient[1])});
-                box-shadow: 0 2px 8px ${darken(darkenAmount, theme.boxShadow)};
-                text-shadow: 0 2px 4px ${darken(darkenAmount, theme.textShadow)};
-                path {
-                    fill: ${darken(darkenAmount, theme.text)} !important;
-                }
+                background-position: -${props.size * 48}px;
+            }
+            
+            transition: background 0.2s;
+            &:active {
+                transition: background 0s;
+                background-position: -${props.size * 48 * 2}px;
             }
         `;
     }}

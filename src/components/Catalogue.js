@@ -83,6 +83,7 @@ export default class Catalogue extends React.Component {
         super(props);
         this.state = {
             items: [],
+            basket: [],
             query: {
                 text: "",
                 category: "",
@@ -94,32 +95,49 @@ export default class Catalogue extends React.Component {
             loading: true,
             selectedItem: null,
 
+
             createItemModal: false,
             addStockModal: false,
             detailModal: false,
         };
     }
 
-    async componentDidMount() {
-        await this.refreshItems();
-        this.setState({loading: false});
+    removeListeners = [];
+
+    componentDidMount() {
+        const initialLoads = [];
+
+        new Promise(resolve => {
+            initialLoads.push(resolve)
+        });
+        new Promise(resolve => {
+            initialLoads.push(resolve)
+        });
+
+        this.removeListeners.push(
+            firebase.firestore().collection("/items").where("deleted", "==", false).onSnapshot(snap => {
+                const items = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                this.setState({items});
+
+                initialLoads[0]();
+            })
+        );
+
+        this.removeListeners.push(
+            firebase.firestore().doc(`/users/${auth.user.email}`).onSnapshot(snap => {
+                this.setState({basket: snap.data().basket});
+
+                initialLoads[1]();
+            })
+        );
+
+        Promise.all(initialLoads).then(() => this.setState({loading: false}));
     }
 
-    async refreshItems() {
-        const query = await firebase.firestore().collection("/items").where("deleted", "==", false).get();
-        const items = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
-
-        const user = await firebase.firestore().doc(`/users/${auth.user.email}`).get();
-
-        for(const item of items) {
-            for(const basketItem of user.data().basket) {
-                if(item.id !== basketItem.itemID) continue;
-
-                item.stock -= basketItem.quantity;
-            }
+    componentWillUnmount() {
+        for(const removeListener of this.removeListeners) {
+            removeListener();
         }
-
-        this.setState({items});
     }
 
     onSearch = text => {
@@ -139,27 +157,16 @@ export default class Catalogue extends React.Component {
     }
 
     deleteItem = id => async () => {
-        this.setState({items: [], loading: true});
-
-        await firebase.firestore().doc(`/items/${id}`).update({deleted: true});
-
-        await this.refreshItems();
-        this.setState({loading: false});
+        firebase.firestore().doc(`/items/${id}`).update({deleted: true});
     }
 
-    addStock = async inc => {
-        setLoading(true);
-
-        await firebase.firestore().doc(`/items/${this.state.selectedItem.id}`).update({
+    addStock = inc => {
+        firebase.firestore().doc(`/items/${this.state.selectedItem.id}`).update({
             stock: firebase.firestore.FieldValue.increment(inc)
         });
-
-        setLoading(false);
     }
 
     addToCart = async (itemID, quantity) => {
-        setLoading(true);
-
         const userRef = firebase.firestore().doc(`/users/${firebase.auth().currentUser.email}`);
 
         await firebase.firestore().runTransaction(async transaction => {
@@ -178,14 +185,9 @@ export default class Catalogue extends React.Component {
                 itemID: itemID,
                 quantity,
             });
+
             await transaction.update(userRef, user);
         });
-
-        setLoading(false);
-
-        this.setState({items: [], loading: true});
-        await this.refreshItems();
-        this.setState({loading: false});
     }
 
     render() {
@@ -221,7 +223,7 @@ export default class Catalogue extends React.Component {
 
         items = items.sort(sortFunctions[sort.target]);
 
-        if(sort.order === "desc") items.reverse();
+        if (sort.order === "desc") items.reverse();
 
         let itemsComponents;
         if (this.props.admin) {
@@ -257,7 +259,6 @@ export default class Catalogue extends React.Component {
                        }}>
                     <CreateItem onCreated={() => {
                         this.setState({createItemModal: false});
-                        this.refreshItems();
                     }}/>
                 </Popup>
 
@@ -267,14 +268,9 @@ export default class Catalogue extends React.Component {
                            this.setState({selectedItem: null});
                        }}>
                     <AddStock onAddStock={async inc => {
-                        await this.addStock(inc);
-
+                        this.addStock(inc);
                         this.setState({addStockModal: false});
                         this.setState({selectedItem: null});
-
-                        this.setState({items: [], loading: true});
-                        await this.refreshItems();
-                        this.setState({loading: false});
                     }}/>
                 </Popup>
 
@@ -285,7 +281,7 @@ export default class Catalogue extends React.Component {
                        }}>
                     <Detail item={this.state.selectedItem}
                             onAddToCart={async quantity => {
-                                await this.addToCart(this.state.selectedItem.id, quantity);
+                                this.addToCart(this.state.selectedItem.id, quantity);
                                 this.setState({detailModal: false});
                                 this.setState({selectedItem: null});
                             }}/>
