@@ -83,6 +83,10 @@ export default class Catalogue extends React.Component {
             query: {
                 text: "",
                 category: "",
+                sort: {
+                    target: "name",
+                    order: "asc",
+                }
             },
             loading: true,
             selectedItem: null,
@@ -110,6 +114,14 @@ export default class Catalogue extends React.Component {
 
     onCategory = category => {
         this.setState(state => ({query: {...state.query, category}}));
+    }
+
+    onSortTarget = target => {
+        this.setState(state => ({query: {...state.query, sort: {...state.query.sort, target}}}));
+    }
+
+    onSortOrder = order => {
+        this.setState(state => ({query: {...state.query, sort: {...state.query.sort, order}}}));
     }
 
     deleteItem = id => async () => {
@@ -176,10 +188,22 @@ export default class Catalogue extends React.Component {
         if (this.state.query.text !== "") filters.push(doesItemMatchText);
         if (this.state.query.category !== "") filters.push(doesItemMatchCategory);
 
-        const items = this.state.items.filter(item => {
+        let items = this.state.items.filter(item => {
             for (const filter of filters) if (!filter(item)) return false;
             return true;
         });
+
+        const sort = this.state.query.sort;
+
+        const sortFunctions = {
+            name: (a, b) => a.name.localeCompare(b.name),
+            brand: (a, b) => a.brand.localeCompare(b.brand),
+            price: (a, b) => a.price - b.price,
+        }
+
+        items = items.sort(sortFunctions[sort.target]);
+
+        if(sort.order === "desc") items.reverse();
 
         let itemsComponents;
         if (this.props.admin) {
@@ -205,7 +229,8 @@ export default class Catalogue extends React.Component {
         }
 
         return (
-            <Wrapper onSearch={this.onSearch} onCategory={this.onCategory}>
+            <Wrapper onSearch={this.onSearch} onCategory={this.onCategory} onSortTarget={this.onSortTarget}
+                     onSortOrder={this.onSortOrder}>
                 <Loader loading={this.state.loading}/>
 
                 <Popup open={this.state.createItemModal}

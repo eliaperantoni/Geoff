@@ -9,7 +9,7 @@ import Price from 'components/basic/Price.js';
 const StyledItem = styled(Card)`
     display: flex;
     flex-direction: column;
-    height: 200px;
+    height: 240px;
     width: 300px;
     padding: 0;
     
@@ -35,6 +35,13 @@ const Info = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 22px 32px;
+    
+    > * {
+        margin-bottom: 4px;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
 `;
 
 const InfoCol = styled.div`
@@ -46,7 +53,13 @@ const Name = styled.span`
     font-family: FuturaBold, sans-serif;
     font-size: 1.4rem;
     color: #6C7C89;
-    margin-bottom: 4px;
+`;
+
+const Brand = styled.span`
+    font-family: FuturaLight, sans-serif;
+    color: #B2BDC6;
+    font-size: 1.2rem;
+    font-style: italic;
 `;
 
 const Stock = styled.span`
@@ -97,6 +110,7 @@ function Item(props) {
             <Info>
                 <InfoCol>
                     <Name>{item.name}</Name>
+                    <Brand>{item.brand}</Brand>
                     <StyledPrice price={item.price}/>
                     {props.admin && (<Stock>{item.stock}<span style={{fontSize: '1.4rem'}}> left</span></Stock>)}
                 </InfoCol>
