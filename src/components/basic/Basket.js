@@ -11,7 +11,7 @@ const Box =  styled.div`
     margin-left: 50px;
     margin-top:40px;
     height: 400px;
-    width: 300px;
+    width: 350px;
     background-color: #fafdff;
     border-radius: 8px;
     cursor: pointer;
@@ -27,7 +27,7 @@ const Triangle = styled.div`
     border-color: transparent transparent #fafdff transparent;
 `;
 const Body = styled.div`
-    width: 250px;
+    width: 300px;
     height: 350px;
     display: flex;
     flex-grow: 1;
@@ -39,7 +39,7 @@ const Body = styled.div`
 const Scroll = styled.div`
     overflow: auto;
     height: 340px;
-    width: 250px;
+    width: 300px;
 `
 const OrderTotalPrice = styled(Price)`
   font-family: FuturaBold, sans-serif;
