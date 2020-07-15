@@ -134,12 +134,12 @@ function Order({order}) {
                 <OrderDetailsPrimaryText>
                     <Price price={totalPrice}/>
                 </OrderDetailsPrimaryText>
-                <OrderDetailsSecondaryText>
-                    {moment(order.placedAt.toDate()).format("DD MMMM YYYY HH:mm")}
-                </OrderDetailsSecondaryText>
                 <Tag>
                     {order.paymentMethod}
                 </Tag>
+                <OrderDetailsSecondaryText>
+                    {moment(order.delivery.toDate()).format("DD MMMM YYYY HH:mm")}
+                </OrderDetailsSecondaryText>
                 <OrderDetailsSecondaryText>
                     #{order.number}
                 </OrderDetailsSecondaryText>
@@ -147,7 +147,11 @@ function Order({order}) {
         </StyledOrder>
     );
 }
-
+/*
+*                 <OrderDetailsSecondaryText>
+                    PlaceAt: {moment(order.placedAt.toDate()).format("DD MMMM YYYY HH:mm")}
+                </OrderDetailsSecondaryText>
+* */
 const OrdersContainer = styled.div`
   align-self: center;
   display: flex;

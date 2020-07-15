@@ -108,6 +108,9 @@ class Checkout extends Component {
             loading:true,
             isModalOpen:false,
             modalBasket:false,
+            modalDate:false,
+            optionDate:[],
+            defaultDate:null,
         };
     }
 
@@ -184,9 +187,15 @@ class Checkout extends Component {
         this.setState({paymentMethod:method, isModalOpen:false, loading: false});
 
     }
-
+    randomDate(start, end) {
+        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    }
     async componentDidMount() {
-
+        console.log();
+        let dates = []
+        for (let i =0;i<5;i++){
+            dates[i] = this.randomDate(new Date(),new Date((new Date().getTime() + ((10-i) * 24 * 60 * 60 * 1000))));
+        }
         let user = await this.getUser();
         let basket = await this.getUserBasket(user.email);
         if(!basket.length >0){
@@ -203,7 +212,7 @@ class Checkout extends Component {
             price += doc.data().price * obj.quantity;
         }
         let payments = await this.getUserPayments(user.email);
-        this.setState({loading:false,paymentMethod: method,payments: payments,price:price,location: user.city+", "+user.address+", "+user.cap});
+        this.setState({defaultDate : dates[1].toString().substring(0, 21), optionDate:dates,loading:false,paymentMethod: method,payments: payments,price:price,location: user.city+", "+user.address+", "+user.cap});
 
     }
 
@@ -241,7 +250,8 @@ class Checkout extends Component {
                 status: ["confirmed", "process", "delivered"][Math.floor(Math.random() * 3)],
                 placedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 paymentMethod: this.getMethodString(this.state.paymentMethod),
-                items: basket
+                items: basket,
+                delivery:firebase.firestore.Timestamp.fromDate(new Date(this.state.defaultDate)),
             }
             //RIMUOVO L'ORDINE DALLO STOCK
             let points = user.loyaltyCard.points;
@@ -286,6 +296,8 @@ class Checkout extends Component {
                                 <BoldText><Icon path={this.getMethodIcon(this.state.paymentMethod)} size={1.7}/> {this.getMethodString(this.state.paymentMethod)}</BoldText>
                                 Will ship to:
                                 <BoldText>{this.state.location}</BoldText>
+                                Delivery:
+                                <BoldText>{this.state.defaultDate}</BoldText>
                             </Text>
                             <Popup open={this.state.modalBasket} onClose={this.closeModalBasket}>
                                 <ModalBasket>
@@ -306,7 +318,17 @@ class Checkout extends Component {
                                     </PaymentOption>
                                 </PaymentContainer>
                             </Popup>
+                            <Popup open={this.state.modalDate} onClose={()=>(this.setState({modalDate:false}))}>
+                                <PaymentContainer>
+                                    {this.state.optionDate.map(d =>(
+                                        <PaymentOption onClick={()=>(this.setState({modalDate:false,defaultDate:d.toString().substring(0, 21)}))}>
+                                            <BoldText >{d.toString().substring(0, 21)}</BoldText>
+                                        </PaymentOption>))
+                                    }
+                                </PaymentContainer>
+                            </Popup>
                             <Button style={{height:'100px'}} onClick={()=>this.buy()}>Buy</Button>
+                            <Button onClick={()=>this.setState({modalDate:true})} style={{marginTop:'20px'}}>Change date</Button>
                             <Button onClick={()=>this.setState({isModalOpen:true})} style={{marginTop:'20px'}}>Change payment method</Button>
                         </Upper>
                     </Form>

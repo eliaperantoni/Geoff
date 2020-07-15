@@ -90,7 +90,6 @@ const Actions = styled.div`
 
 class Header extends Component{
     constructor(props) {
-        console.log(props);
         super(props);
         this.state = {
             showBasket:false,
@@ -140,7 +139,6 @@ class Header extends Component{
         return (
             <StyledHeader className={this.props.className}>
                 <Title onClick={this.main}>Geoff</Title>
-
                 <InputContainer hide={this.props.hideInput}>
                     <StyledSelect onChange={e => this.props.onSortTarget(e.target.value)}>
                         <option value="name">By name</option>
