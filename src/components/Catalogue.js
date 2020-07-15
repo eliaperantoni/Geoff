@@ -12,6 +12,7 @@ import Card from "./basic/Card";
 import Validation from "controller/Validation";
 import Auth from "controller/Auth";
 import Search from "controller/Search";
+import Items from "controller/Items";
 import Input from "components/basic/Input";
 
 const auth = Auth.getInstance();
@@ -139,38 +140,16 @@ export default class Catalogue extends React.Component {
         this.setState(state => ({query: {...state.query, sort: {...state.query.sort, order}}}));
     }
 
-    deleteItem = id => async () => {
-        firebase.firestore().doc(`/items/${id}`).update({deleted: true});
+    deleteItem = id => () => {
+        Items.deleteItem(id);
     }
 
     addStock = inc => {
-        firebase.firestore().doc(`/items/${this.state.selectedItem.id}`).update({
-            stock: firebase.firestore.FieldValue.increment(inc)
-        });
+        Items.addStock(this.state.selectedItem.id, inc);
     }
 
-    addToCart = async (itemID, quantity) => {
-        const userRef = firebase.firestore().doc(`/users/${firebase.auth().currentUser.email}`);
-
-        await firebase.firestore().runTransaction(async transaction => {
-            const userDoc = await transaction.get(userRef);
-            const user = userDoc.data();
-
-            for (const item of user.basket) {
-                if (item.itemID === itemID) {
-                    item.quantity += quantity;
-                    await transaction.update(userRef, user);
-                    return;
-                }
-            }
-
-            user.basket.push({
-                itemID: itemID,
-                quantity,
-            });
-
-            await transaction.update(userRef, user);
-        });
+    addToCart = (itemID, quantity) => {
+        Items.addToCart(itemID, quantity);
     }
 
     render() {
