@@ -67,15 +67,16 @@ class Login extends React.Component {
             const auth = Auth.getInstance();
             await auth.login(email.str, password.str);
 
-            if(auth.user.emailVerified){
-                if (auth.user.isAdmin) {
-                    this.props.history.push("/admin/catalogue");
-                } else {
-                    this.props.history.push("/");
-                }
-            } else {
+            if(!auth.user.isAdmin && !auth.user.emailVerified) {
                 await auth.logout();
                 this.props.history.push("/confirm");
+                return;
+            }
+
+            if (auth.user.isAdmin) {
+                this.props.history.push("/admin/catalogue");
+            } else {
+                this.props.history.push("/");
             }
         } catch (error) {
             alert(error.message)
