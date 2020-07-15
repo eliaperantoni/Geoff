@@ -137,7 +137,6 @@ class Header extends Component{
         window.addEventListener("resize", this.handleResize);
     }
     render() {
-        console.log(!this.state.hiddenBasket)
         return (
             <StyledHeader className={this.props.className}>
                 <Title onClick={this.main}>Geoff</Title>

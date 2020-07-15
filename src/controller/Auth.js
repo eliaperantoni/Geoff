@@ -14,10 +14,15 @@ export default class Auth {
         const unsub = firebase.auth().onAuthStateChanged(async user => {
             unsub();
             if(user) {
-                await this.loadUser(user.email);
+                this.user = {
+                    email: user.email,
+                    emailVerified: user.emailVerified,
+                    ...await this.getUser(user.email),
+                };
             } else {
                 this.user = null;
             }
+
             resolveFn();
         });
     }
@@ -31,18 +36,20 @@ export default class Auth {
 
     login = async (email, password) => {
         await firebase.auth().signInWithEmailAndPassword(email, password);
-        await this.loadUser(email);
+        this.user = {
+            email,
+            emailVerified: firebase.auth().currentUser.emailVerified,
+            ...await this.getUser(email),
+        };
     }
 
     logout = async () => {
         await firebase.auth().signOut();
         this.user = null;
     }
-    isVerifiedEmail = async () => {
-        return firebase.auth().currentUser.emailVerified;
-    }
-    loadUser = async email => {
+
+    getUser = async email => {
         const userDoc = await firebase.firestore().doc(`/users/${email}`).get();
-        this.user = {email, ...userDoc.data()};
+        return userDoc.data();
     }
 }
