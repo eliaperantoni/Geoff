@@ -66,18 +66,18 @@ class Login extends React.Component {
             setLoading(true);
             const auth = Auth.getInstance();
             await auth.login(email.str, password.str);
-            if(await auth.isVerifiedEmail()){
-                if (auth.user.isAdmin) {
-                    this.props.history.push("/admin/catalogue");
-                }
-                this.props.history.push("/");
-            }else{
-                await firebase.auth().currentUser.sendEmailVerification();
+
+            if(!auth.user.isAdmin && !auth.user.emailVerified) {
                 await auth.logout();
                 this.props.history.push("/confirm");
+                return;
             }
 
-
+            if (auth.user.isAdmin) {
+                this.props.history.push("/admin/catalogue");
+            } else {
+                this.props.history.push("/");
+            }
         } catch (error) {
             alert(error.message)
         } finally {

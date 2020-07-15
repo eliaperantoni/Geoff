@@ -143,7 +143,7 @@ describe("credit card number", () => {
     ];
 
     for(const row of rows) {
-        test(`"${row.str}" ${row.want ? "is" : "is not"} a valid credit card number}`, () => {
+        test(`"${row.str}" ${row.want ? "is" : "is not"} a valid credit card number`, () => {
             const got = Validation.creditCardNumber(row.str);
             expect(got).toBe(row.want);
         });
@@ -160,7 +160,7 @@ describe("credit card cvv", () => {
     ];
 
     for(const row of rows) {
-        test(`"${row.str}" ${row.want ? "is" : "is not"} a valid credit card CVV}`, () => {
+        test(`"${row.str}" ${row.want ? "is" : "is not"} a valid credit card CVV`, () => {
             const got = Validation.creditCardCVV(row.str);
             expect(got).toBe(row.want);
         });
@@ -177,7 +177,7 @@ describe("credit card expiration date", () => {
     ];
 
     for(const row of rows) {
-        test(`"${row.str}" ${row.want ? "is" : "is not"} a valid credit card expiration date}`, () => {
+        test(`"${row.str}" ${row.want ? "is" : "is not"} a valid credit card expiration date`, () => {
             const got = Validation.creditCardExpirationDate(row.str);
             expect(got).toBe(row.want);
         });
