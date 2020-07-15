@@ -13,6 +13,7 @@ import Labeled, {Label} from "components/basic/Labeled";
 import {mdiPencil} from "@mdi/js";
 import {setLoading} from "App";
 import Validation from "controller/Validation";
+import Items from "controller/Items";
 
 const StyledCreateItem = styled(Card)`
     display: flex;
@@ -124,20 +125,14 @@ export default class CreateItem extends React.Component {
     createItem = async () => {
         setLoading(true);
 
-        const itemRef = await firebase.firestore().collection(`/items`).add({
+        await Items.createItem({
             name: this.state.name.str,
             brand: this.state.brand.str,
             category: this.state.category.str,
             tags: this.state.tags.split(",").filter(t => t !== ""),
             stock: parseInt(this.state.stock.str),
             price: Math.floor(parseFloat(this.state.price.str) * 100),
-            deleted: false,
-        });
-
-        const imageRef = firebase.storage().ref(`/items/${itemRef.id}`);
-        await imageRef.put(this.state.image.file);
-        await itemRef.update({
-            image: await imageRef.getDownloadURL(),
+            image: this.state.image.file,
         });
 
         setLoading(false);

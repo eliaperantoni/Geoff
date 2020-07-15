@@ -1,9 +1,8 @@
 export default class Validation {
     static int = ({min = -Infinity, max = +Infinity} = {}) => str => {
         const parsed = parseInt(str);
-        return /^\d+$/.test(str) && !isNaN(parsed) && parsed >= min && parsed <= max && parsed === parseFloat(str);
+        return /^-?\d+$/.test(str) && !isNaN(parsed) && parsed >= min && parsed <= max && parsed === parseFloat(str);
     }
-
     static price = str => /^\d+(\.\d+)?$/.test(str);
     static email = str => /^\S+@\S+$/.test(str);
     static cap = str => /^\d+$/.test(str);
@@ -11,10 +10,10 @@ export default class Validation {
     static password = str => str.length >= 6;
     static nonEmptyString = str => str.length > 0;
     static exactly = getMatch => str => getMatch() === str;
-    static creditCardNumber = str => /\d{4}\s\d{4}\s\d{4}\s\d{4}/.test(str);
-    static creditCardCVV = str => /\d{3}/.test(str);
+    static creditCardNumber = str => /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/.test(str);
+    static creditCardCVV = str => /^\d{3}$/.test(str);
     static creditCardExpirationDate = str => {
-        if(!/\d\d\/\d\d/.test(str)) return false;
+        if(!/^\d\d\/\d\d$/.test(str)) return false;
 
         const [month, year] = str.split("/").map(piece => parseInt(piece));
         if(month < 1 || month > 12) return false;

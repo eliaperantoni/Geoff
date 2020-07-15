@@ -11,6 +11,8 @@ import CreateItem from "components/CreateItem";
 import Card from "./basic/Card";
 import Validation from "controller/Validation";
 import Auth from "controller/Auth";
+import Search from "controller/Search";
+import Items from "controller/Items";
 import Input from "components/basic/Input";
 
 const auth = Auth.getInstance();
@@ -138,81 +140,26 @@ export default class Catalogue extends React.Component {
         this.setState(state => ({query: {...state.query, sort: {...state.query.sort, order}}}));
     }
 
-    deleteItem = id => async () => {
-        firebase.firestore().doc(`/items/${id}`).update({deleted: true});
+    deleteItem = id => () => {
+        Items.deleteItem(id);
     }
 
     addStock = inc => {
-        firebase.firestore().doc(`/items/${this.state.selectedItem.id}`).update({
-            stock: firebase.firestore.FieldValue.increment(inc)
-        });
+        Items.addStock(this.state.selectedItem.id, inc);
     }
 
-    addToCart = async (itemID, quantity) => {
-        const userRef = firebase.firestore().doc(`/users/${firebase.auth().currentUser.email}`);
-
-        await firebase.firestore().runTransaction(async transaction => {
-            const userDoc = await transaction.get(userRef);
-            const user = userDoc.data();
-
-            for (const item of user.basket) {
-                if (item.itemID === itemID) {
-                    item.quantity += quantity;
-                    await transaction.update(userRef, user);
-                    return;
-                }
-            }
-
-            user.basket.push({
-                itemID: itemID,
-                quantity,
-            });
-
-            await transaction.update(userRef, user);
-        });
+    addToCart = (itemID, quantity) => {
+        Items.addToCart(itemID, quantity);
     }
 
     render() {
-        const doesItemMatchText = item => {
-            const doesStringResemble = str => {
-                return str.toLowerCase().includes(this.state.query.text.toLowerCase());
-            }
-
-            return doesStringResemble(item.name) ||
-                doesStringResemble(item.brand) ||
-                item.tags.reduce((acc, tag) => acc || doesStringResemble(tag), false);
-        }
-
-        const doesItemMatchCategory = item => item.category === this.state.query.category;
-
-        const filters = [];
-
-        if (this.state.query.text !== "") filters.push(doesItemMatchText);
-        if (this.state.query.category !== "") filters.push(doesItemMatchCategory);
-
-        let items = JSON.parse(JSON.stringify(this.state.items)).filter(item => {
-            for (const filter of filters) if (!filter(item)) return false;
-            return true;
-        });
-
-        const sort = this.state.query.sort;
-
-        const sortFunctions = {
-            name: (a, b) => a.name.localeCompare(b.name),
-            brand: (a, b) => a.brand.localeCompare(b.brand),
-            price: (a, b) => a.price - b.price,
-        }
-
-        items = items.sort(sortFunctions[sort.target]);
-
-        if (sort.order === "desc") items.reverse();
+        const items = Search.search(this.state.items, this.state.query.text, this.state.query.category, this.state.query.sort);
 
         for(const item of items) {
             for(const basketItem of this.state.basket) {
                 if(item.id !== basketItem.itemID) continue;
 
                 item.stock -= basketItem.quantity;
-                console.log("ITEM", item.id, item.stock);
             }
         }
 
