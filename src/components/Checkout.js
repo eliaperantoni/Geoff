@@ -254,7 +254,11 @@ class Checkout extends Component {
                 delivery:firebase.firestore.Timestamp.fromDate(new Date(this.state.defaultDate)),
             }
             //RIMUOVO L'ORDINE DALLO STOCK
-            let points = user.loyaltyCard.points;
+            let points;
+            if(user.loyaltyCard){
+                points = user.loyaltyCard.points;
+            }
+
             for (const obj of basket){
                 let doc = await firebase.firestore().doc(`/items/${obj.itemID}`).get();
                 let item = {...doc.data()}
@@ -263,7 +267,12 @@ class Checkout extends Component {
                 await firebase.firestore().collection(`items`).doc(doc.id).update({stock:diff});
             }
             //AGGIORNO IL BASKET
-            await firebase.firestore().collection(`users`).doc(user.email).update({basket:[],loyaltyCard:({points:points})});
+            if(user.loyaltyCard){
+                await firebase.firestore().collection(`users`).doc(user.email).update({basket:[],loyaltyCard:({points:points})});
+            }else{
+                await firebase.firestore().collection(`users`).doc(user.email).update({basket:[]});
+            }
+
             //AGGIUNGO L'ORDINE
             let orderID = await firebase.firestore().collection('users').doc(user.email).collection('orders').add({...order});
 
@@ -312,10 +321,6 @@ class Checkout extends Component {
                                             <BoldText>{this.getMethodString(method)}</BoldText>
                                         </PaymentOption>))
                                     }
-                                    <PaymentOption onClick={()=>this.setDefaultPayment(null)} >
-                                        <Icon path={this.getMethodIcon(null)} size={1.5}/>
-                                        <BoldText>{this.getMethodString(null)}</BoldText>
-                                    </PaymentOption>
                                 </PaymentContainer>
                             </Popup>
                             <Popup open={this.state.modalDate} onClose={()=>(this.setState({modalDate:false}))}>
