@@ -134,12 +134,12 @@ function Order({order}) {
                 <OrderDetailsPrimaryText>
                     <Price price={totalPrice}/>
                 </OrderDetailsPrimaryText>
-                <Tag>
-                    {order.paymentMethod}
-                </Tag>
                 <OrderDetailsSecondaryText>
                     {moment(order.delivery.toDate()).format("DD MMMM YYYY HH:mm")}
                 </OrderDetailsSecondaryText>
+                <Tag>
+                    {order.paymentMethod}
+                </Tag>
                 <OrderDetailsSecondaryText>
                     #{order.number}
                 </OrderDetailsSecondaryText>
