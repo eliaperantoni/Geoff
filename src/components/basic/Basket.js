@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import Button from "components/basic/Button.js"
 import OrderItem from "components/OrderItem"
 import Price from "components/basic/Price";
@@ -10,7 +10,12 @@ import Auth from "controller/Auth";
 
 const auth = Auth.getInstance();
 
+const Shadow = css`
+    box-shadow: 0 2px 64px rgba(187,196,206,0.9);
+`;
+
 const Box =  styled.div`
+    ${Shadow}
     margin-left: 50px;
     margin-top:40px;
     height: 400px;
