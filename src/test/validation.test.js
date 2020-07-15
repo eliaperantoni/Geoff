@@ -1,6 +1,6 @@
 import Validation from "controller/Validation";
 
-describe("integer validation", () => {
+describe("integer", () => {
     const rows = [
         {str: "23",want: true},
         {str: "-124",want: true},

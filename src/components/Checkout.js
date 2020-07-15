@@ -333,8 +333,8 @@ class Checkout extends Component {
                                 </PaymentContainer>
                             </Popup>
                             <Button style={{height:'100px'}} onClick={()=>this.buy()}>Buy</Button>
-                            <Button onClick={()=>this.setState({modalDate:true})} style={{marginTop:'20px'}}>Change date</Button>
-                            <Button onClick={()=>this.setState({isModalOpen:true})} style={{marginTop:'20px'}}>Change payment method</Button>
+                            <Button type="secondary" onClick={()=>this.setState({modalDate:true})} style={{marginTop:'20px'}}>Change date</Button>
+                            <Button type="secondary" onClick={()=>this.setState({isModalOpen:true})} style={{marginTop:'20px'}}>Change payment method</Button>
                         </Upper>
                     </Form>
                 )}
